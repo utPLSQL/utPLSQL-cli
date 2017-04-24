@@ -12,13 +12,13 @@ public class ConnectionInfo {
 
     /**
      * Regex pattern to match following connection strings:
-     * user/pass@127.0.0.1:1521/sid
-     * user/pass@127.0.0.1/sid
-     * user/pass@sid
+     * user/pass@127.0.0.1:1521/db
+     * user/pass@127.0.0.1/db
+     * user/pass@db
      */
     private static final String CONNSTR_PATTERN =
             "^(?<user>[0-9a-z]+)/(?<pass>[0-9a-z]+)" +
-                    "(?:(?:@(?<host>[^:/]+)?(?::(?<port>[0-9]+))?(?:/(?<sid1>[0-9a-z]+))$)|(?:@(?<sid2>[0-9a-z]+)$))";
+                    "(?:(?:@(?<host>[^:/]+)?(?::(?<port>[0-9]+))?(?:/(?<db1>[0-9a-z]+))$)|(?:@(?<db2>[0-9a-z]+)$))";
 
     private static final String DEFAULT_HOST = "127.0.0.1";
     private static final int DEFAULT_PORT = 1521;
@@ -27,7 +27,7 @@ public class ConnectionInfo {
     private String password;
     private String host;
     private int port;
-    private String sid;
+    private String db;
 
     public ConnectionInfo() {
     }
@@ -41,9 +41,9 @@ public class ConnectionInfo {
 
         this.setUser(m.group("user"));
         this.setPassword(m.group("pass"));
-        this.setHost(m.group("host") != null ? m.group("host") : "127.0.0.1");
-        this.setPort(m.group("port") != null ? Integer.parseInt(m.group("port")) : 1521);
-        this.setSid(m.group("sid1") != null ? m.group("sid1") : m.group("sid2"));
+        this.setHost(m.group("host") != null ? m.group("host") : DEFAULT_HOST);
+        this.setPort(m.group("port") != null ? Integer.parseInt(m.group("port")) : DEFAULT_PORT);
+        this.setDb(m.group("db1") != null ? m.group("db1") : m.group("db2"));
 
         return this;
     }
@@ -80,21 +80,21 @@ public class ConnectionInfo {
         this.port = port;
     }
 
-    public String getSid() {
-        return sid;
+    public String getDb() {
+        return db;
     }
 
-    public void setSid(String sid) {
-        this.sid = sid;
+    public void setDb(String db) {
+        this.db = db;
     }
 
     public String getConnectionUrl() {
-        return String.format("jdbc:oracle:thin:@%s:%d:%s", getHost(), getPort(), getSid());
+        return String.format("jdbc:oracle:thin:@//%s:%d/%s", getHost(), getPort(), getDb());
     }
 
     @Override
     public String toString() {
-        return String.format("%s@%s:%d/%s", getUser(), getHost(), getPort(), getSid());
+        return String.format("%s@%s:%d/%s", getUser(), getHost(), getPort(), getDb());
     }
 
 }

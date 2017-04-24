@@ -2,13 +2,12 @@ package io.github.utplsql.cli;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import com.sun.deploy.util.StringUtils;
 import io.github.utplsql.api.OutputBuffer;
 import io.github.utplsql.api.OutputBufferLines;
 import io.github.utplsql.api.TestRunner;
-import io.github.utplsql.api.utPLSQL;
 import io.github.utplsql.api.types.BaseReporter;
 import io.github.utplsql.api.types.DocumentationReporter;
+import io.github.utplsql.api.utPLSQL;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -25,7 +24,7 @@ public class RunCommand {
 
     @Parameter(
             required = true, converter = ConnectionStringConverter.class,
-            description = "user/pass@[[host][:port]/]sid")
+            description = "user/pass@[[host][:port]/]db")
     private List<ConnectionInfo> connectionInfoList;
 
     @Parameter(
@@ -39,10 +38,10 @@ public class RunCommand {
     }
 
     public String getTestPaths() {
-        if (testPaths != null && testPaths.size() > 1)
-            throw new RuntimeException("Multiple test paths not supported yet.");
+//        if (testPaths != null && testPaths.size() > 1)
+//            throw new RuntimeException("Multiple test paths not supported yet.");
 
-        return (testPaths == null) ? null : StringUtils.join(testPaths, ",");
+        return (testPaths == null) ? null : String.join(",", testPaths);
     }
 
     public void run() throws Exception {
@@ -64,6 +63,12 @@ public class RunCommand {
             try {
                 conn = utPLSQL.getConnection();
                 new TestRunner().run(conn, testPaths, reporter);
+
+                OutputBufferLines outputLines = new OutputBuffer(reporter.getReporterId())
+                        .fetchAll(conn);
+
+                if (outputLines.getLines().size() > 0)
+                    System.out.println(outputLines.toString());
             } catch (SQLException e) {
                 // TODO
                 e.printStackTrace();
@@ -73,30 +78,28 @@ public class RunCommand {
             }
         });
 
-        executorService.submit(() -> {
-            Connection conn = null;
-            try {
-                conn = utPLSQL.getConnection();
-                OutputBufferLines outputLines;
-                do {
-                    outputLines = new OutputBuffer(reporter.getReporterId())
-                            .fetchAvailable(conn);
-
-                    Thread.sleep(500);
-
-                    if (outputLines.getLines().size() > 0)
-                        System.out.println(outputLines.toString());
-                } while (!outputLines.isFinished());
-            } catch (SQLException e) {
-                // TODO
-                e.printStackTrace();
-            } catch (InterruptedException ignored) {
-                // ignored
-            } finally {
-                if (conn != null)
-                    try { conn.close(); } catch (SQLException ignored) {}
-            }
-        });
+//        executorService.submit(() -> {
+//            Connection conn = null;
+//            try {
+//                conn = utPLSQL.getConnection();
+//                OutputBufferLines outputLines;
+//                do {
+//                    outputLines = new OutputBuffer(reporter.getReporterId())
+//                            .fetchAvailable(conn);
+//
+//                    Thread.sleep(500);
+//
+//                    if (outputLines.getLines().size() > 0)
+//                        System.out.println(outputLines.toString());
+//                } while (!outputLines.isFinished());
+//            } catch (SQLException | InterruptedException e) {
+//                // TODO
+//                e.printStackTrace();
+//            } finally {
+//                if (conn != null)
+//                    try { conn.close(); } catch (SQLException ignored) {}
+//            }
+//        });
 
         executorService.shutdown();
         executorService.awaitTermination(60, TimeUnit.MINUTES);
