@@ -3,11 +3,9 @@ package io.github.utplsql.cli;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import io.github.utplsql.api.OutputBuffer;
-import io.github.utplsql.api.OutputBufferLines;
 import io.github.utplsql.api.TestRunner;
 import io.github.utplsql.api.types.BaseReporter;
 import io.github.utplsql.api.types.DocumentationReporter;
-import io.github.utplsql.api.utPLSQL;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -24,14 +22,22 @@ public class RunCommand {
 
     @Parameter(
             required = true, converter = ConnectionStringConverter.class,
+            arity = 1,
             description = "user/pass@[[host][:port]/]db")
     private List<ConnectionInfo> connectionInfoList;
 
     @Parameter(
             names = {"-p", "--path"},
             description = "run suites/tests by path, format: \n" +
-                    "schema or schema:[suite ...][.test] or schema[.suite ...][.test]")
+                    "-p schema or schema:[suite ...][.test] or schema[.suite ...][.test]")
     private List<String> testPaths;
+
+    @Parameter(
+            names = {"-f", "--format"},
+            variableArity = true,
+            description = "output reporter format: \n" +
+                    "-f reporter_name [output_file] [console_output]")
+    private List<String> reporterParams;
 
     public ConnectionInfo getConnectionInfo() {
         return connectionInfoList.get(0);
@@ -44,78 +50,49 @@ public class RunCommand {
         return (testPaths == null) ? null : String.join(",", testPaths);
     }
 
-    public void run() throws Exception {
-        ConnectionInfo ci = getConnectionInfo();
-        System.out.println("Running Tests For: " + ci.toString());
+    public List<String> getReporterParams() {
+        return reporterParams;
+    }
 
-        utPLSQL.init(ci.getConnectionUrl(), ci.getUser(), ci.getPassword());
+    public void run() throws Exception {
+        final ConnectionInfo ci = getConnectionInfo();
+        System.out.println("Running Tests For: " + ci.toString());
 
         String tempTestPaths = getTestPaths();
         if (tempTestPaths == null) tempTestPaths = ci.getUser();
 
-        final BaseReporter reporter = createDocumentationReporter();
+        final BaseReporter reporter = new DocumentationReporter();
         final String testPaths = tempTestPaths;
+
+        try (Connection conn = ci.getConnection()) {
+            reporter.init(conn);
+        } catch (SQLException e) {
+            // TODO
+            e.printStackTrace();
+        }
 
         ExecutorService executorService = Executors.newFixedThreadPool(2);
 
         executorService.submit(() -> {
-            Connection conn = null;
-            try {
-                conn = utPLSQL.getConnection();
+            try (Connection conn = ci.getConnection()){
                 new TestRunner().run(conn, testPaths, reporter);
-
-                OutputBufferLines outputLines = new OutputBuffer(reporter.getReporterId())
-                        .fetchAll(conn);
-
-                if (outputLines.getLines().size() > 0)
-                    System.out.println(outputLines.toString());
             } catch (SQLException e) {
                 // TODO
                 e.printStackTrace();
-            } finally {
-                if (conn != null)
-                    try { conn.close(); } catch (SQLException ignored) {}
             }
         });
 
-//        executorService.submit(() -> {
-//            Connection conn = null;
-//            try {
-//                conn = utPLSQL.getConnection();
-//                OutputBufferLines outputLines;
-//                do {
-//                    outputLines = new OutputBuffer(reporter.getReporterId())
-//                            .fetchAvailable(conn);
-//
-//                    Thread.sleep(500);
-//
-//                    if (outputLines.getLines().size() > 0)
-//                        System.out.println(outputLines.toString());
-//                } while (!outputLines.isFinished());
-//            } catch (SQLException | InterruptedException e) {
-//                // TODO
-//                e.printStackTrace();
-//            } finally {
-//                if (conn != null)
-//                    try { conn.close(); } catch (SQLException ignored) {}
-//            }
-//        });
+        executorService.submit(() -> {
+            try (Connection conn = ci.getConnection()){
+                new OutputBuffer(reporter).printAvailable(conn, System.out);
+            } catch (SQLException e) {
+                // TODO
+                e.printStackTrace();
+            }
+        });
 
         executorService.shutdown();
         executorService.awaitTermination(60, TimeUnit.MINUTES);
-    }
-
-    private BaseReporter createDocumentationReporter() throws SQLException {
-        Connection conn = null;
-        try {
-            conn = utPLSQL.getConnection();
-            BaseReporter reporter = new DocumentationReporter();
-            reporter.setReporterId(utPLSQL.newSysGuid(conn));
-            return reporter;
-        } finally {
-            if (conn != null)
-                try { conn.close(); } catch (SQLException ignored) {}
-        }
     }
 
 }
