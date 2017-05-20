@@ -1,6 +1,6 @@
 package io.github.utplsql.cli;
 
-import com.sun.istack.internal.NotNull;
+import io.github.utplsql.api.types.BaseReporter;
 
 /**
  * Created by Vinicius on 20/05/2017.
@@ -11,6 +11,8 @@ public class ReporterOptions {
     private String outputFileName;
     private boolean outputToScreen;
     private boolean forceOutputToScreen;
+
+    private BaseReporter reporterObj = null;
 
     public ReporterOptions(String reporterName, String outputFileName, boolean outputToScreen) {
         setReporterName(reporterName);
@@ -23,13 +25,20 @@ public class ReporterOptions {
         this(reporterName, null, true);
     }
 
-    public String getReporterName() {
-        return reporterName;
+    public BaseReporter getReporterObj() {
+        return reporterObj;
     }
 
-    @NotNull
+    public void setReporterObj(BaseReporter reporterObj) {
+        this.reporterObj = reporterObj;
+    }
+
+    public String getReporterName() {
+        return reporterName.toUpperCase();
+    }
+
     public void setReporterName(String reporterName) {
-        this.reporterName = reporterName.toUpperCase();
+        this.reporterName = reporterName;
     }
 
     public String getOutputFileName() {

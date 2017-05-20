@@ -6,8 +6,10 @@ import io.github.utplsql.api.OutputBuffer;
 import io.github.utplsql.api.TestRunner;
 import io.github.utplsql.api.types.BaseReporter;
 import io.github.utplsql.api.types.CustomTypes;
-import io.github.utplsql.api.types.DocumentationReporter;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -45,11 +47,8 @@ public class RunCommand {
         return connectionInfoList.get(0);
     }
 
-    public String getTestPaths() {
-//        if (testPaths != null && testPaths.size() > 1)
-//            throw new RuntimeException("Multiple test paths not supported yet.");
-
-        return (testPaths == null) ? null : String.join(",", testPaths);
+    public List<String> getTestPaths() {
+        return testPaths;
     }
 
     public List<ReporterOptions> getReporterOptionsList() {
@@ -73,7 +72,7 @@ public class RunCommand {
 
         // If no reporter parameters were passed, use default reporter.
         if (reporterOptionsList.isEmpty()) {
-            reporterOptionsList.add(new ReporterOptions(CustomTypes.UT_DOCUMENTATION_REPORTER.getName()));
+            reporterOptionsList.add(new ReporterOptions(CustomTypes.UT_DOCUMENTATION_REPORTER));
         }
 
         return reporterOptionsList;
@@ -83,38 +82,62 @@ public class RunCommand {
         final ConnectionInfo ci = getConnectionInfo();
         System.out.println("Running Tests For: " + ci.toString());
 
-        String tempTestPaths = getTestPaths();
-        if (tempTestPaths == null) tempTestPaths = ci.getUser();
+        final List<ReporterOptions> reporterOptionsList = getReporterOptionsList();
+        final List<BaseReporter> reporterList = new ArrayList<>();
+        final List<String> testPaths = getTestPaths();
 
-        final BaseReporter reporter = new DocumentationReporter();
-        final String testPaths = tempTestPaths;
+        if (testPaths.isEmpty()) testPaths.add(ci.getUser());
 
+        // Do the reporters initialization, so we can use the id to run and gather results.
         try (Connection conn = ci.getConnection()) {
-            reporter.init(conn);
+            for (ReporterOptions ro : reporterOptionsList) {
+                BaseReporter reporter = CustomTypes.createReporter(ro.getReporterName());
+                reporter.init(conn);
+                ro.setReporterObj(reporter);
+                reporterList.add(reporter);
+            }
         } catch (SQLException e) {
             // TODO
             e.printStackTrace();
         }
 
-        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        ExecutorService executorService = Executors.newFixedThreadPool(1 + reporterList.size());
 
         executorService.submit(() -> {
             try (Connection conn = ci.getConnection()){
-                new TestRunner().run(conn, testPaths, reporter);
+                new TestRunner().run(conn, testPaths, reporterList);
             } catch (SQLException e) {
                 // TODO
                 e.printStackTrace();
             }
         });
 
-        executorService.submit(() -> {
-            try (Connection conn = ci.getConnection()){
-                new OutputBuffer(reporter).printAvailable(conn, System.out);
-            } catch (SQLException e) {
-                // TODO
-                e.printStackTrace();
-            }
-        });
+
+        for (ReporterOptions ro : reporterOptionsList) {
+            executorService.submit(() -> {
+                List<PrintStream> printStreams = new ArrayList<>();
+                PrintStream fileOutStream = null;
+
+                try (Connection conn = ci.getConnection()) {
+                    if (ro.outputToScreen()) {
+                        printStreams.add(System.out);
+                    }
+
+                    if (ro.outputToFile()) {
+                        fileOutStream = new PrintStream(new FileOutputStream(ro.getOutputFileName()));
+                        printStreams.add(fileOutStream);
+                    }
+
+                    new OutputBuffer(ro.getReporterObj()).printAvailable(conn, printStreams);
+                } catch (SQLException | FileNotFoundException e) {
+                    // TODO
+                    e.printStackTrace();
+                } finally {
+                    if (fileOutStream != null)
+                        fileOutStream.close();
+                }
+            });
+        }
 
         executorService.shutdown();
         executorService.awaitTermination(60, TimeUnit.MINUTES);
