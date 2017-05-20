@@ -5,10 +5,12 @@ import com.beust.jcommander.Parameters;
 import io.github.utplsql.api.OutputBuffer;
 import io.github.utplsql.api.TestRunner;
 import io.github.utplsql.api.types.BaseReporter;
+import io.github.utplsql.api.types.CustomTypes;
 import io.github.utplsql.api.types.DocumentationReporter;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,20 +26,20 @@ public class RunCommand {
             required = true, converter = ConnectionStringConverter.class,
             arity = 1,
             description = "user/pass@[[host][:port]/]db")
-    private List<ConnectionInfo> connectionInfoList;
+    private List<ConnectionInfo> connectionInfoList = new ArrayList<>();
 
     @Parameter(
             names = {"-p", "--path"},
             description = "run suites/tests by path, format: \n" +
                     "-p schema or schema:[suite ...][.test] or schema[.suite ...][.test]")
-    private List<String> testPaths;
+    private List<String> testPaths = new ArrayList<>();
 
     @Parameter(
             names = {"-f", "--format"},
             variableArity = true,
             description = "output reporter format: \n" +
                     "-f reporter_name [output_file] [console_output]")
-    private List<String> reporterParams;
+    private List<String> reporterParams = new ArrayList<>();
 
     public ConnectionInfo getConnectionInfo() {
         return connectionInfoList.get(0);
@@ -50,8 +52,31 @@ public class RunCommand {
         return (testPaths == null) ? null : String.join(",", testPaths);
     }
 
-    public List<String> getReporterParams() {
-        return reporterParams;
+    public List<ReporterOptions> getReporterOptionsList() {
+        List<ReporterOptions> reporterOptionsList = new ArrayList<>();
+        ReporterOptions reporterOptions = null;
+
+        for (String p : reporterParams) {
+            if (reporterOptions == null || !p.startsWith("-")) {
+                reporterOptions = new ReporterOptions(p);
+                reporterOptionsList.add(reporterOptions);
+            }
+            else
+            if (p.startsWith("-o=")) {
+                reporterOptions.setOutputFileName(p.substring(3));
+            }
+            else
+            if (p.equals("-s")) {
+                reporterOptions.forceOutputToScreen(true);
+            }
+        }
+
+        // If no reporter parameters were passed, use default reporter.
+        if (reporterOptionsList.isEmpty()) {
+            reporterOptionsList.add(new ReporterOptions(CustomTypes.UT_DOCUMENTATION_REPORTER.getName()));
+        }
+
+        return reporterOptionsList;
     }
 
     public void run() throws Exception {
