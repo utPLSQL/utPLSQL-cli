@@ -1,6 +1,6 @@
 package io.github.utplsql.cli;
 
-import io.github.utplsql.api.types.BaseReporter;
+import io.github.utplsql.api.reporter.Reporter;
 
 /**
  * Created by Vinicius on 20/05/2017.
@@ -12,7 +12,7 @@ public class ReporterOptions {
     private boolean outputToScreen;
     private boolean forceOutputToScreen;
 
-    private BaseReporter reporterObj = null;
+    private Reporter reporterObj = null;
 
     public ReporterOptions(String reporterName, String outputFileName, boolean outputToScreen) {
         setReporterName(reporterName);
@@ -25,11 +25,11 @@ public class ReporterOptions {
         this(reporterName, null, true);
     }
 
-    public BaseReporter getReporterObj() {
+    public Reporter getReporterObj() {
         return reporterObj;
     }
 
-    public void setReporterObj(BaseReporter reporterObj) {
+    public void setReporterObj(Reporter reporterObj) {
         this.reporterObj = reporterObj;
     }
 

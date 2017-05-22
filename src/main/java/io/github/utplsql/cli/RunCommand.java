@@ -2,10 +2,11 @@ package io.github.utplsql.cli;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
+import io.github.utplsql.api.CustomTypes;
 import io.github.utplsql.api.OutputBuffer;
 import io.github.utplsql.api.TestRunner;
-import io.github.utplsql.api.types.BaseReporter;
-import io.github.utplsql.api.types.CustomTypes;
+import io.github.utplsql.api.reporter.Reporter;
+import io.github.utplsql.api.reporter.ReporterFactory;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -83,7 +84,7 @@ public class RunCommand {
         System.out.println("Running Tests For: " + ci.toString());
 
         final List<ReporterOptions> reporterOptionsList = getReporterOptionsList();
-        final List<BaseReporter> reporterList = new ArrayList<>();
+        final List<Reporter> reporterList = new ArrayList<>();
         final List<String> testPaths = getTestPaths();
 
         if (testPaths.isEmpty()) testPaths.add(ci.getUser());
@@ -91,7 +92,7 @@ public class RunCommand {
         // Do the reporters initialization, so we can use the id to run and gather results.
         try (Connection conn = ci.getConnection()) {
             for (ReporterOptions ro : reporterOptionsList) {
-                BaseReporter reporter = CustomTypes.createReporter(ro.getReporterName());
+                Reporter reporter = ReporterFactory.createReporter(ro.getReporterName());
                 reporter.init(conn);
                 ro.setReporterObj(reporter);
                 reporterList.add(reporter);
