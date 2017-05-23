@@ -106,7 +106,10 @@ public class RunCommand {
 
         executorService.submit(() -> {
             try (Connection conn = ci.getConnection()){
-                new TestRunner().run(conn, testPaths, reporterList);
+                new TestRunner()
+                        .addPathList(testPaths)
+                        .addReporterList(reporterList)
+                        .run(conn);
             } catch (SQLException e) {
                 // TODO
                 e.printStackTrace();
