@@ -2,15 +2,18 @@ package io.github.utplsql.cli;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
+import io.github.utplsql.api.CustomTypes;
 import io.github.utplsql.api.OutputBuffer;
-import io.github.utplsql.api.OutputBufferLines;
 import io.github.utplsql.api.TestRunner;
-import io.github.utplsql.api.types.BaseReporter;
-import io.github.utplsql.api.types.DocumentationReporter;
-import io.github.utplsql.api.utPLSQL;
+import io.github.utplsql.api.reporter.Reporter;
+import io.github.utplsql.api.reporter.ReporterFactory;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,98 +27,124 @@ public class RunCommand {
 
     @Parameter(
             required = true, converter = ConnectionStringConverter.class,
+            arity = 1,
             description = "user/pass@[[host][:port]/]db")
-    private List<ConnectionInfo> connectionInfoList;
+    private List<ConnectionInfo> connectionInfoList = new ArrayList<>();
 
     @Parameter(
             names = {"-p", "--path"},
             description = "run suites/tests by path, format: \n" +
-                    "schema or schema:[suite ...][.test] or schema[.suite ...][.test]")
-    private List<String> testPaths;
+                    "-p schema or schema:[suite ...][.test] or schema[.suite ...][.test]")
+    private List<String> testPaths = new ArrayList<>();
+
+    @Parameter(
+            names = {"-f", "--format"},
+            variableArity = true,
+            description = "output reporter format: \n" +
+                    "-f reporter_name [output_file] [console_output]")
+    private List<String> reporterParams = new ArrayList<>();
 
     public ConnectionInfo getConnectionInfo() {
         return connectionInfoList.get(0);
     }
 
-    public String getTestPaths() {
-//        if (testPaths != null && testPaths.size() > 1)
-//            throw new RuntimeException("Multiple test paths not supported yet.");
+    public List<String> getTestPaths() {
+        return testPaths;
+    }
 
-        return (testPaths == null) ? null : String.join(",", testPaths);
+    public List<ReporterOptions> getReporterOptionsList() {
+        List<ReporterOptions> reporterOptionsList = new ArrayList<>();
+        ReporterOptions reporterOptions = null;
+
+        for (String p : reporterParams) {
+            if (reporterOptions == null || !p.startsWith("-")) {
+                reporterOptions = new ReporterOptions(p);
+                reporterOptionsList.add(reporterOptions);
+            }
+            else
+            if (p.startsWith("-o=")) {
+                reporterOptions.setOutputFileName(p.substring(3));
+            }
+            else
+            if (p.equals("-s")) {
+                reporterOptions.forceOutputToScreen(true);
+            }
+        }
+
+        // If no reporter parameters were passed, use default reporter.
+        if (reporterOptionsList.isEmpty()) {
+            reporterOptionsList.add(new ReporterOptions(CustomTypes.UT_DOCUMENTATION_REPORTER));
+        }
+
+        return reporterOptionsList;
     }
 
     public void run() throws Exception {
-        ConnectionInfo ci = getConnectionInfo();
+        final ConnectionInfo ci = getConnectionInfo();
         System.out.println("Running Tests For: " + ci.toString());
 
-        utPLSQL.init(ci.getConnectionUrl(), ci.getUser(), ci.getPassword());
+        final List<ReporterOptions> reporterOptionsList = getReporterOptionsList();
+        final List<Reporter> reporterList = new ArrayList<>();
+        final List<String> testPaths = getTestPaths();
 
-        String tempTestPaths = getTestPaths();
-        if (tempTestPaths == null) tempTestPaths = ci.getUser();
+        if (testPaths.isEmpty()) testPaths.add(ci.getUser());
 
-        final BaseReporter reporter = createDocumentationReporter();
-        final String testPaths = tempTestPaths;
+        // Do the reporters initialization, so we can use the id to run and gather results.
+        try (Connection conn = ci.getConnection()) {
+            for (ReporterOptions ro : reporterOptionsList) {
+                Reporter reporter = ReporterFactory.createReporter(ro.getReporterName());
+                reporter.init(conn);
+                ro.setReporterObj(reporter);
+                reporterList.add(reporter);
+            }
+        } catch (SQLException e) {
+            // TODO
+            e.printStackTrace();
+        }
 
-        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        ExecutorService executorService = Executors.newFixedThreadPool(1 + reporterList.size());
 
         executorService.submit(() -> {
-            Connection conn = null;
-            try {
-                conn = utPLSQL.getConnection();
-                new TestRunner().run(conn, testPaths, reporter);
-
-                OutputBufferLines outputLines = new OutputBuffer(reporter.getReporterId())
-                        .fetchAll(conn);
-
-                if (outputLines.getLines().size() > 0)
-                    System.out.println(outputLines.toString());
+            try (Connection conn = ci.getConnection()){
+                new TestRunner()
+                        .addPathList(testPaths)
+                        .addReporterList(reporterList)
+                        .run(conn);
             } catch (SQLException e) {
                 // TODO
                 e.printStackTrace();
-            } finally {
-                if (conn != null)
-                    try { conn.close(); } catch (SQLException ignored) {}
             }
         });
 
-//        executorService.submit(() -> {
-//            Connection conn = null;
-//            try {
-//                conn = utPLSQL.getConnection();
-//                OutputBufferLines outputLines;
-//                do {
-//                    outputLines = new OutputBuffer(reporter.getReporterId())
-//                            .fetchAvailable(conn);
-//
-//                    Thread.sleep(500);
-//
-//                    if (outputLines.getLines().size() > 0)
-//                        System.out.println(outputLines.toString());
-//                } while (!outputLines.isFinished());
-//            } catch (SQLException | InterruptedException e) {
-//                // TODO
-//                e.printStackTrace();
-//            } finally {
-//                if (conn != null)
-//                    try { conn.close(); } catch (SQLException ignored) {}
-//            }
-//        });
+
+        for (ReporterOptions ro : reporterOptionsList) {
+            executorService.submit(() -> {
+                List<PrintStream> printStreams = new ArrayList<>();
+                PrintStream fileOutStream = null;
+
+                try (Connection conn = ci.getConnection()) {
+                    if (ro.outputToScreen()) {
+                        printStreams.add(System.out);
+                    }
+
+                    if (ro.outputToFile()) {
+                        fileOutStream = new PrintStream(new FileOutputStream(ro.getOutputFileName()));
+                        printStreams.add(fileOutStream);
+                    }
+
+                    new OutputBuffer(ro.getReporterObj()).printAvailable(conn, printStreams);
+                } catch (SQLException | FileNotFoundException e) {
+                    // TODO
+                    e.printStackTrace();
+                } finally {
+                    if (fileOutStream != null)
+                        fileOutStream.close();
+                }
+            });
+        }
 
         executorService.shutdown();
         executorService.awaitTermination(60, TimeUnit.MINUTES);
-    }
-
-    private BaseReporter createDocumentationReporter() throws SQLException {
-        Connection conn = null;
-        try {
-            conn = utPLSQL.getConnection();
-            BaseReporter reporter = new DocumentationReporter();
-            reporter.setReporterId(utPLSQL.newSysGuid(conn));
-            return reporter;
-        } finally {
-            if (conn != null)
-                try { conn.close(); } catch (SQLException ignored) {}
-        }
     }
 
 }

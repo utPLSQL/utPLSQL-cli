@@ -2,6 +2,9 @@ package io.github.utplsql.cli;
 
 import com.beust.jcommander.ParameterException;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,6 +33,10 @@ public class ConnectionInfo {
     private String db;
 
     public ConnectionInfo() {
+    }
+
+    public Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(getConnectionUrl(), getUser(), getPassword());
     }
 
     public ConnectionInfo parseConnectionString(String connectionString) throws ParameterException {
