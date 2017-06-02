@@ -1,0 +1,33 @@
+sudo: required
+language: java
+
+jdk:
+  - oraclejdk8
+
+env:
+  global:
+    - MAVEN_HOME=/usr/local/maven
+    - MAVEN_CFG=$HOME/.m2
+
+cache:
+  directories:
+    - $MAVEN_CFG
+    - $MAVEN_HOME/lib/ext # Used to cache wagon-http lib.
+
+install:
+  - bash .travis/maven_cfg.sh
+
+script:
+  - mvn package -DskipTests
+  - mvn package appassembler:assemble
+
+before_deploy:
+  - bash .travis/create_release.sh
+
+deploy:
+  provider: bintray
+  file: bintray.json
+  user: $BINTRAY_USER
+  key: $BINTRAY_API_KEY
+  dry-run: false
+  on: develop
