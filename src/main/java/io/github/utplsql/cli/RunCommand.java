@@ -44,6 +44,11 @@ public class RunCommand {
                     "-f reporter_name [output_file] [console_output]")
     private List<String> reporterParams = new ArrayList<>();
 
+    @Parameter(
+            names = {"-c", "--color"},
+            description = "enables printing of test results in colors as defined by ANSICONSOLE standards")
+    private boolean colorConsole = false;
+
     public ConnectionInfo getConnectionInfo() {
         return connectionInfoList.get(0);
     }
@@ -81,11 +86,10 @@ public class RunCommand {
 
     public void run() throws Exception {
         final ConnectionInfo ci = getConnectionInfo();
-        System.out.println("Running Tests For: " + ci.toString());
 
         final List<ReporterOptions> reporterOptionsList = getReporterOptionsList();
-        final List<Reporter> reporterList = new ArrayList<>();
         final List<String> testPaths = getTestPaths();
+        final List<Reporter> reporterList = new ArrayList<>();
 
         if (testPaths.isEmpty()) testPaths.add(ci.getUser());
 
@@ -109,6 +113,7 @@ public class RunCommand {
                 new TestRunner()
                         .addPathList(testPaths)
                         .addReporterList(reporterList)
+                        .colorConsole(colorConsole)
                         .run(conn);
             } catch (SQLException e) {
                 // TODO

@@ -58,6 +58,8 @@ database          - database to connect to.
                     If not defined, then output will be displayed on screen, even if the parameter -s is not specified.
                     If more than one -o parameter is specified for one -f parameter, the last one is taken into consideration.
 -s                - Forces putting output to to screen for a given -f parameter.
+-c                - If specified, enables printing of test results in colors as defined by ANSICONSOLE standards. 
+                    Works only on reporeters that support colors (ut_documentation_reporter).
 ```
 
 Parameters -f, -o, -s are correlated. That is parameters -o and -s are controlling outputs for reporter specified by the preceding -f parameter.
@@ -80,3 +82,7 @@ utplsql run hr/hr@xe
 ```
 
 Invokes all unit test suites from schema "hr". Results are displayed to screen using default ut_documentation_reporter.
+
+##### Enabling Color Outputs on Windows
+
+To enable color outputs on Windows cmd you need to install an open-source utility called [ANSICON](http://adoxa.altervista.org/ansicon/).
