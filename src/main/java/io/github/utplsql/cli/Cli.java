@@ -25,10 +25,12 @@ public class Cli {
                 jc.usage();
             }
         } catch (ParameterException e) {
-            if (jc.getParsedCommand() != null)
+            if (jc.getParsedCommand() != null) {
+                System.err.println(e.getMessage());
                 jc.usage(jc.getParsedCommand());
-            else
+            } else {
                 jc.usage();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
