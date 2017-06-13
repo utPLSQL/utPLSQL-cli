@@ -34,14 +34,15 @@ public class RunCommand {
     @Parameter(
             names = {"-p", "--path"},
             description = "run suites/tests by path, format: \n" +
-                    "-p schema or schema:[suite ...][.test] or schema[.suite ...][.test]")
+                    "-p=[schema|schema:[suite ...][.test]|schema[.suite ...][.test]")
     private List<String> testPaths = new ArrayList<>();
 
     @Parameter(
             names = {"-f", "--format"},
             variableArity = true,
             description = "output reporter format: \n" +
-                    "-f reporter_name [output_file] [console_output]")
+                    "enables specified format reporting to specified output file (-o) and to screen (-s)\n" +
+                    "-f=reporter_name [-o=output_file [-s]]")
     private List<String> reporterParams = new ArrayList<>();
 
     @Parameter(
