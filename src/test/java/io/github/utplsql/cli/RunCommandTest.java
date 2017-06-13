@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class RunCommandTest {
 
-    private RunCommand createCommand(String... args) {
+    private RunCommand createRunCommand(String... args) {
         RunCommand runCmd = new RunCommand();
 
         JCommander.newBuilder()
@@ -25,7 +25,7 @@ public class RunCommandTest {
 
     @Test
     public void reporterOptions_Default() {
-        RunCommand runCmd = createCommand("run", "app/app");
+        RunCommand runCmd = createRunCommand("app/app@xe");
 
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
 
@@ -38,7 +38,7 @@ public class RunCommandTest {
 
     @Test
     public void reporterOptions_OneReporter() {
-        RunCommand runCmd = createCommand("run", "app/app", "-f=ut_documentation_reporter", "-o=output.txt");
+        RunCommand runCmd = createRunCommand("app/app@xe", "-f=ut_documentation_reporter", "-o=output.txt");
 
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
 
@@ -51,7 +51,7 @@ public class RunCommandTest {
 
     @Test
     public void reporterOptions_OneReporterForceScreen() {
-        RunCommand runCmd = createCommand("run", "app/app", "-f=ut_documentation_reporter", "-o=output.txt", "-s");
+        RunCommand runCmd = createRunCommand("app/app@xe", "-f=ut_documentation_reporter", "-o=output.txt", "-s");
 
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
 
@@ -64,7 +64,7 @@ public class RunCommandTest {
 
     @Test
     public void reporterOptions_OneReporterForceScreenInverse() {
-        RunCommand runCmd = createCommand("run", "app/app", "-f=ut_documentation_reporter", "-s", "-o=output.txt");
+        RunCommand runCmd = createRunCommand("app/app@xe", "-f=ut_documentation_reporter", "-s", "-o=output.txt");
 
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
 
@@ -77,7 +77,7 @@ public class RunCommandTest {
 
     @Test
     public void reporterOptions_TwoReporters() {
-        RunCommand runCmd = createCommand("run", "app/app",
+        RunCommand runCmd = createRunCommand("app/app@xe",
                 "-f=ut_documentation_reporter",
                 "-f=ut_coverage_html_reporter", "-o=coverage.html", "-s");
 

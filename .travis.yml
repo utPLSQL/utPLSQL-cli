@@ -6,13 +6,14 @@ jdk:
 
 env:
   global:
+    - CACHE_DIR=$HOME/.cache
     - MAVEN_HOME=/usr/local/maven
     - MAVEN_CFG=$HOME/.m2
 
 cache:
   directories:
+    - $CACHE_DIR
     - $MAVEN_CFG
-    - $MAVEN_HOME/lib/ext # Used to cache wagon-http lib.
 
 install:
   - bash .travis/maven_cfg.sh
