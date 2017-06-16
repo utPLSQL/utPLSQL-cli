@@ -21,7 +21,7 @@ public class ConnectionInfo {
      */
     private static final String CONNSTR_PATTERN =
             "^(?<user>[0-9a-z]+)/(?<pass>[0-9a-z]+)" +
-                    "(?:(?:@(?<host>[^:/]+)?(?::(?<port>[0-9]+))?(?:/(?<db1>[0-9a-z]+))$)|(?:@(?<db2>[0-9a-z]+)$))";
+                    "(?:(?:@(?<host>[^:/]+)?(?::(?<port>[0-9]+))?(?:/(?<db1>[0-9a-z_.]+))$)|(?:@(?<db2>[0-9a-z_.]+)$))";
 
     private static final String DEFAULT_HOST = "127.0.0.1";
     private static final int DEFAULT_PORT = 1521;
