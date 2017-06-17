@@ -17,12 +17,14 @@ You can download development versions on [Bintray](https://bintray.com/viniciusa
 * ~~When using reporters for Sonar or Coveralls client needs to be invoked from project's root directory.~~
 
 ## Usage
-utplsql run user/password@database [-p=(ut_path|ut_paths)] [-f=format [-o=output_file] [-s] ...]
+utplsql run user/pass@[[host][:port]/]db [-p=(ut_path|ut_paths)] [-f=format [-o=output_file] [-s] ...]
 
 ```
-user              - username to connect as.
-password          - password of the user.
-database          - database to connect to.
+user              - Username to connect as.
+password          - Password of the user.
+host              - Server address, defaults to 127.0.0.1.
+port              - Server port, defaults to 1521.
+db                - Database to connect to.
 -p=suite_path(s)  - A suite path or a comma separated list of suite paths for unit test to be executed.     
                     The path(s) can be in one of the following formats:
                         schema[.package[.procedure]]
