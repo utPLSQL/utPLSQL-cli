@@ -47,7 +47,7 @@ public class ConnectionInfo {
     private void parseCredentials(String str) throws ParameterException, IllegalArgumentException {
         int barIdx = str.indexOf("/");
 
-        if (barIdx == -1 || str.length() == 1)
+        if (barIdx == -1 || barIdx == 0 || barIdx == str.length() - 1)
             throw invalidConnectionString();
 
         this.setUser(str.substring(0, barIdx));
@@ -61,22 +61,21 @@ public class ConnectionInfo {
         int colonIdx = str.indexOf(":");
         int barIdx = str.indexOf("/");
 
-        if (colonIdx != -1 && barIdx != -1) {
+        if ((colonIdx != -1 && barIdx == -1) || barIdx == 0) // @host:port or // @/db
+            throw invalidConnectionString();
+
+        if (colonIdx != -1) { // @host:port/db
             setHost(str.substring(0, colonIdx));
             setPort(Integer.parseInt(str.substring(colonIdx + 1, barIdx)));
             setDatabase(str.substring(barIdx + 1));
         }
         else
-        if (colonIdx == -1 && barIdx != -1) {
+        if (barIdx != -1) { // @host/db
             setHost(str.substring(0, barIdx));
             setPort(DEFAULT_PORT);
             setDatabase(str.substring(barIdx + 1));
         }
-        else
-        if (colonIdx != -1) {
-            throw invalidConnectionString();
-        }
-        else {
+        else { // @db
             setHost(DEFAULT_HOST);
             setPort(DEFAULT_PORT);
             setDatabase(str);
