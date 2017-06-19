@@ -8,6 +8,7 @@ import io.github.utplsql.api.TestRunner;
 import io.github.utplsql.api.reporter.Reporter;
 import io.github.utplsql.api.reporter.ReporterFactory;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -49,6 +50,12 @@ public class RunCommand {
             names = {"-c", "--color"},
             description = "enables printing of test results in colors as defined by ANSICONSOLE standards")
     private boolean colorConsole = false;
+
+    @Parameter(names = {"-source_path"}, description = "path to project source files")
+    private String sourcePath;
+
+    @Parameter(names = {"-test_path"}, description = "path to project test files")
+    private String testPath;
 
     public ConnectionInfo getConnectionInfo() {
         return connectionInfoList.get(0);
@@ -92,6 +99,19 @@ public class RunCommand {
         final List<String> testPaths = getTestPaths();
         final List<Reporter> reporterList = new ArrayList<>();
 
+        final File baseDir = new File("").getAbsoluteFile();
+        List<String> sourceFilesTmp = null;
+        List<String> testFilesTmp = null;
+
+        if (this.sourcePath != null)
+            sourceFilesTmp = new FileWalker().getFileList(baseDir, this.sourcePath);
+
+        if (this.testPath != null)
+            testFilesTmp = new FileWalker().getFileList(baseDir, this.testPath);
+
+        final List<String> sourceFiles = sourceFilesTmp;
+        final List<String> testFiles = testFilesTmp;
+
         if (testPaths.isEmpty()) testPaths.add(ci.getUser());
 
         // Do the reporters initialization, so we can use the id to run and gather results.
@@ -109,11 +129,14 @@ public class RunCommand {
 
         ExecutorService executorService = Executors.newFixedThreadPool(1 + reporterList.size());
 
+        // Run tests.
         executorService.submit(() -> {
             try (Connection conn = ci.getConnection()){
                 new TestRunner()
                         .addPathList(testPaths)
                         .addReporterList(reporterList)
+                        .withSourceFiles(sourceFiles)
+                        .withTestFiles(testFiles)
                         .colorConsole(colorConsole)
                         .run(conn);
             } catch (SQLException e) {
@@ -122,7 +145,7 @@ public class RunCommand {
             }
         });
 
-
+        // Gather each reporter results on a separate thread.
         for (ReporterOptions ro : reporterOptionsList) {
             executorService.submit(() -> {
                 List<PrintStream> printStreams = new ArrayList<>();
