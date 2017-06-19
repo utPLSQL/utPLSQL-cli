@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -16,6 +17,7 @@ public class FileWalkerTest {
     @Test
     public void fileWalker_Relative() {
         List<String> fileList = new FileWalker().getFileList(BASE_DIR, "source");
+        Collections.sort(fileList);
         Assert.assertArrayEquals(new Object[] {
                 "source/packages/package.pkb".replace('/', File.separatorChar),
                 "source/packages/package.pks".replace('/', File.separatorChar),
@@ -27,6 +29,7 @@ public class FileWalkerTest {
     @Test
     public void fileWalker_Absolute() {
         List<String> fileList = new FileWalker().getFileList(BASE_DIR, "source", false);
+        Collections.sort(fileList);
         Assert.assertArrayEquals(new Object[] {
                 BASE_DIR.getAbsolutePath() + "/source/packages/package.pkb".replace('/', File.separatorChar),
                 BASE_DIR.getAbsolutePath() + "/source/packages/package.pks".replace('/', File.separatorChar),
