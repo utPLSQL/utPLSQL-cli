@@ -53,7 +53,7 @@ public class RunCommand {
     @Parameter(names = {"-source_path"}, description = "path to project source files")
     private String sourcePath;
 
-    @Parameter(names = {"-test_path"}, description = "path to project source files")
+    @Parameter(names = {"-test_path"}, description = "path to project test files")
     private String testPath;
 
     public ConnectionInfo getConnectionInfo() {
