@@ -6,7 +6,7 @@ Provides an easy way of invoking utPLSQL from command-line. Main features:
 * Ability to run tests with multiple reporters simultaneously.
 * Ability to save output from every individual reporter to a separate output file.
 * Allows execution of selected suites, subset of suite.
-* ~~Maps project and test files to database objects for reporting purposes.~~ (Comming Soon)
+* Maps project and test files to database objects for reporting purposes. (Comming Soon)
 
 ## Downloading
 You can download development versions on [Bintray](https://bintray.com/viniciusam/utPLSQL-cli/utPLSQL-cli-develop#files).
@@ -14,7 +14,7 @@ You can download development versions on [Bintray](https://bintray.com/viniciusa
 
 ## Requirements
 * [Java SE Runtime Environment 8](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
-* ~~When using reporters for Sonar or Coveralls client needs to be invoked from project's root directory.~~
+* When using reporters for Sonar or Coveralls client needs to be invoked from project's root directory.
 
 ## Usage
 utplsql run user/pass@[[host][:port]/]db [-p=(ut_path|ut_paths)] [-f=format [-o=output_file] [-s] ...]
@@ -62,11 +62,12 @@ db                - Database to connect to.
 -s                - Forces putting output to to screen for a given -f parameter.
 -c                - If specified, enables printing of test results in colors as defined by ANSICONSOLE standards. 
                     Works only on reporeters that support colors (ut_documentation_reporter).
+--no-failure      - By default, the client will exit with -1 if any test failed, override this behavior by providing this option.
 ```
 
 Parameters -f, -o, -s are correlated. That is parameters -o and -s are controlling outputs for reporter specified by the preceding -f parameter.
 
-~~Sonar and Coveralls reporter will only provide valid reports, when source_path and/or test_path are provided, and ut_run is executed from your project's root path.~~
+Sonar and Coveralls reporter will only provide valid reports, when source_path and/or test_path are provided, and ut_run is executed from your project's root path.
 
 Examples:
 
@@ -77,7 +78,7 @@ utplsql run hr/hr@xe -p=hr_test -f=ut_documentation_reporter -o=run.log -s -f=ut
 Invokes all Unit tests from schema/package "hr_test" with two reporters:
 
 * ut_documentation_reporter - will output to screen and save output to file "run.log"
-* ~~ut_coverage_html_reporter - will report only on database objects that are mapping to file structure from "source" folder and save output to file "coverage.html"~~
+* ut_coverage_html_reporter - will report only on database objects that are mapping to file structure from "source" folder and save output to file "coverage.html"
 
 ```
 utplsql run hr/hr@xe

@@ -20,7 +20,8 @@ public class Cli {
             boolean hasCmd = jc.getParsedCommand() != null;
 
             if (hasCmd && jc.getParsedCommand().equals(RUN_CMD)) {
-                runCmd.run();
+                int status = runCmd.run();
+                System.exit(status);
             } else {
                 jc.usage();
             }
