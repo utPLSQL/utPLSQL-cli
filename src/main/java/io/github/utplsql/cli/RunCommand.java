@@ -53,9 +53,9 @@ public class RunCommand {
     private boolean colorConsole = false;
 
     @Parameter(
-            names = {"--no-failure"},
-            description = "will exit with 0 even if tests failed, default false")
-    private boolean noFailure = false;
+            names = {"--failure-exit-code"},
+            description = "override the exit code on failure, default = 1")
+    private int failureExitCode = 1;
 
     @Parameter(names = {"-source_path"}, description = "path to project source files")
     private String sourcePath;
@@ -145,10 +145,10 @@ public class RunCommand {
                         .withSourceFiles(sourceFiles)
                         .withTestFiles(testFiles)
                         .colorConsole(this.colorConsole)
-                        .failOnErrors(!this.noFailure)
+                        .failOnErrors(true)
                         .run(conn);
             } catch (SomeTestsFailedException e) {
-                returnCode[0] = -1;
+                returnCode[0] = this.failureExitCode;
             } catch (SQLException e) {
                 // TODO
                 e.printStackTrace();
