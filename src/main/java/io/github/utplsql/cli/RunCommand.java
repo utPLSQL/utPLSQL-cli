@@ -130,8 +130,8 @@ public class RunCommand {
                 reporterList.add(reporter);
             }
         } catch (SQLException e) {
-            // TODO
-            e.printStackTrace();
+            System.out.println(e.getMessage());
+            return Cli.DEFAULT_ERROR_CODE;
         }
 
         ExecutorService executorService = Executors.newFixedThreadPool(1 + reporterList.size());
@@ -150,8 +150,8 @@ public class RunCommand {
             } catch (SomeTestsFailedException e) {
                 returnCode[0] = this.failureExitCode;
             } catch (SQLException e) {
-                // TODO
-                e.printStackTrace();
+                System.out.println(e.getMessage());
+                returnCode[0] = Cli.DEFAULT_ERROR_CODE;
             }
         });
 
@@ -173,8 +173,8 @@ public class RunCommand {
 
                     new OutputBuffer(ro.getReporterObj()).printAvailable(conn, printStreams);
                 } catch (SQLException | FileNotFoundException e) {
-                    // TODO
-                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                    returnCode[0] = Cli.DEFAULT_ERROR_CODE;
                 } finally {
                     if (fileOutStream != null)
                         fileOutStream.close();
