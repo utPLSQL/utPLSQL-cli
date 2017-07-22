@@ -5,6 +5,7 @@ import com.beust.jcommander.Parameters;
 import io.github.utplsql.api.CustomTypes;
 import io.github.utplsql.api.OutputBuffer;
 import io.github.utplsql.api.TestRunner;
+import io.github.utplsql.api.exception.SomeTestsFailedException;
 import io.github.utplsql.api.reporter.Reporter;
 import io.github.utplsql.api.reporter.ReporterFactory;
 
@@ -51,6 +52,11 @@ public class RunCommand {
             description = "enables printing of test results in colors as defined by ANSICONSOLE standards")
     private boolean colorConsole = false;
 
+    @Parameter(
+            names = {"--failure-exit-code"},
+            description = "override the exit code on failure, default = 1")
+    private int failureExitCode = 1;
+
     @Parameter(names = {"-source_path"}, description = "path to project source files")
     private String sourcePath;
 
@@ -92,7 +98,7 @@ public class RunCommand {
         return reporterOptionsList;
     }
 
-    public void run() throws Exception {
+    public int run() throws Exception {
         final ConnectionInfo ci = getConnectionInfo();
 
         final List<ReporterOptions> reporterOptionsList = getReporterOptionsList();
@@ -111,6 +117,7 @@ public class RunCommand {
 
         final List<String> sourceFiles = sourceFilesTmp;
         final List<String> testFiles = testFilesTmp;
+        final int[] returnCode = {0};
 
         if (testPaths.isEmpty()) testPaths.add(ci.getUser());
 
@@ -123,25 +130,28 @@ public class RunCommand {
                 reporterList.add(reporter);
             }
         } catch (SQLException e) {
-            // TODO
-            e.printStackTrace();
+            System.out.println(e.getMessage());
+            return Cli.DEFAULT_ERROR_CODE;
         }
 
         ExecutorService executorService = Executors.newFixedThreadPool(1 + reporterList.size());
 
         // Run tests.
         executorService.submit(() -> {
-            try (Connection conn = ci.getConnection()){
+            try (Connection conn = ci.getConnection()) {
                 new TestRunner()
                         .addPathList(testPaths)
                         .addReporterList(reporterList)
                         .withSourceFiles(sourceFiles)
                         .withTestFiles(testFiles)
-                        .colorConsole(colorConsole)
+                        .colorConsole(this.colorConsole)
+                        .failOnErrors(true)
                         .run(conn);
+            } catch (SomeTestsFailedException e) {
+                returnCode[0] = this.failureExitCode;
             } catch (SQLException e) {
-                // TODO
-                e.printStackTrace();
+                System.out.println(e.getMessage());
+                returnCode[0] = Cli.DEFAULT_ERROR_CODE;
             }
         });
 
@@ -163,8 +173,8 @@ public class RunCommand {
 
                     new OutputBuffer(ro.getReporterObj()).printAvailable(conn, printStreams);
                 } catch (SQLException | FileNotFoundException e) {
-                    // TODO
-                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                    returnCode[0] = Cli.DEFAULT_ERROR_CODE;
                 } finally {
                     if (fileOutStream != null)
                         fileOutStream.close();
@@ -174,6 +184,7 @@ public class RunCommand {
 
         executorService.shutdown();
         executorService.awaitTermination(60, TimeUnit.MINUTES);
+        return returnCode[0];
     }
 
 }
