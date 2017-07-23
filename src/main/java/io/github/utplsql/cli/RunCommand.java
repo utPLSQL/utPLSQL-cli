@@ -85,28 +85,22 @@ public class RunCommand {
         final List<Reporter> reporterList = new ArrayList<>();
 
         final File baseDir = new File("").getAbsoluteFile();
-        List<String> sourceFilesTmp = null;
-        List<String> testFilesTmp = null;
-        FileMapperOptions sourceMappingOptionsTmp= null;
-        FileMapperOptions testMappingOptionsTmp = null;
+        final FileMapperOptions[] sourceMappingOptions = {null};
+        final FileMapperOptions[] testMappingOptions = {null};
+
+        final int[] returnCode = {0};
 
         if (!this.sourcePathParams.isEmpty()) {
             String sourcePath = this.sourcePathParams.get(0);
-            sourceFilesTmp = new FileWalker().getFileList(baseDir, sourcePath);
-            sourceMappingOptionsTmp = getMapperOptions(this.sourcePathParams);
+            List<String> sourceFiles = new FileWalker().getFileList(baseDir, sourcePath);
+            sourceMappingOptions[0] = getMapperOptions(this.sourcePathParams, sourceFiles);
         }
 
         if (!this.testPathParams.isEmpty()) {
             String testPath = this.testPathParams.get(0);
-            testFilesTmp = new FileWalker().getFileList(baseDir, testPath);
-            testMappingOptionsTmp = getMapperOptions(this.testPathParams);
+            List<String> testFiles = new FileWalker().getFileList(baseDir, testPath);
+            testMappingOptions[0] = getMapperOptions(this.testPathParams, testFiles);
         }
-
-        final List<String> sourceFiles = sourceFilesTmp;
-        final List<String> testFiles = testFilesTmp;
-        final FileMapperOptions sourceMappingOptions = sourceMappingOptionsTmp;
-        final FileMapperOptions testMappingOptions = testMappingOptionsTmp;
-        final int[] returnCode = {0};
 
         if (testPaths.isEmpty()) testPaths.add(ci.getUser());
 
@@ -131,10 +125,8 @@ public class RunCommand {
                 new TestRunner()
                         .addPathList(testPaths)
                         .addReporterList(reporterList)
-                        .withSourceFiles(sourceFiles)
-                        .sourceMappingOptions(sourceMappingOptions)
-                        .withTestFiles(testFiles)
-                        .testMappingOptions(testMappingOptions)
+                        .sourceMappingOptions(sourceMappingOptions[0])
+                        .testMappingOptions(testMappingOptions[0])
                         .colorConsole(this.colorConsole)
                         .failOnErrors(true)
                         .run(conn);
@@ -205,8 +197,8 @@ public class RunCommand {
         return reporterOptionsList;
     }
 
-    public FileMapperOptions getMapperOptions(List<String> mappingParams) {
-        FileMapperOptions mapperOptions = new FileMapperOptions();
+    public FileMapperOptions getMapperOptions(List<String> mappingParams, List<String> filePaths) {
+        FileMapperOptions mapperOptions = new FileMapperOptions(filePaths);
 
         for (String p : mappingParams) {
             if (p.startsWith("-object_owner=")) {
