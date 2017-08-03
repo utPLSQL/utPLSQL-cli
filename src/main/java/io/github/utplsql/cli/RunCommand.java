@@ -135,6 +135,7 @@ public class RunCommand {
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
                 returnCode[0] = Cli.DEFAULT_ERROR_CODE;
+                executorService.shutdownNow();
             }
         });
 
@@ -158,6 +159,7 @@ public class RunCommand {
                 } catch (SQLException | FileNotFoundException e) {
                     System.out.println(e.getMessage());
                     returnCode[0] = Cli.DEFAULT_ERROR_CODE;
+                    executorService.shutdownNow();
                 } finally {
                     if (fileOutStream != null)
                         fileOutStream.close();
