@@ -1,6 +1,6 @@
-package io.github.utplsql.cli;
+package org.utplsql.cli;
 
-import io.github.utplsql.api.reporter.Reporter;
+import org.utplsql.api.reporter.Reporter;
 
 /**
  * Created by Vinicius on 20/05/2017.

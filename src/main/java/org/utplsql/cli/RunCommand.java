@@ -1,11 +1,11 @@
-package io.github.utplsql.cli;
+package org.utplsql.cli;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import io.github.utplsql.api.*;
-import io.github.utplsql.api.exception.SomeTestsFailedException;
-import io.github.utplsql.api.reporter.Reporter;
-import io.github.utplsql.api.reporter.ReporterFactory;
+import org.utplsql.api.*;
+import org.utplsql.api.exception.SomeTestsFailedException;
+import org.utplsql.api.reporter.Reporter;
+import org.utplsql.api.reporter.ReporterFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;

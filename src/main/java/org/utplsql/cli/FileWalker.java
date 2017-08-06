@@ -1,4 +1,4 @@
-package io.github.utplsql.cli;
+package org.utplsql.cli;
 
 import java.io.File;
 import java.util.ArrayList;
