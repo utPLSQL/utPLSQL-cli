@@ -1,4 +1,4 @@
-package io.github.utplsql.cli;
+package org.utplsql.cli;
 
 import com.beust.jcommander.IStringConverter;
 

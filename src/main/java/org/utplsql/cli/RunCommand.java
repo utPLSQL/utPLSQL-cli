@@ -1,11 +1,11 @@
-package io.github.utplsql.cli;
+package org.utplsql.cli;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import io.github.utplsql.api.*;
-import io.github.utplsql.api.exception.SomeTestsFailedException;
-import io.github.utplsql.api.reporter.Reporter;
-import io.github.utplsql.api.reporter.ReporterFactory;
+import org.utplsql.api.*;
+import org.utplsql.api.exception.SomeTestsFailedException;
+import org.utplsql.api.reporter.Reporter;
+import org.utplsql.api.reporter.ReporterFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -202,17 +202,24 @@ public class RunCommand {
     public FileMapperOptions getMapperOptions(List<String> mappingParams, List<String> filePaths) {
         FileMapperOptions mapperOptions = new FileMapperOptions(filePaths);
 
+        final String OPT_OWNER="-owner=";
+        final String OPT_REGEX="-regex_expression=";
+        final String OPT_TYPE_MAPPING="-type_mapping=";
+        final String OPT_OWNER_SUBEX="-owner_subexpression=";
+        final String OPT_NAME_SUBEX="-name_subexpression=";
+        final String OPT_TYPE_SUBEX="-type_subexpression=";
+
         for (String p : mappingParams) {
-            if (p.startsWith("-object_owner=")) {
-                mapperOptions.setObjectOwner(p.substring("-object_owner=".length()));
+            if (p.startsWith(OPT_OWNER)) {
+                mapperOptions.setObjectOwner(p.substring(OPT_OWNER.length()));
             }
             else
-            if (p.startsWith("-regex_pattern=")) {
-                mapperOptions.setRegexPattern(p.substring("-regex_pattern=".length()));
+            if (p.startsWith(OPT_REGEX)) {
+                mapperOptions.setRegexPattern(p.substring(OPT_REGEX.length()));
             }
             else
-            if (p.startsWith("-type_mapping=")) {
-                String typeMappingsParam = p.substring("-type_mapping=".length());
+            if (p.startsWith(OPT_TYPE_MAPPING)) {
+                String typeMappingsParam = p.substring(OPT_TYPE_MAPPING.length());
 
                 List<KeyValuePair> typeMappings = new ArrayList<>();
                 for (String mapping : typeMappingsParam.split("/")) {
@@ -223,23 +230,20 @@ public class RunCommand {
                 mapperOptions.setTypeMappings(typeMappings);
             }
             else
-            if (p.startsWith("-owner_subexpression=")) {
-                mapperOptions.setOwnerSubExpression(Integer.parseInt(p.substring("-owner_subexpression=".length())));
+            if (p.startsWith(OPT_OWNER_SUBEX)) {
+                mapperOptions.setOwnerSubExpression(Integer.parseInt(p.substring(OPT_OWNER_SUBEX.length())));
             }
             else
-            if (p.startsWith("-name_subexpression=")) {
-                mapperOptions.setNameSubExpression(Integer.parseInt(p.substring("-name_subexpression=".length())));
+            if (p.startsWith(OPT_NAME_SUBEX)) {
+                mapperOptions.setNameSubExpression(Integer.parseInt(p.substring(OPT_NAME_SUBEX.length())));
             }
             else
-            if (p.startsWith("-type_subexpression=")) {
+            if (p.startsWith(OPT_TYPE_SUBEX)) {
                 mapperOptions.setTypeSubExpression(Integer.parseInt(p.substring("-type_subexpression=".length())));
             }
         }
 
-        if (mapperOptions.getRegexPattern() == null || mapperOptions.getRegexPattern().isEmpty())
-            return null;
-        else
-            return mapperOptions;
+        return mapperOptions;
     }
 
 }

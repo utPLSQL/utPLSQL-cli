@@ -2,7 +2,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>io.github.utplsql</groupId>
+  <groupId>org.utplsql</groupId>
   <artifactId>cli</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
@@ -18,15 +18,15 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.beust</groupId>
-      <artifactId>jcommander</artifactId>
-      <version>1.69</version>
+      <groupId>org.utplsql</groupId>
+      <artifactId>java-api</artifactId>
+      <version>1.0-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>io.github.utplsql</groupId>
-      <artifactId>java-api</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <groupId>com.beust</groupId>
+      <artifactId>jcommander</artifactId>
+      <version>1.69</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -50,7 +50,7 @@
           <repositoryLayout>flat</repositoryLayout>
           <programs>
             <program>
-              <mainClass>io.github.utplsql.cli.Cli</mainClass>
+              <mainClass>org.utplsql.cli.Cli</mainClass>
               <id>utplsql</id>
             </program>
           </programs>

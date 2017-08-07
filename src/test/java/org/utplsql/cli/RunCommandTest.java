@@ -1,9 +1,9 @@
-package io.github.utplsql.cli;
+package org.utplsql.cli;
 
 import com.beust.jcommander.JCommander;
-import io.github.utplsql.api.CustomTypes;
 import org.junit.Assert;
 import org.junit.Test;
+import org.utplsql.api.CustomTypes;
 
 import java.util.List;
 
