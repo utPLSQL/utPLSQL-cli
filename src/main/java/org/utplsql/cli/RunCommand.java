@@ -26,9 +26,10 @@ import java.util.concurrent.TimeUnit;
 public class RunCommand {
 
     @Parameter(
-            required = true, converter = ConnectionStringConverter.class,
+            required = true,
+            converter = ConnectionInfo.ConnectionStringConverter.class,
             arity = 1,
-            description = "user/pass@[[host][:port]/]db")
+            description = "<user>/<password>@//<host>[:<port>]/<service> OR <user>/<password>@<TNSName> OR <user>/<password>@<host>:<port>:<SID>")
     private List<ConnectionInfo> connectionInfoList = new ArrayList<>();
 
     @Parameter(
@@ -101,8 +102,6 @@ public class RunCommand {
             List<String> testFiles = new FileWalker().getFileList(baseDir, testPath);
             testMappingOptions[0] = getMapperOptions(this.testPathParams, testFiles);
         }
-
-        if (testPaths.isEmpty()) testPaths.add(ci.getUser());
 
         // Do the reporters initialization, so we can use the id to run and gather results.
         try (Connection conn = ci.getConnection()) {
