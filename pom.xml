@@ -4,7 +4,7 @@
 
   <groupId>org.utplsql</groupId>
   <artifactId>cli</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>3.0.3-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>cli</name>
@@ -20,7 +20,7 @@
     <dependency>
       <groupId>org.utplsql</groupId>
       <artifactId>java-api</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>3.0.3-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

@@ -3,6 +3,7 @@ package org.utplsql.cli;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import org.utplsql.api.*;
+import org.utplsql.api.exception.DatabaseNotCompatibleException;
 import org.utplsql.api.exception.SomeTestsFailedException;
 import org.utplsql.api.reporter.Reporter;
 import org.utplsql.api.reporter.ReporterFactory;
@@ -79,6 +80,9 @@ public class RunCommand {
 
     public int run() throws Exception {
         final ConnectionInfo ci = getConnectionInfo();
+
+        // First of all do a compatibility check and fail-fast
+        checkFrameworkCompatibility(ci);
 
         final List<ReporterOptions> reporterOptionsList = getReporterOptionsList();
         final List<String> testPaths = getTestPaths();
@@ -197,6 +201,19 @@ public class RunCommand {
         }
 
         return reporterOptionsList;
+    }
+
+    private void checkFrameworkCompatibility(ConnectionInfo ci) throws SQLException {
+        try
+        {
+            DBHelper.failOnVersionCompatibilityCheckFailed(ci.getConnection());
+        }
+        catch ( DatabaseNotCompatibleException e )
+        {
+            System.out.println(e.getMessage());
+
+            throw e;
+        }
     }
 
     public FileMapperOptions getMapperOptions(List<String> mappingParams, List<String> filePaths) {
