@@ -22,6 +22,9 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Created by vinicius.moreira on 19/04/2017.
+ *
+ * @author vinicious moreira
+ * @author pesse
  */
 @Parameters(separators = "=", commandDescription = "run tests")
 public class RunCommand {
@@ -69,6 +72,12 @@ public class RunCommand {
             description = "-test_path [-regex_expression=\"pattern\" -owner_subexpression=0 -type_subexpression=0 " +
                     "-name_subexpression=0] - path to project test files")
     private List<String> testPathParams = new ArrayList<>();
+
+    @Parameter(
+            names = {"-scc", "--skip-compatibility-check"},
+            description = "Skips the check for compatibility with database framework. CLI expects the framework to be " +
+                    "most actual. Use this if you use CLI with a development version of utPLSQL-framework")
+    private boolean skipCompatibilityCheck = false;
 
     public ConnectionInfo getConnectionInfo() {
         return connectionInfoList.get(0);
@@ -133,6 +142,7 @@ public class RunCommand {
                         .testMappingOptions(testMappingOptions[0])
                         .colorConsole(this.colorConsole)
                         .failOnErrors(true)
+                        .skipCompatibilityCheck(skipCompatibilityCheck)
                         .run(conn);
             } catch (SomeTestsFailedException e) {
                 returnCode[0] = this.failureExitCode;
@@ -204,15 +214,19 @@ public class RunCommand {
     }
 
     private void checkFrameworkCompatibility(ConnectionInfo ci) throws SQLException {
-        try
-        {
-            DBHelper.failOnVersionCompatibilityCheckFailed(ci.getConnection());
-        }
-        catch ( DatabaseNotCompatibleException e )
-        {
-            System.out.println(e.getMessage());
 
-            throw e;
+        if ( !skipCompatibilityCheck ) {
+            try {
+                DBHelper.failOnVersionCompatibilityCheckFailed(ci.getConnection());
+            } catch (DatabaseNotCompatibleException e) {
+                System.out.println(e.getMessage());
+
+                throw e;
+            }
+        }
+        else {
+            System.out.println("Skipping Compatibility check with framework version, expecting the latest version " +
+                    "to be installed in database");
         }
     }
 
