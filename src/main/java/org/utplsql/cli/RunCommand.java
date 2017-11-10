@@ -78,6 +78,9 @@ public class RunCommand {
     }
 
     public int run() throws Exception {
+
+        checkOracleLibrariesExist();
+
         final ConnectionInfo ci = getConnectionInfo();
 
         final List<ReporterOptions> reporterOptionsList = getReporterOptionsList();
@@ -246,4 +249,27 @@ public class RunCommand {
         return mapperOptions;
     }
 
+
+    /** Checks that necessary oracle libraries exist
+     *
+     */
+    private void checkOracleLibrariesExist()
+    {
+        if ( !OracleLibraryChecker.checkOjdbcExists() )
+        {
+            System.out.println("Could not find Oracle JDBC driver in classpath. Please download the jar from Oracle website" +
+                    " and copy it to the 'lib' folder of your utPLSQL-cli installation.");
+            System.out.println("Download from http://www.oracle.com/technetwork/database/features/jdbc/jdbc-ucp-122-3110062.html");
+
+            throw new RuntimeException("Can't run utPLSQL-cli without Oracle JDBC driver");
+        }
+
+        if ( !OracleLibraryChecker.checkOrai18nExists() )
+        {
+            System.out.println("Warning: Could not find Oracle i18n driver in classpath. Depending on your database " +
+                    "version (11g) and used charset utPLSQL-cli might not run properly. It is recommended you download " +
+                    "the i18n driver from the Oracle website and copy it to the 'lib' folder of your utPLSQL-cli installation.");
+            System.out.println("Download from http://www.oracle.com/technetwork/database/enterprise-edition/jdbc-112010-090769.html");
+        }
+    }
 }
