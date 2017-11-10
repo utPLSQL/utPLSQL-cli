@@ -91,8 +91,6 @@ public class RunCommand {
     public int run() throws Exception {
         final ConnectionInfo ci = getConnectionInfo();
 
-        // First of all do a compatibility check and fail-fast
-        checkFrameworkCompatibility(ci);
 
         final List<ReporterOptions> reporterOptionsList = getReporterOptionsList();
         final List<String> testPaths = getTestPaths();
@@ -118,6 +116,10 @@ public class RunCommand {
 
         // Do the reporters initialization, so we can use the id to run and gather results.
         try (Connection conn = ci.getConnection()) {
+
+            // First of all do a compatibility check and fail-fast
+            checkFrameworkCompatibility(conn);
+
             for (ReporterOptions ro : reporterOptionsList) {
                 Reporter reporter = ReporterFactory.createReporter(ro.getReporterName());
                 reporter.init(conn);
@@ -212,11 +214,16 @@ public class RunCommand {
         return reporterOptionsList;
     }
 
-    private void checkFrameworkCompatibility(ConnectionInfo ci) throws SQLException {
+    /** Checks whether cli is compatible with the database framework
+     *
+     * @param conn Active Connection
+     * @throws SQLException
+     */
+    private void checkFrameworkCompatibility(Connection conn) throws SQLException {
 
         if ( !skipCompatibilityCheck ) {
             try {
-                DBHelper.failOnVersionCompatibilityCheckFailed(ci.getConnection());
+                DBHelper.failOnVersionCompatibilityCheckFailed(conn);
             } catch (DatabaseNotCompatibleException e) {
                 System.out.println(e.getMessage());
 
