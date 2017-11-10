@@ -91,10 +91,9 @@ public class RunCommand {
     public int run() throws Exception {
         final ConnectionInfo ci = getConnectionInfo();
 
-
+        final List<Reporter> reporterList;
         final List<ReporterOptions> reporterOptionsList = getReporterOptionsList();
         final List<String> testPaths = getTestPaths();
-        final List<Reporter> reporterList = new ArrayList<>();
 
         final File baseDir = new File("").getAbsoluteFile();
         final FileMapperOptions[] sourceMappingOptions = {null};
@@ -102,17 +101,8 @@ public class RunCommand {
 
         final int[] returnCode = {0};
 
-        if (!this.sourcePathParams.isEmpty()) {
-            String sourcePath = this.sourcePathParams.get(0);
-            List<String> sourceFiles = new FileWalker().getFileList(baseDir, sourcePath);
-            sourceMappingOptions[0] = getMapperOptions(this.sourcePathParams, sourceFiles);
-        }
-
-        if (!this.testPathParams.isEmpty()) {
-            String testPath = this.testPathParams.get(0);
-            List<String> testFiles = new FileWalker().getFileList(baseDir, testPath);
-            testMappingOptions[0] = getMapperOptions(this.testPathParams, testFiles);
-        }
+        sourceMappingOptions[0] = getFileMapperOptionsByParamListItem(this.sourcePathParams, baseDir);
+        testMappingOptions[0] = getFileMapperOptionsByParamListItem(this.testPathParams, baseDir);
 
         // Do the reporters initialization, so we can use the id to run and gather results.
         try (Connection conn = ci.getConnection()) {
@@ -120,12 +110,8 @@ public class RunCommand {
             // First of all do a compatibility check and fail-fast
             checkFrameworkCompatibility(conn);
 
-            for (ReporterOptions ro : reporterOptionsList) {
-                Reporter reporter = ReporterFactory.createReporter(ro.getReporterName());
-                reporter.init(conn);
-                ro.setReporterObj(reporter);
-                reporterList.add(reporter);
-            }
+            reporterList = initReporters(conn, reporterOptionsList);
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             return Cli.DEFAULT_ERROR_CODE;
@@ -155,6 +141,44 @@ public class RunCommand {
         });
 
         // Gather each reporter results on a separate thread.
+        startReporterGatherers(reporterOptionsList, executorService, ci, returnCode);
+
+        executorService.shutdown();
+        executorService.awaitTermination(60, TimeUnit.MINUTES);
+        return returnCode[0];
+    }
+
+    /** Initializes the reporters so we can use the id to gather results
+     *
+     * @param conn Active Connection
+     * @param reporterOptionsList
+     * @return List of Reporters
+     * @throws SQLException
+     */
+    private List<Reporter> initReporters( Connection conn, List<ReporterOptions> reporterOptionsList ) throws SQLException
+    {
+        final List<Reporter> reporterList = new ArrayList<>();
+
+        for (ReporterOptions ro : reporterOptionsList) {
+            Reporter reporter = ReporterFactory.createReporter(ro.getReporterName());
+            reporter.init(conn);
+            ro.setReporterObj(reporter);
+            reporterList.add(reporter);
+        }
+
+        return reporterList;
+    }
+
+    /** Starts a separate thread for each Reporter to gather its results
+     *
+      * @param reporterOptionsList
+     * @param executorService
+     * @param ci
+     * @param returnCode
+     */
+    private void startReporterGatherers(List<ReporterOptions> reporterOptionsList, ExecutorService executorService, final ConnectionInfo ci, final int[] returnCode)
+    {
+        // Gather each reporter results on a separate thread.
         for (ReporterOptions ro : reporterOptionsList) {
             executorService.submit(() -> {
                 List<PrintStream> printStreams = new ArrayList<>();
@@ -181,10 +205,23 @@ public class RunCommand {
                 }
             });
         }
+    }
 
-        executorService.shutdown();
-        executorService.awaitTermination(60, TimeUnit.MINUTES);
-        return returnCode[0];
+    /** Returns FileMapperOptions for the first item of a given param list in a baseDir
+     *
+     * @param pathParams
+     * @param baseDir
+     * @return FileMapperOptions or null
+     */
+    private FileMapperOptions getFileMapperOptionsByParamListItem(List<String> pathParams, File baseDir )
+    {
+        if (!pathParams.isEmpty()) {
+            String sourcePath = pathParams.get(0);
+            List<String> files = new FileWalker().getFileList(baseDir, sourcePath);
+           return getMapperOptions(pathParams, files);
+        }
+
+        return null;
     }
 
     public List<ReporterOptions> getReporterOptionsList() {

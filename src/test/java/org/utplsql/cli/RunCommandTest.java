@@ -12,6 +12,16 @@ import java.util.List;
  */
 public class RunCommandTest {
 
+    private static String sUrl;
+    private static String sUser;
+    private static String sPass;
+
+    static {
+        sUrl  = System.getenv("DB_URL")  != null ? System.getenv("DB_URL")  : "192.168.99.100:1521:XE";
+        sUser = System.getenv("DB_USER") != null ? System.getenv("DB_USER") : "app";
+        sPass = System.getenv("DB_PASS") != null ? System.getenv("DB_PASS") : "app";
+    }
+
     private RunCommand createRunCommand(String... args) {
         RunCommand runCmd = new RunCommand();
 
@@ -94,6 +104,19 @@ public class RunCommandTest {
         Assert.assertEquals(reporterOptions2.getOutputFileName(), "coverage.html");
         Assert.assertTrue(reporterOptions2.outputToFile());
         Assert.assertTrue(reporterOptions2.outputToScreen());
+    }
+
+    @Test
+    public void run_Default() {
+        RunCommand runCmd = createRunCommand(sUser + "/" + sPass + "@" + sUrl);
+
+        try {
+            int result = runCmd.run();
+            Assert.assertEquals(0, result);
+        }
+        catch ( Exception e ) {
+            Assert.fail(e.getMessage());
+        }
     }
 
 }
