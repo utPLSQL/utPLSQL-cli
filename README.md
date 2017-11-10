@@ -21,14 +21,11 @@ The latest CLI is always compatible with all database frameworks of the same maj
 For example CLI-3.0.4 is compatible with database framework 3.0.0-3.0.4 but not with database framework 2.x.
 
 ## Usage
-utplsql run user/pass@[[host][:port]/]db [-p=(ut_path|ut_paths)] [-f=format [-o=output_file] [-s] ...]
+utplsql run \<ConnectionURL\> [-p=(ut_path|ut_paths)] [-f=format [-o=output_file] [-s] ...]
 
 ```
-user                - Username to connect as.
-password            - Password of the user.
-host                - Server address, defaults to 127.0.0.1.
-port                - Server port, defaults to 1521.
-db                  - Database to connect to.
+<ConnectionURL>     - <user>/<password>@//<host>[:<port>]/<service> OR <user>/<password>@<TNSName> OR <user>/<password>@<host>:<port>:<SID>
+                          To connect using TNS, you need to have the ORACLE_HOME environment variable set.
 -p=suite_path(s)    - A suite path or a comma separated list of suite paths for unit test to be executed.     
                       The path(s) can be in one of the following formats:
                           schema[.package[.procedure]]
