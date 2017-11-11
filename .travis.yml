@@ -9,16 +9,16 @@ jdk:
 
 env:
   global:
-     - DOCKER_CFG=$HOME/.docker
-     - DOCKER_REPO="viniciusam/oracledb"
-     - CACHE_DIR=$HOME/.cache
-     - MAVEN_HOME=/usr/local/maven
-     - MAVEN_CFG=$HOME/.m2
-     - DB_URL="127.0.0.1:1521:XE"
-     - DB_USER=app
-     - DB_PASS=app
-   matrix:
-     - ORACLE_VERSION="11g-xe-r2" DOCKER_OPTIONS="--shm-size=1g"
+    - DOCKER_CFG=$HOME/.docker
+    - DOCKER_REPO="viniciusam/oracledb"
+    - CACHE_DIR=$HOME/.cache
+    - MAVEN_HOME=/usr/local/maven
+    - MAVEN_CFG=$HOME/.m2
+    - DB_URL="127.0.0.1:1521:XE"
+    - DB_USER=app
+    - DB_PASS=app
+  matrix:
+    - ORACLE_VERSION="11g-xe-r2" DOCKER_OPTIONS="--shm-size=1g"
 
 cache:
   directories:
@@ -28,9 +28,9 @@ cache:
 
 install:
   - bash .travis/maven_cfg.sh
-   - bash .travis/start_db.sh
-   - bash .travis/install_utplsql.sh
-   - bash .travis/install_demo_project.sh
+  - bash .travis/start_db.sh
+  - bash .travis/install_utplsql.sh
+  - bash .travis/install_demo_project.sh
 
 script:
   - mvn package -DskipTests
