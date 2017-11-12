@@ -16,15 +16,16 @@ You can download development versions on [Bintray](https://bintray.com/viniciusa
 * [Java SE Runtime Environment 8](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
 * When using reporters for Sonar or Coveralls client needs to be invoked from project's root directory.
 
+## Compatibility
+The latest CLI is always compatible with all database frameworks of the same major version.
+For example CLI-3.0.4 is compatible with database framework 3.0.0-3.0.4 but not with database framework 2.x.
+
 ## Usage
-utplsql run user/pass@[[host][:port]/]db [-p=(ut_path|ut_paths)] [-f=format [-o=output_file] [-s] ...]
+utplsql run \<ConnectionURL\> [-p=(ut_path|ut_paths)] [-f=format [-o=output_file] [-s] ...]
 
 ```
-user                - Username to connect as.
-password            - Password of the user.
-host                - Server address, defaults to 127.0.0.1.
-port                - Server port, defaults to 1521.
-db                  - Database to connect to.
+<ConnectionURL>     - <user>/<password>@//<host>[:<port>]/<service> OR <user>/<password>@<TNSName> OR <user>/<password>@<host>:<port>:<SID>
+                          To connect using TNS, you need to have the ORACLE_HOME environment variable set.
 -p=suite_path(s)    - A suite path or a comma separated list of suite paths for unit test to be executed.     
                       The path(s) can be in one of the following formats:
                           schema[.package[.procedure]]
@@ -77,6 +78,8 @@ db                  - Database to connect to.
 -c                  - If specified, enables printing of test results in colors as defined by ANSICONSOLE standards. 
                       Works only on reporeters that support colors (ut_documentation_reporter).
 --failure-exit-code - Override the exit code on failure, defaults to 1. You can set it to 0 to always exit with a success status.
+-scc                - If specified, skips the compatibility-check with the version of the database framework.
+                      If you skip compatibility-check, CLI will expect the most actual framework version
 ```
 
 Parameters -f, -o, -s are correlated. That is parameters -o and -s are controlling outputs for reporter specified by the preceding -f parameter.
