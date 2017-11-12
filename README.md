@@ -15,6 +15,9 @@ You can download development versions on [Bintray](https://bintray.com/viniciusa
 ## Requirements
 * [Java SE Runtime Environment 8](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
 * When using reporters for Sonar or Coveralls client needs to be invoked from project's root directory.
+* Due to Oracle license we can't ship the necessary oracle libraries directly with utPLSQL-cli. <b>Please download the libraries directly from oracle website and put the jars into the "lib" folder of your utPLSQL-cli installation</b>
+  * Oracle JDBC driver: http://www.oracle.com/technetwork/database/features/jdbc/jdbc-ucp-122-3110062.html
+  * If you are on a 11g database you might need the orai18n library, too: http://www.oracle.com/technetwork/database/enterprise-edition/jdbc-112010-090769.html
 
 ## Compatibility
 The latest CLI is always compatible with all database frameworks of the same major version.
