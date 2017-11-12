@@ -6,9 +6,13 @@ import oracle.ucp.jdbc.PoolDataSourceFactory;
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ConnectionInfo {
+
+    private String databaseVersion;
 
     static {
         String oracleHome = System.getenv("ORACLE_HOME");
@@ -40,6 +44,42 @@ public class ConnectionInfo {
         public ConnectionInfo convert(String s) {
             return new ConnectionInfo(s);
         }
+    }
+
+    public String getOracleDatabaseVersion() throws SQLException
+    {
+        try ( Connection conn = getConnection() ) {
+            return getOracleDatabaseVersion(conn);
+        }
+    }
+
+    public String getOracleDatabaseVersion( Connection conn ) throws SQLException
+    {
+        if ( databaseVersion == null ) {
+            databaseVersion = getOracleDatabaseVersionFromConnection( conn );
+        }
+
+        return databaseVersion;
+    }
+
+    /** TODO: Outsource this to Java-API
+     *
+     * @param conn
+     * @return
+     * @throws SQLException
+     */
+    public static String getOracleDatabaseVersionFromConnection( Connection conn ) throws SQLException {
+        assert conn != null;
+        String result = null;
+        try (PreparedStatement stmt = conn.prepareStatement("select version from product_component_version where product like 'Oracle Database%'"))
+        {
+            ResultSet rs = stmt.executeQuery();
+
+            if ( rs.next() )
+                result = rs.getString(1);
+        }
+
+        return result;
     }
 
 }
