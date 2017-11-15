@@ -6,6 +6,7 @@ VERSION=`date +%Y%m%d%H%M`
 mkdir dist
 mv target/appassembler utPLSQL-cli
 zip -r -q dist/utPLSQL-cli-${TRAVIS_BRANCH}-${VERSION}.zip utPLSQL-cli
+zip -r -q utPLSQL-cli.zip utPLSQL-cli
 
 cat > bintray.json <<EOF
 {

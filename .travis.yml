@@ -26,9 +26,15 @@ before_deploy:
   - bash .travis/create_release.sh
 
 deploy:
-  provider: bintray
-  file: bintray.json
-  user: $BINTRAY_USER
-  key: $BINTRAY_API_KEY
-  dry-run: false
-  on: develop
+  - provider: releases
+    api_key: $github_api_token
+    file: utPLSQL-cli.zip
+    skip_cleanup: true
+    on:
+      tags: true
+  - provider: bintray
+    file: bintray.json
+    user: $BINTRAY_USER
+    key: $BINTRAY_API_KEY
+    dry-run: false
+    on: develop
