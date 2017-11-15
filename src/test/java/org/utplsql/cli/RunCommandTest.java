@@ -12,6 +12,16 @@ import java.util.List;
  */
 public class RunCommandTest {
 
+    private static String sUrl;
+    private static String sUser;
+    private static String sPass;
+
+    static {
+        sUrl  = System.getenv("DB_URL")  != null ? System.getenv("DB_URL")  : "192.168.99.100:1521:XE";
+        sUser = System.getenv("DB_USER") != null ? System.getenv("DB_USER") : "app";
+        sPass = System.getenv("DB_PASS") != null ? System.getenv("DB_PASS") : "app";
+    }
+
     private RunCommand createRunCommand(String... args) {
         RunCommand runCmd = new RunCommand();
 
@@ -23,9 +33,13 @@ public class RunCommandTest {
         return runCmd;
     }
 
+    private String getConnectionString() {
+        return sUser + "/" + sPass + "@" + sUrl;
+    }
+
     @Test
     public void reporterOptions_Default() {
-        RunCommand runCmd = createRunCommand("app/app@xe");
+        RunCommand runCmd = createRunCommand(getConnectionString());
 
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
 
@@ -38,7 +52,7 @@ public class RunCommandTest {
 
     @Test
     public void reporterOptions_OneReporter() {
-        RunCommand runCmd = createRunCommand("app/app@xe", "-f=ut_documentation_reporter", "-o=output.txt");
+        RunCommand runCmd = createRunCommand(getConnectionString(), "-f=ut_documentation_reporter", "-o=output.txt");
 
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
 
@@ -51,7 +65,7 @@ public class RunCommandTest {
 
     @Test
     public void reporterOptions_OneReporterForceScreen() {
-        RunCommand runCmd = createRunCommand("app/app@xe", "-f=ut_documentation_reporter", "-o=output.txt", "-s");
+        RunCommand runCmd = createRunCommand(getConnectionString(), "-f=ut_documentation_reporter", "-o=output.txt", "-s");
 
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
 
@@ -64,7 +78,7 @@ public class RunCommandTest {
 
     @Test
     public void reporterOptions_OneReporterForceScreenInverse() {
-        RunCommand runCmd = createRunCommand("app/app@xe", "-f=ut_documentation_reporter", "-s", "-o=output.txt");
+        RunCommand runCmd = createRunCommand(getConnectionString(), "-f=ut_documentation_reporter", "-s", "-o=output.txt");
 
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
 
@@ -77,7 +91,7 @@ public class RunCommandTest {
 
     @Test
     public void reporterOptions_TwoReporters() {
-        RunCommand runCmd = createRunCommand("app/app@xe",
+        RunCommand runCmd = createRunCommand(getConnectionString(),
                 "-f=ut_documentation_reporter",
                 "-f=ut_coverage_html_reporter", "-o=coverage.html", "-s");
 
@@ -94,6 +108,22 @@ public class RunCommandTest {
         Assert.assertEquals(reporterOptions2.getOutputFileName(), "coverage.html");
         Assert.assertTrue(reporterOptions2.outputToFile());
         Assert.assertTrue(reporterOptions2.outputToScreen());
+    }
+
+    @Test
+    public void run_Default() {
+        RunCommand runCmd = createRunCommand(getConnectionString(),
+                "-f=ut_documentation_reporter",
+                "-c",
+                "--failure-exit-code=2");
+
+        try {
+            int result = runCmd.run();
+            Assert.assertEquals(2, result);
+        }
+        catch ( Exception e ) {
+            Assert.fail(e.getMessage());
+        }
     }
 
 }
