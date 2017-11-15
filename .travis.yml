@@ -10,6 +10,7 @@ jdk:
 env:
   global:
     - DOCKER_CFG=$HOME/.docker
+    - DOCKER_REPO="utplsqlv3/oracledb"
     - CACHE_DIR=$HOME/.cache
     - MAVEN_HOME=/usr/local/maven
     - MAVEN_CFG=$HOME/.m2
