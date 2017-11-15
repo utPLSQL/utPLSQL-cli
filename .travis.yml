@@ -17,8 +17,8 @@ env:
     - DB_URL="127.0.0.1:1521:XE"
     - DB_USER=app
     - DB_PASS=app
-  matrix:
-    - ORACLE_VERSION="11g-xe-r2" DOCKER_OPTIONS="--shm-size=1g"
+    - ORACLE_VERSION="11g-xe-r2"
+    - DOCKER_OPTIONS="--shm-size=1g"
 
 cache:
   directories:
