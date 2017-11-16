@@ -89,6 +89,9 @@ public class RunCommand {
     }
 
     public int run() throws Exception {
+
+        checkOracleJDBCExists();
+
         final ConnectionInfo ci = getConnectionInfo();
 
         final List<Reporter> reporterList;
@@ -106,6 +109,9 @@ public class RunCommand {
 
         // Do the reporters initialization, so we can use the id to run and gather results.
         try (Connection conn = ci.getConnection()) {
+
+            // Check if orai18n exists if database version is 11g
+            checkOracleI18nExists(ci.getOracleDatabaseVersion(conn));
 
             // First of all do a compatibility check and fail-fast
             checkFrameworkCompatibility(conn);
@@ -320,4 +326,33 @@ public class RunCommand {
         return mapperOptions;
     }
 
+
+    /** Checks that ojdbc library exists
+     *
+     */
+    private void checkOracleJDBCExists()
+    {
+        if ( !OracleLibraryChecker.checkOjdbcExists() )
+        {
+            System.out.println("Could not find Oracle JDBC driver in classpath. Please download the jar from Oracle website" +
+                    " and copy it to the 'lib' folder of your utPLSQL-cli installation.");
+            System.out.println("Download from http://www.oracle.com/technetwork/database/features/jdbc/jdbc-ucp-122-3110062.html");
+
+            throw new RuntimeException("Can't run utPLSQL-cli without Oracle JDBC driver");
+        }
+    }
+
+    /** Checks that orai18n library exists if database is an oracle 11
+     *
+     */
+    private void checkOracleI18nExists(String oracleDatabaseVersion )
+    {
+        if ( oracleDatabaseVersion.startsWith("11.") && !OracleLibraryChecker.checkOrai18nExists() )
+        {
+            System.out.println("Warning: Could not find Oracle i18n driver in classpath. Depending on the database charset " +
+                    "utPLSQL-cli might not run properly. It is recommended you download " +
+                    "the i18n driver from the Oracle website and copy it to the 'lib' folder of your utPLSQL-cli installation.");
+            System.out.println("Download from http://www.oracle.com/technetwork/database/enterprise-edition/jdbc-112010-090769.html");
+        }
+    }
 }
