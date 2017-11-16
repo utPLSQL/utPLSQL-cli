@@ -3,6 +3,7 @@ package org.utplsql.cli;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import org.utplsql.api.*;
+import org.utplsql.api.compatibility.CompatibilityProxy;
 import org.utplsql.api.exception.DatabaseNotCompatibleException;
 import org.utplsql.api.exception.SomeTestsFailedException;
 import org.utplsql.api.reporter.Reporter;
@@ -264,14 +265,10 @@ public class RunCommand {
      */
     private void checkFrameworkCompatibility(Connection conn) throws SQLException {
 
-        if ( !skipCompatibilityCheck ) {
-            try {
-                DBHelper.failOnVersionCompatibilityCheckFailed(conn);
-            } catch (DatabaseNotCompatibleException e) {
-                System.out.println(e.getMessage());
+        CompatibilityProxy proxy = new CompatibilityProxy(conn, skipCompatibilityCheck);
 
-                throw e;
-            }
+        if ( !skipCompatibilityCheck ) {
+            proxy.failOnNotCompatible();
         }
         else {
             System.out.println("Skipping Compatibility check with framework version, expecting the latest version " +
