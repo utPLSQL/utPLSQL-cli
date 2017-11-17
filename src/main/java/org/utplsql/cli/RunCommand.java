@@ -4,6 +4,7 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import org.utplsql.api.*;
 import org.utplsql.api.compatibility.CompatibilityProxy;
+import org.utplsql.api.compatibility.OptionalFeatures;
 import org.utplsql.api.exception.DatabaseNotCompatibleException;
 import org.utplsql.api.exception.SomeTestsFailedException;
 import org.utplsql.api.reporter.Reporter;
@@ -82,6 +83,8 @@ public class RunCommand {
                     "most actual. Use this if you use CLI with a development version of utPLSQL-framework")
     private boolean skipCompatibilityCheck = false;
 
+    private CompatibilityProxy compatibilityProxy;
+
     public ConnectionInfo getConnectionInfo() {
         return connectionInfoList.get(0);
     }
@@ -92,7 +95,7 @@ public class RunCommand {
 
     public int run() throws Exception {
 
-        checkOracleJDBCExists();
+        RunCommandChecker.checkOracleJDBCExists();
 
         final ConnectionInfo ci = getConnectionInfo();
 
@@ -113,10 +116,10 @@ public class RunCommand {
         try (Connection conn = ci.getConnection()) {
 
             // Check if orai18n exists if database version is 11g
-            checkOracleI18nExists(ci.getOracleDatabaseVersion(conn));
+            RunCommandChecker.checkOracleI18nExists(ci.getOracleDatabaseVersion(conn));
 
             // First of all do a compatibility check and fail-fast
-            checkFrameworkCompatibility(conn);
+            compatibilityProxy = checkFrameworkCompatibility(conn);
 
             reporterList = initReporters(conn, reporterOptionsList);
 
@@ -127,6 +130,12 @@ public class RunCommand {
             else {
                 throw e;
             }
+        }
+
+        // Output a message if --failureExitCode is set but database framework is not capable of
+        String msg = RunCommandChecker.getCheckFailOnErrorMessage(failureExitCode, compatibilityProxy.getDatabaseVersion());
+        if ( msg != null ) {
+            System.out.println(msg);
         }
 
         ExecutorService executorService = Executors.newFixedThreadPool(1 + reporterList.size());
@@ -268,7 +277,7 @@ public class RunCommand {
      * @param conn Active Connection
      * @throws SQLException
      */
-    private void checkFrameworkCompatibility(Connection conn) throws SQLException {
+    private CompatibilityProxy checkFrameworkCompatibility(Connection conn) throws SQLException {
 
         CompatibilityProxy proxy = new CompatibilityProxy(conn, skipCompatibilityCheck);
 
@@ -279,6 +288,8 @@ public class RunCommand {
             System.out.println("Skipping Compatibility check with framework version, expecting the latest version " +
                     "to be installed in database");
         }
+
+        return proxy;
     }
 
     public FileMapperOptions getMapperOptions(List<String> mappingParams, List<String> filePaths) {
@@ -328,33 +339,14 @@ public class RunCommand {
         return mapperOptions;
     }
 
-
-    /** Checks that ojdbc library exists
+    /** Returns the version of the database framework if available
      *
+     * @return
      */
-    private void checkOracleJDBCExists()
-    {
-        if ( !OracleLibraryChecker.checkOjdbcExists() )
-        {
-            System.out.println("Could not find Oracle JDBC driver in classpath. Please download the jar from Oracle website" +
-                    " and copy it to the 'lib' folder of your utPLSQL-cli installation.");
-            System.out.println("Download from http://www.oracle.com/technetwork/database/features/jdbc/jdbc-ucp-122-3110062.html");
+    public Version getDatabaseVersion() {
+        if ( compatibilityProxy != null )
+            return compatibilityProxy.getDatabaseVersion();
 
-            throw new RuntimeException("Can't run utPLSQL-cli without Oracle JDBC driver");
-        }
-    }
-
-    /** Checks that orai18n library exists if database is an oracle 11
-     *
-     */
-    private void checkOracleI18nExists(String oracleDatabaseVersion )
-    {
-        if ( oracleDatabaseVersion.startsWith("11.") && !OracleLibraryChecker.checkOrai18nExists() )
-        {
-            System.out.println("Warning: Could not find Oracle i18n driver in classpath. Depending on the database charset " +
-                    "utPLSQL-cli might not run properly. It is recommended you download " +
-                    "the i18n driver from the Oracle website and copy it to the 'lib' folder of your utPLSQL-cli installation.");
-            System.out.println("Download from http://www.oracle.com/technetwork/database/enterprise-edition/jdbc-112010-090769.html");
-        }
+        return null;
     }
 }
