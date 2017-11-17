@@ -8,6 +8,7 @@ import org.utplsql.api.exception.DatabaseNotCompatibleException;
 import org.utplsql.api.exception.SomeTestsFailedException;
 import org.utplsql.api.reporter.Reporter;
 import org.utplsql.api.reporter.ReporterFactory;
+import org.utplsql.cli.exception.DatabaseConnectionFailed;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -120,8 +121,12 @@ public class RunCommand {
             reporterList = initReporters(conn, reporterOptionsList);
 
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            return Cli.DEFAULT_ERROR_CODE;
+            if ( e.getErrorCode() == 1017 || e.getErrorCode() == 12514 ) {
+                throw new DatabaseConnectionFailed(e);
+            }
+            else {
+                throw e;
+            }
         }
 
         ExecutorService executorService = Executors.newFixedThreadPool(1 + reporterList.size());

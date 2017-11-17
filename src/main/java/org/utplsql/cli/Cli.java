@@ -4,6 +4,8 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import org.utplsql.api.exception.DatabaseNotCompatibleException;
+import org.utplsql.api.exception.UtPLSQLNotInstalledException;
+import org.utplsql.cli.exception.DatabaseConnectionFailed;
 
 public class Cli {
 
@@ -35,7 +37,7 @@ public class Cli {
             } else {
                 jc.usage();
             }
-        } catch ( DatabaseNotCompatibleException e ) {
+        } catch ( DatabaseNotCompatibleException | UtPLSQLNotInstalledException | DatabaseConnectionFailed e ) {
             System.out.println(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
