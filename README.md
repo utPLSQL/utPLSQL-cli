@@ -9,7 +9,10 @@ Provides an easy way of invoking utPLSQL from command-line. Main features:
 * Maps project and test files to database objects for reporting purposes. (Comming Soon)
 
 ## Downloading
-You can download development versions on [Bintray](https://bintray.com/viniciusam/utPLSQL-cli/utPLSQL-cli-develop#files).
+
+Published releases are available for download on the [utPLSQL-cli GitHub Releases Page.](https://github.com/utPLSQL/utPLSQL-cli/releases)
+
+You can also download all development versions from [Bintray](https://bintray.com/viniciusam/utPLSQL-cli/utPLSQL-cli-develop#files).
 
 
 ## Requirements

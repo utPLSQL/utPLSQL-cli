@@ -52,3 +52,6 @@ deploy:
     key: $BINTRAY_API_KEY
     dry-run: false
     on: develop
+
+notifications:
+  slack: $SLACK_API_TOKEN
