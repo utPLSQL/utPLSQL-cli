@@ -59,4 +59,19 @@
     </plugins>
   </build>
 
+  <repositories>
+    <repository>
+      <id>utplsql-java-api</id>
+      <url>
+        https://packagecloud.io/utplsql/utplsql-java-api/maven2
+      </url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
 </project>

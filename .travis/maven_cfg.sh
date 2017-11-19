@@ -22,8 +22,3 @@ else
     echo "Using cached maven settings..."
 fi
 
-# The Java API is not available on a public repository yet, we need to download and install it locally.
-# Always downloading the latest development version.
-git clone https://github.com/utPLSQL/utPLSQL-java-api.git
-cd utPLSQL-java-api
-mvn package install -DskipTests
