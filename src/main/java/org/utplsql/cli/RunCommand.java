@@ -3,10 +3,13 @@ package org.utplsql.cli;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import org.utplsql.api.*;
+import org.utplsql.api.compatibility.CompatibilityProxy;
+import org.utplsql.api.compatibility.OptionalFeatures;
 import org.utplsql.api.exception.DatabaseNotCompatibleException;
 import org.utplsql.api.exception.SomeTestsFailedException;
 import org.utplsql.api.reporter.Reporter;
 import org.utplsql.api.reporter.ReporterFactory;
+import org.utplsql.cli.exception.DatabaseConnectionFailed;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -80,6 +83,8 @@ public class RunCommand {
                     "most actual. Use this if you use CLI with a development version of utPLSQL-framework")
     private boolean skipCompatibilityCheck = false;
 
+    private CompatibilityProxy compatibilityProxy;
+
     public ConnectionInfo getConnectionInfo() {
         return connectionInfoList.get(0);
     }
@@ -89,6 +94,9 @@ public class RunCommand {
     }
 
     public int run() throws Exception {
+
+        RunCommandChecker.checkOracleJDBCExists();
+
         final ConnectionInfo ci = getConnectionInfo();
 
         final List<Reporter> reporterList;
@@ -107,14 +115,27 @@ public class RunCommand {
         // Do the reporters initialization, so we can use the id to run and gather results.
         try (Connection conn = ci.getConnection()) {
 
+            // Check if orai18n exists if database version is 11g
+            RunCommandChecker.checkOracleI18nExists(ci.getOracleDatabaseVersion(conn));
+
             // First of all do a compatibility check and fail-fast
-            checkFrameworkCompatibility(conn);
+            compatibilityProxy = checkFrameworkCompatibility(conn);
 
             reporterList = initReporters(conn, reporterOptionsList);
 
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            return Cli.DEFAULT_ERROR_CODE;
+            if ( e.getErrorCode() == 1017 || e.getErrorCode() == 12514 ) {
+                throw new DatabaseConnectionFailed(e);
+            }
+            else {
+                throw e;
+            }
+        }
+
+        // Output a message if --failureExitCode is set but database framework is not capable of
+        String msg = RunCommandChecker.getCheckFailOnErrorMessage(failureExitCode, compatibilityProxy.getDatabaseVersion());
+        if ( msg != null ) {
+            System.out.println(msg);
         }
 
         ExecutorService executorService = Executors.newFixedThreadPool(1 + reporterList.size());
@@ -256,21 +277,19 @@ public class RunCommand {
      * @param conn Active Connection
      * @throws SQLException
      */
-    private void checkFrameworkCompatibility(Connection conn) throws SQLException {
+    private CompatibilityProxy checkFrameworkCompatibility(Connection conn) throws SQLException {
+
+        CompatibilityProxy proxy = new CompatibilityProxy(conn, skipCompatibilityCheck);
 
         if ( !skipCompatibilityCheck ) {
-            try {
-                DBHelper.failOnVersionCompatibilityCheckFailed(conn);
-            } catch (DatabaseNotCompatibleException e) {
-                System.out.println(e.getMessage());
-
-                throw e;
-            }
+            proxy.failOnNotCompatible();
         }
         else {
             System.out.println("Skipping Compatibility check with framework version, expecting the latest version " +
                     "to be installed in database");
         }
+
+        return proxy;
     }
 
     public FileMapperOptions getMapperOptions(List<String> mappingParams, List<String> filePaths) {
@@ -320,4 +339,14 @@ public class RunCommand {
         return mapperOptions;
     }
 
+    /** Returns the version of the database framework if available
+     *
+     * @return
+     */
+    public Version getDatabaseVersion() {
+        if ( compatibilityProxy != null )
+            return compatibilityProxy.getDatabaseVersion();
+
+        return null;
+    }
 }

@@ -4,6 +4,7 @@ import com.beust.jcommander.JCommander;
 import org.junit.Assert;
 import org.junit.Test;
 import org.utplsql.api.CustomTypes;
+import org.utplsql.api.compatibility.OptionalFeatures;
 
 import java.util.List;
 
@@ -119,7 +120,12 @@ public class RunCommandTest {
 
         try {
             int result = runCmd.run();
-            Assert.assertEquals(2, result);
+
+            // Only expect failure-exit-code to work on several framework versions
+            if (OptionalFeatures.FAIL_ON_ERROR.isAvailableFor(runCmd.getDatabaseVersion()) )
+                Assert.assertEquals(2, result);
+            else
+                Assert.assertEquals(0, result);
         }
         catch ( Exception e ) {
             Assert.fail(e.getMessage());
