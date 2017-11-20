@@ -38,6 +38,7 @@ script:
 
 before_deploy:
   - bash .travis/create_release.sh
+  - if [ ! -z "$TRAVIS_TAG" ]; then VERSION=$(tr -d "/v/" <<<$TRAVIS_TAG); mvn org.codehaus.mojo:versions-maven-plugin:2.1:set -DnewVersion=${VERSION}; fi
 
 deploy:
   - provider: releases
@@ -45,13 +46,16 @@ deploy:
     file: utPLSQL-cli.zip
     skip_cleanup: true
     on:
+      repository: utPLSQL/utPLSQL-cli
       tags: true
   - provider: bintray
     file: bintray.json
-    user: $BINTRAY_USER
-    key: $BINTRAY_API_KEY
+    user: ${BINTRAY_USER}
+    key: ${BINTRAY_API_KEY}
     dry-run: false
-    on: develop
+    on:
+      repository: utPLSQL/utPLSQL-cli
+      branch: develop
 
 notifications:
   slack: $SLACK_API_TOKEN
