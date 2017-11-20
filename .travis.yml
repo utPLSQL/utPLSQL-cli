@@ -56,3 +56,6 @@ deploy:
     on:
       repository: utPLSQL/utPLSQL-cli
       branch: develop
+
+notifications:
+  slack: $SLACK_API_TOKEN
