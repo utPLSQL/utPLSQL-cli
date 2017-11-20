@@ -13,14 +13,7 @@ else
     sudo cp $CACHE_DIR/wagon-http-2.8-shaded.jar $MAVEN_HOME/lib/ext/
 fi
 
-# Create the settings file with oracle server config.
-# If file already exists, Oracle dependencies were cached on previous build.
-if [ ! -f $MAVEN_CFG/.cached ]; then
-    cp settings.xml $MAVEN_CFG/settings.xml
-    touch $MAVEN_CFG/.cached
-else
-    echo "Using cached maven settings..."
-fi
+cp settings.xml $MAVEN_CFG/settings.xml
 
 # The Java API is not available on a public repository yet, we need to download and install it locally.
 # Always downloading the latest development version.
