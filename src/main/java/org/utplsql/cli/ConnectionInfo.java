@@ -1,8 +1,7 @@
 package org.utplsql.cli;
 
 import com.beust.jcommander.IStringConverter;
-import oracle.ucp.jdbc.PoolDataSource;
-import oracle.ucp.jdbc.PoolDataSourceFactory;
+import com.zaxxer.hikari.HikariDataSource;
 
 import java.io.File;
 import java.sql.Connection;
@@ -22,16 +21,13 @@ public class ConnectionInfo {
         }
     }
 
-    private PoolDataSource pds = PoolDataSourceFactory.getPoolDataSource();
+    private HikariDataSource pds = new HikariDataSource();
 
     public ConnectionInfo(String connectionInfo) {
-        try {
-            this.pds.setConnectionFactoryClassName("oracle.jdbc.pool.OracleDataSource");
-            this.pds.setURL("jdbc:oracle:thin:" + connectionInfo);
-            this.pds.setInitialPoolSize(2);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
+        pds.setJdbcUrl("jdbc:oracle:thin:" + connectionInfo);
+        pds.setAutoCommit(false);
+
     }
 
     public Connection getConnection() throws SQLException {

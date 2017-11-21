@@ -34,7 +34,7 @@ install:
 
 script:
   - mvn package -DskipTests
-  - mvn package appassembler:assemble
+  - mvn package jar:jar appassembler:assemble
 
 before_deploy:
   - bash .travis/create_release.sh
