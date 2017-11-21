@@ -19,19 +19,27 @@ You can also download all development versions from [Bintray](https://bintray.co
 * [Java SE Runtime Environment 8](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
 * When using reporters for Sonar or Coveralls client needs to be invoked from project's root directory.
 * Due to Oracle license we can't ship the necessary oracle libraries directly with utPLSQL-cli. <b>Please download the libraries directly from oracle website and put the jars into the "lib" folder of your utPLSQL-cli installation</b>
-  * Oracle JDBC driver: http://www.oracle.com/technetwork/database/features/jdbc/jdbc-ucp-122-3110062.html
-  * If you are on a 11g database you might need the orai18n library, too: http://www.oracle.com/technetwork/database/enterprise-edition/jdbc-112010-090769.html
+  * Oracle `ojdbc8` driver
+  * Oracle `ucp` library 
+  * If you are on a 11g database with non0standard NLS settings, you will also need the `orai18n` library.
+  * All of the above can be downloaded from [Oracle download site](http://www.oracle.com/technetwork/database/features/jdbc/jdbc-ucp-122-3110062.html)
 
 ## Compatibility
 The latest CLI is always compatible with all database frameworks of the same major version.
 For example CLI-3.0.4 is compatible with database framework 3.0.0-3.0.4 but not with database framework 2.x.
 
 ## Usage
-utplsql run \<ConnectionURL\> [-p=(ut_path|ut_paths)] [-f=format [-o=output_file] [-s] ...]
+
+`utplsql run <ConnectionURL> [-p=(ut_path|ut_paths)] [-f=format [-o=output_file] [-s] ...]`
 
 ```
-<ConnectionURL>     - <user>/<password>@//<host>[:<port>]/<service> OR <user>/<password>@<TNSName> OR <user>/<password>@<host>:<port>:<SID>
-                          To connect using TNS, you need to have the ORACLE_HOME environment variable set.
+<ConnectionURL>     - accepted formats:
+                      <user>/<password>@//<host>[:<port>]/<service>
+                      <user>/<password>@<host>:<port>:<SID> 
+                      <user>/<password>@<TNSName> 
+                        To connect using TNS, you need to have the ORACLE_HOME environment variable set.
+                        The file tnsnames.ora must exist in path %ORACLE_HOME%/network/admin
+                        The file tnsnames.ora must contain valid TNS entries. 
 -p=suite_path(s)    - A suite path or a comma separated list of suite paths for unit test to be executed.     
                       The path(s) can be in one of the following formats:
                           schema[.package[.procedure]]
