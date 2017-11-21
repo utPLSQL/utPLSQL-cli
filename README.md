@@ -20,13 +20,12 @@ You can also download all development versions from [Bintray](https://bintray.co
 * When using reporters for Sonar or Coveralls client needs to be invoked from project's root directory.
 * Due to Oracle license we can't ship the necessary oracle libraries directly with utPLSQL-cli. <b>Please download the libraries directly from oracle website and put the jars into the "lib" folder of your utPLSQL-cli installation</b>
   * Oracle `ojdbc8` driver
-  * Oracle `ucp` library 
-  * If you are on a 11g database with non0standard NLS settings, you will also need the `orai18n` library.
+  * If you are on a 11g database with non standard NLS settings, you will also need the `orai18n` library.
   * All of the above can be downloaded from [Oracle download site](http://www.oracle.com/technetwork/database/features/jdbc/jdbc-ucp-122-3110062.html)
 
 ## Compatibility
-The latest CLI is always compatible with all database frameworks of the same major version.
-For example CLI-3.0.4 is compatible with database framework 3.0.0-3.0.4 but not with database framework 2.x.
+The latest CLI is always compatible with all database frameworks of the same minor version.
+For example CLI-3.0.4 is compatible with database framework 3.0.0-3.0.4 but not with database framework 2.x and 3.1.x.
 
 ## Usage
 
