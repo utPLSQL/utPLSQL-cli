@@ -3,6 +3,9 @@ set -ev
 
 VERSION=`date +%Y%m%d%H%M`
 
+#overcome maven assemble issue: https://github.com/mojohaus/appassembler/issues/61
+sed -i '/CYGWIN\*) cygwin=true/c\  CYGWIN*|MINGW*) cygwin=true ;;' target/appassembler/bin/utplsql
+
 mkdir dist
 mv target/appassembler utPLSQL-cli
 # Remove Oracle libraries du to licensing problems
