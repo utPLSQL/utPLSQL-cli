@@ -45,6 +45,7 @@
         <version>1.10</version>
         <configuration>
           <copyConfigurationDirectory>true</copyConfigurationDirectory>
+          <useWildcardClassPath>true</useWildcardClassPath>
           <configurationDirectory>etc</configurationDirectory>
           <repositoryName>lib</repositoryName>
           <repositoryLayout>flat</repositoryLayout>

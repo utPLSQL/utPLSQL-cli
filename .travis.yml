@@ -58,4 +58,8 @@ deploy:
       branch: develop
 
 notifications:
-  slack: $SLACK_API_TOKEN
+  slack:
+    rooms:
+      - secure: "jTPq4AcWQdWp1rB175c05ei/1lXZF1DBoqiKl9PPe7f8vqXS2QLPXMwGTEkZ1YnqL2MPZMB+50Gw5RhLKQ+t+9pN7ejLO0D8ULi1e96PDU5ZL5pNvRglH6U/lR5iT1CjELUuraDXDJ98Vu4gluLMiwTtFYQhNrOoA2V84L+8fF7rGjbGl4/zOXA9RQ4YAcOomJesb4vE7BCjhDjUuMW43xjNWg2s0WAiF+fC1HY/tsBMb1CGfpVULnO5ES5bKtUv/aGtySzH0vXilGDUvhZ/8mdaRn6uxpzcqrFdAyW8elSD28CypcYoxy6Myudw3SFiRPs0/Z02VXvm8DQtU/lcFEnaO7dMG+FpFhsWbrEjcRS6R7ve8uc7e/WuaQhtNVzSTOzRe+JFPGP9FOcYN+AcW2NJFILV9yT7+X/MPIB0OMxuwaPmVgtoyx0oec2nw05azmDr76P2e1XLnKtxa8ouwvPx8EMgApnXSR6VmLGu/w8nmtvIWjEAJ88cdGhwBagtyAsn2frzHq8aKpMziDRYvw4ivwGAeHJFsDtdRXzSbxhxmjl6+is3P0g0iAfojQ/Pzd4GugSYwqRQLLE7dUE0FAKXhKAAQAkjRZxik2+w6jgG8PuLuHdR4pm7C9srL+WAX8aFq/RQXE7BoIdqiZ5TMekw8d6eCRTjcRHsa3pPAd0="
+    on_success: change
+    on_failure: always
