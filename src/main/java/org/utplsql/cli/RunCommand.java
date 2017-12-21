@@ -18,6 +18,7 @@ import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -83,6 +84,21 @@ public class RunCommand {
                     "most actual. Use this if you use CLI with a development version of utPLSQL-framework")
     private boolean skipCompatibilityCheck = false;
 
+    @Parameter(
+            names = {"-include"},
+            description = "Comma-separated object list to include in the coverage report. " +
+                    "Format: [schema.]package[,[schema.]package ...]. See coverage reporting options in framework documentation"
+    )
+    private String includeObjects = null;
+
+    @Parameter(
+            names = {"-exclude"},
+            description = "Comma-separated object list to exclude from the coverage report. " +
+                    "Format: [schema.]package[,[schema.]package ...]. See coverage reporting options in framework documentation"
+    )
+    private String excludeObjects = null;
+
+
     private CompatibilityProxy compatibilityProxy;
 
     public ConnectionInfo getConnectionInfo() {
@@ -111,6 +127,24 @@ public class RunCommand {
 
         sourceMappingOptions[0] = getFileMapperOptionsByParamListItem(this.sourcePathParams, baseDir);
         testMappingOptions[0] = getFileMapperOptionsByParamListItem(this.testPathParams, baseDir);
+
+        ArrayList<String> includeObjectsList;
+        ArrayList<String> excludeObjectsList;
+
+        if (includeObjects != null && !includeObjects.isEmpty()) {
+            includeObjectsList = new ArrayList<>(Arrays.asList(includeObjects.split(",")));
+        } else {
+            includeObjectsList = new ArrayList<>();
+        }
+
+        if (excludeObjects != null && !excludeObjects.isEmpty()) {
+            excludeObjectsList = new ArrayList<>(Arrays.asList(excludeObjects.split(",")));
+        } else {
+            excludeObjectsList = new ArrayList<>();
+        }
+
+        final ArrayList<String> finalIncludeObjectsList = includeObjectsList;
+        final ArrayList<String> finalExcludeObjectsList = excludeObjectsList;
 
         // Do the reporters initialization, so we can use the id to run and gather results.
         try (Connection conn = ci.getConnection()) {
@@ -143,15 +177,23 @@ public class RunCommand {
         // Run tests.
         executorService.submit(() -> {
             try (Connection conn = ci.getConnection()) {
-                new TestRunner()
+                TestRunner testRunner = new TestRunner()
                         .addPathList(testPaths)
                         .addReporterList(reporterList)
                         .sourceMappingOptions(sourceMappingOptions[0])
                         .testMappingOptions(testMappingOptions[0])
                         .colorConsole(this.colorConsole)
                         .failOnErrors(true)
-                        .skipCompatibilityCheck(skipCompatibilityCheck)
-                        .run(conn);
+                        .skipCompatibilityCheck(skipCompatibilityCheck);
+
+                for (String includeObject: finalIncludeObjectsList){
+                    testRunner.includeObject(includeObject);
+                }
+                for (String excludeObject: finalExcludeObjectsList){
+                    testRunner.excludeObject(excludeObject);
+                }
+
+                testRunner.run(conn);
             } catch (SomeTestsFailedException e) {
                 returnCode[0] = this.failureExitCode;
             } catch (SQLException e) {

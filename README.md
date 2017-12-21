@@ -93,6 +93,12 @@ For example CLI-3.0.4 is compatible with database framework 3.0.0-3.0.4 but not 
 --failure-exit-code - Override the exit code on failure, defaults to 1. You can set it to 0 to always exit with a success status.
 -scc                - If specified, skips the compatibility-check with the version of the database framework.
                       If you skip compatibility-check, CLI will expect the most actual framework version
+-include=package_list - Comma-separated object list to include in the coverage report.
+                        Format: [schema.]package[,[schema.]package ...].
+                        See coverage reporting options in framework documentation.
+-exclude=package_list - Comma-separated object list to exclude from the coverage report.
+                        Format: [schema.]package[,[schema.]package ...].
+                        See coverage reporting options in framework documentation.
 ```
 
 Parameters -f, -o, -s are correlated. That is parameters -o and -s are controlling outputs for reporter specified by the preceding -f parameter.
