@@ -20,7 +20,7 @@
     <dependency>
       <groupId>org.utplsql</groupId>
       <artifactId>java-api</artifactId>
-      <version>3.0.4</version>
+      <version>3.0.4-SNAPSHOT</version>
       <scope>compile</scope>
         <exclusions>
             <exclusion>

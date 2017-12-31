@@ -184,14 +184,9 @@ public class RunCommand {
                         .testMappingOptions(testMappingOptions[0])
                         .colorConsole(this.colorConsole)
                         .failOnErrors(true)
-                        .skipCompatibilityCheck(skipCompatibilityCheck);
-
-                for (String includeObject: finalIncludeObjectsList){
-                    testRunner.includeObject(includeObject);
-                }
-                for (String excludeObject: finalExcludeObjectsList){
-                    testRunner.excludeObject(excludeObject);
-                }
+                        .skipCompatibilityCheck(skipCompatibilityCheck)
+                        .includeObjects(finalIncludeObjectsList)
+                        .excludeObjects(finalExcludeObjectsList);
 
                 testRunner.run(conn);
             } catch (SomeTestsFailedException e) {
