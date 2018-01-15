@@ -9,12 +9,15 @@ import org.utplsql.cli.exception.DatabaseConnectionFailed;
 
 public class Cli {
 
-    public static final int DEFAULT_ERROR_CODE = 1;
+    static final int DEFAULT_ERROR_CODE = 1;
 
-    public static final String HELP_CMD = "-h";
-    public static final String RUN_CMD = "run";
+    static final String HELP_CMD = "-h";
+    private static final String RUN_CMD = "run";
 
     public static void main(String[] args) {
+
+        LocaleInitializer.initLocale();
+
         JCommander jc = new JCommander();
         // jc.addCommand(HELP_CMD, new HelpCommand());
         RunCommand runCmd = new RunCommand();
