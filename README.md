@@ -27,6 +27,17 @@ You can also download all development versions from [Bintray](https://bintray.co
 The latest CLI is always compatible with all database frameworks of the same minor version.
 For example CLI-3.0.4 is compatible with database framework 3.0.0-3.0.4 but not with database framework 2.x and 3.1.x.
 
+## Localization and NLS settings
+utPLSQL-cli will use the environment variables (in that order) "NLS_LANG", "LC_ALL" or "LANG" to change the locale and therefore the NLS settings.
+If neither environment variable is available, it will use the JVM default locale.
+
+Example: to change the NLS-settings to English American, you can do the following:
+```
+export LC_ALL=en_US.utf-8
+```
+
+The charset-part of LC_ALL is ignored.
+
 ## Usage
 
 `utplsql run <ConnectionURL> [-p=(ut_path|ut_paths)] [-f=format [-o=output_file] [-s] ...]`
