@@ -28,7 +28,7 @@ The latest CLI is always compatible with all database frameworks of the same min
 For example CLI-3.0.4 is compatible with database framework 3.0.0-3.0.4 but not with database framework 2.x and 3.1.x.
 
 ## Localization and NLS settings
-utPLSQL-cli will use the environment variables "LC_ALL" or "LANG" to change the locale and therefore the NLS settings.
+utPLSQL-cli will use the environment variables (in that order) "NLS_LANG", "LC_ALL" or "LANG" to change the locale and therefore the NLS settings.
 If neither environment variable is available, it will use the JVM default locale.
 
 Example: to change the NLS-settings to English American, you can do the following:

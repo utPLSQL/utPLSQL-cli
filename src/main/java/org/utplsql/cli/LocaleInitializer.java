@@ -7,9 +7,10 @@ import java.util.regex.Pattern;
 /** This class makes sure the java locale is set according to the environment variables LC_ALL and LANG
  * We experienced that, in some cases, the locale was not set as expected, therefore this class implements some clear
  * rules:
- *   1. If environment variable LC_ALL is set, we try to parse its content and set locale according to its value if valid
- *   2. If environment variable LANG is set, we try to parse its content and set locale according to its value if valid
- *   3. Otherwise we use default locale
+ *   1. If environment variable NLS_LANG is set, we try to parse its content and set locale according to its value if valid
+ *   2. If environment variable LC_ALL is set, we try to parse its content and set locale according to its value if valid
+ *   3. If environment variable LANG is set, we try to parse its content and set locale according to its value if valid
+ *   4. Otherwise we use default locale
  *
  *   @author pesse
  */
@@ -21,7 +22,12 @@ class LocaleInitializer {
      *
      */
     static void initLocale() {
-        if ( !setDefaultLocale(System.getenv("LC_ALL")))
+
+        boolean localeChanged = setDefaultLocale(System.getenv("NLS_LANG"));
+
+        if ( !localeChanged )
+            localeChanged = setDefaultLocale(System.getenv("LC_ALL"));
+        if ( !localeChanged )
             setDefaultLocale(System.getenv("LANG"));
     }
 
