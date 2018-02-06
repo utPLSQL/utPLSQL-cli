@@ -1,12 +1,11 @@
 package org.utplsql.cli;
 
-import com.beust.jcommander.JCommander;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.utplsql.api.CustomTypes;
-import org.utplsql.api.compatibility.OptionalFeatures;
 
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit test for run command.
@@ -20,10 +19,10 @@ public class RunCommandTest {
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
 
         ReporterOptions reporterOptions1 = reporterOptionsList.get(0);
-        Assert.assertEquals(CustomTypes.UT_DOCUMENTATION_REPORTER, reporterOptions1.getReporterName());
-        Assert.assertNull(reporterOptions1.getOutputFileName());
-        Assert.assertFalse(reporterOptions1.outputToFile());
-        Assert.assertTrue(reporterOptions1.outputToScreen());
+        assertEquals(CustomTypes.UT_DOCUMENTATION_REPORTER, reporterOptions1.getReporterName());
+        assertNull(reporterOptions1.getOutputFileName());
+        assertFalse(reporterOptions1.outputToFile());
+        assertTrue(reporterOptions1.outputToScreen());
     }
 
     @Test
@@ -33,10 +32,10 @@ public class RunCommandTest {
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
 
         ReporterOptions reporterOptions1 = reporterOptionsList.get(0);
-        Assert.assertEquals(CustomTypes.UT_DOCUMENTATION_REPORTER, reporterOptions1.getReporterName());
-        Assert.assertEquals(reporterOptions1.getOutputFileName(), "output.txt");
-        Assert.assertTrue(reporterOptions1.outputToFile());
-        Assert.assertFalse(reporterOptions1.outputToScreen());
+        assertEquals(CustomTypes.UT_DOCUMENTATION_REPORTER, reporterOptions1.getReporterName());
+        assertEquals(reporterOptions1.getOutputFileName(), "output.txt");
+        assertTrue(reporterOptions1.outputToFile());
+        assertFalse(reporterOptions1.outputToScreen());
     }
 
     @Test
@@ -46,10 +45,10 @@ public class RunCommandTest {
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
 
         ReporterOptions reporterOptions1 = reporterOptionsList.get(0);
-        Assert.assertEquals(CustomTypes.UT_DOCUMENTATION_REPORTER, reporterOptions1.getReporterName());
-        Assert.assertEquals(reporterOptions1.getOutputFileName(), "output.txt");
-        Assert.assertTrue(reporterOptions1.outputToFile());
-        Assert.assertTrue(reporterOptions1.outputToScreen());
+        assertEquals(CustomTypes.UT_DOCUMENTATION_REPORTER, reporterOptions1.getReporterName());
+        assertEquals(reporterOptions1.getOutputFileName(), "output.txt");
+        assertTrue(reporterOptions1.outputToFile());
+        assertTrue(reporterOptions1.outputToScreen());
     }
 
     @Test
@@ -59,10 +58,10 @@ public class RunCommandTest {
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
 
         ReporterOptions reporterOptions1 = reporterOptionsList.get(0);
-        Assert.assertEquals(CustomTypes.UT_DOCUMENTATION_REPORTER, reporterOptions1.getReporterName());
-        Assert.assertEquals(reporterOptions1.getOutputFileName(), "output.txt");
-        Assert.assertTrue(reporterOptions1.outputToFile());
-        Assert.assertTrue(reporterOptions1.outputToScreen());
+        assertEquals(CustomTypes.UT_DOCUMENTATION_REPORTER, reporterOptions1.getReporterName());
+        assertEquals(reporterOptions1.getOutputFileName(), "output.txt");
+        assertTrue(reporterOptions1.outputToFile());
+        assertTrue(reporterOptions1.outputToScreen());
     }
 
     @Test
@@ -74,16 +73,16 @@ public class RunCommandTest {
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
 
         ReporterOptions reporterOptions1 = reporterOptionsList.get(0);
-        Assert.assertEquals(CustomTypes.UT_DOCUMENTATION_REPORTER, reporterOptions1.getReporterName());
-        Assert.assertNull(reporterOptions1.getOutputFileName());
-        Assert.assertFalse(reporterOptions1.outputToFile());
-        Assert.assertTrue(reporterOptions1.outputToScreen());
+        assertEquals(CustomTypes.UT_DOCUMENTATION_REPORTER, reporterOptions1.getReporterName());
+        assertNull(reporterOptions1.getOutputFileName());
+        assertFalse(reporterOptions1.outputToFile());
+        assertTrue(reporterOptions1.outputToScreen());
 
         ReporterOptions reporterOptions2 = reporterOptionsList.get(1);
-        Assert.assertEquals(CustomTypes.UT_COVERAGE_HTML_REPORTER, reporterOptions2.getReporterName());
-        Assert.assertEquals(reporterOptions2.getOutputFileName(), "coverage.html");
-        Assert.assertTrue(reporterOptions2.outputToFile());
-        Assert.assertTrue(reporterOptions2.outputToScreen());
+        assertEquals(CustomTypes.UT_COVERAGE_HTML_REPORTER, reporterOptions2.getReporterName());
+        assertEquals(reporterOptions2.getOutputFileName(), "coverage.html");
+        assertTrue(reporterOptions2.outputToFile());
+        assertTrue(reporterOptions2.outputToScreen());
     }
 
 }

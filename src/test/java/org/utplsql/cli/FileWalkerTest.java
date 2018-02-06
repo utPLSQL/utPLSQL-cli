@@ -1,11 +1,12 @@
 package org.utplsql.cli;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 /**
  * Created by Vinicius on 18/06/2017.
@@ -18,7 +19,7 @@ public class FileWalkerTest {
     public void fileWalker_Relative() {
         List<String> fileList = new FileWalker().getFileList(BASE_DIR, "source");
         Collections.sort(fileList);
-        Assert.assertArrayEquals(new Object[] {
+        assertArrayEquals(new Object[] {
                 "source/packages/package.pkb".replace('/', File.separatorChar),
                 "source/packages/package.pks".replace('/', File.separatorChar),
                 "source/script.sql".replace('/', File.separatorChar),
@@ -30,7 +31,7 @@ public class FileWalkerTest {
     public void fileWalker_Absolute() {
         List<String> fileList = new FileWalker().getFileList(BASE_DIR, "source", false);
         Collections.sort(fileList);
-        Assert.assertArrayEquals(new Object[] {
+        assertArrayEquals(new Object[] {
                 BASE_DIR.getAbsolutePath() + "/source/packages/package.pkb".replace('/', File.separatorChar),
                 BASE_DIR.getAbsolutePath() + "/source/packages/package.pks".replace('/', File.separatorChar),
                 BASE_DIR.getAbsolutePath() + "/source/script.sql".replace('/', File.separatorChar),
