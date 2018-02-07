@@ -4,9 +4,8 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import org.utplsql.api.*;
 import org.utplsql.api.compatibility.CompatibilityProxy;
-import org.utplsql.api.compatibility.OptionalFeatures;
-import org.utplsql.api.exception.DatabaseNotCompatibleException;
 import org.utplsql.api.exception.SomeTestsFailedException;
+import org.utplsql.api.reporter.CoverageHTMLReporter;
 import org.utplsql.api.reporter.Reporter;
 import org.utplsql.api.reporter.ReporterFactory;
 import org.utplsql.cli.exception.DatabaseConnectionFailed;
@@ -15,6 +14,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -219,6 +219,13 @@ public class RunCommand {
 
         for (ReporterOptions ro : reporterOptionsList) {
             Reporter reporter = ReporterFactory.createReporter(ro.getReporterName());
+
+            // Quick-hack for CoverageHTML Reporter
+            if ( reporter instanceof CoverageHTMLReporter && ro.outputToFile() ) {
+                ((CoverageHTMLReporter)reporter).setAssetsPath(ro.getOutputFileName()+"_assets/");
+                CoverageHTMLReporter.writeReportAssetsTo(Paths.get(ro.getOutputFileName()+"_assets/"));
+            }
+
             reporter.init(conn);
             ro.setReporterObj(reporter);
             reporterList.add(reporter);

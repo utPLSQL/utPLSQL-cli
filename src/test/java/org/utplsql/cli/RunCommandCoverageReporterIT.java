@@ -2,14 +2,17 @@ package org.utplsql.cli;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * System tests for Code Coverage Reporter
@@ -80,6 +83,27 @@ public class RunCommandCoverageReporterIT {
 
         } finally {
             Files.delete(coveragePath);
+        }
+
+    }
+
+    @Test
+    public void coverageReporterWriteAssetsToOutput() throws Exception {
+        Path coveragePath = getTempCoverageFilePath();
+
+        RunCommand runCmd = RunCommandTestHelper.createRunCommand(RunCommandTestHelper.getConnectionString(),
+                "-f=ut_coverage_html_reporter", "-o=" + coveragePath, "-s");
+        try {
+            int result = runCmd.run();
+
+            List<ReporterOptions> reporterOptions = runCmd.getReporterOptionsList();
+            File applicationJs = coveragePath.resolve(Paths.get("assets", "application.js")).toFile();
+
+            assertTrue(applicationJs.exists());
+
+        } finally {
+            if ( Files.exists(coveragePath))
+                Files.delete(coveragePath);
         }
 
     }
