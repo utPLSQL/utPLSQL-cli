@@ -1,13 +1,16 @@
 package org.utplsql.cli;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,6 +26,12 @@ public class RunCommandCoverageReporterIT {
 
     private static final Pattern REGEX_COVERAGE_TITLE = Pattern.compile("<a href=\"[a-zA-Z0-9#]+\" class=\"src_link\" title=\"[a-zA-Z\\._]+\">([a-zA-Z0-9\\._]+)<\\/a>");
 
+    private Set<Path> tempPaths;
+
+    private void addTempPath(Path path) {
+        tempPaths.add(path);
+    }
+
     private String getTempCoverageFileName(int counter) {
 
         return "tmpCoverage_" + String.valueOf(System.currentTimeMillis()) + "_" + String.valueOf(counter) + ".html";
@@ -34,14 +43,18 @@ public class RunCommandCoverageReporterIT {
      * @return
      */
     private Path getTempCoverageFilePath() {
+
         int i = 1;
         Path p = Paths.get(getTempCoverageFileName(i));
 
-        while (Files.exists(p) && i < 100)
+        while ((Files.exists(p) || tempPaths.contains(p)) && i < 100)
             p = Paths.get(getTempCoverageFileName(i++));
 
         if (i >= 100)
             throw new IllegalStateException("Could not get temporary file for coverage output");
+
+        addTempPath(p);
+        addTempPath(Paths.get(p.toString()+"_assets"));
 
         return p;
     }
@@ -64,6 +77,11 @@ public class RunCommandCoverageReporterIT {
         return false;
     }
 
+    @BeforeEach
+    public void setupTest() {
+        tempPaths = new HashSet<>();
+    }
+
     @Test
     public void run_CodeCoverageWithIncludeAndExclude() throws Exception {
 
@@ -72,39 +90,48 @@ public class RunCommandCoverageReporterIT {
         RunCommand runCmd = RunCommandTestHelper.createRunCommand(RunCommandTestHelper.getConnectionString(),
                 "-f=ut_coverage_html_reporter", "-o=" + coveragePath, "-s", "-exclude=app.award_bonus,app.betwnstr");
 
-        try {
-            int result = runCmd.run();
 
-            String content = new Scanner(coveragePath).useDelimiter("\\Z").next();
+        int result = runCmd.run();
 
-            assertEquals(true, hasCoverageListed(content, "app.remove_rooms_by_name"));
-            assertEquals(false, hasCoverageListed(content, "app.award_bonus"));
-            assertEquals(false, hasCoverageListed(content, "app.betwnstr"));
+        String content = new Scanner(coveragePath).useDelimiter("\\Z").next();
 
-        } finally {
-            Files.delete(coveragePath);
-        }
+        assertEquals(true, hasCoverageListed(content, "app.remove_rooms_by_name"));
+        assertEquals(false, hasCoverageListed(content, "app.award_bonus"));
+        assertEquals(false, hasCoverageListed(content, "app.betwnstr"));
 
     }
 
     @Test
     public void coverageReporterWriteAssetsToOutput() throws Exception {
         Path coveragePath = getTempCoverageFilePath();
+        Path coverageAssetsPath = Paths.get(coveragePath.toString() + "_assets");
 
         RunCommand runCmd = RunCommandTestHelper.createRunCommand(RunCommandTestHelper.getConnectionString(),
                 "-f=ut_coverage_html_reporter", "-o=" + coveragePath, "-s");
-        try {
-            int result = runCmd.run();
 
-            List<ReporterOptions> reporterOptions = runCmd.getReporterOptionsList();
-            File applicationJs = coveragePath.resolve(Paths.get("assets", "application.js")).toFile();
+        runCmd.run();
 
-            assertTrue(applicationJs.exists());
+        File applicationJs = coverageAssetsPath.resolve(Paths.get("application.js")).toFile();
 
-        } finally {
-            if ( Files.exists(coveragePath))
-                Files.delete(coveragePath);
+        assertTrue(applicationJs.exists());
+
+
+    }
+
+    @AfterEach
+    public void deleteTempFiles() {
+        tempPaths.forEach(p -> deleteDir(p.toFile()));
+    }
+
+    void deleteDir(File file) {
+        if (file.exists()) {
+            File[] contents = file.listFiles();
+            if (contents != null) {
+                for (File f : contents) {
+                    deleteDir(f);
+                }
+            }
+            file.delete();
         }
-
     }
 }
