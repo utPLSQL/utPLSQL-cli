@@ -111,11 +111,13 @@ public class RunCommandCoverageReporterIT {
 
         runCmd.run();
 
+        // Check application file exists
         File applicationJs = coverageAssetsPath.resolve(Paths.get("application.js")).toFile();
-
         assertTrue(applicationJs.exists());
 
-
+        // Check correct script-part in HTML source exists
+        String content = new Scanner(coveragePath).useDelimiter("\\Z").next();
+        assertTrue(content.contains("<script src='" + coverageAssetsPath.toString() + "/application.js' type='text/javascript'>"));
     }
 
     @AfterEach
