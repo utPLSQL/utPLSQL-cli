@@ -19,6 +19,7 @@ public class Cli {
         LocaleInitializer.initLocale();
 
         JCommander jc = new JCommander();
+        jc.setProgramName("utplsql");
         // jc.addCommand(HELP_CMD, new HelpCommand());
         RunCommand runCmd = new RunCommand();
         jc.addCommand(RUN_CMD, runCmd);
