@@ -2,9 +2,13 @@ package org.utplsql.cli;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import org.utplsql.api.*;
+import org.utplsql.api.FileMapperOptions;
+import org.utplsql.api.KeyValuePair;
+import org.utplsql.api.TestRunner;
+import org.utplsql.api.Version;
 import org.utplsql.api.compatibility.CompatibilityProxy;
 import org.utplsql.api.exception.SomeTestsFailedException;
+import org.utplsql.api.reporter.CoreReporters;
 import org.utplsql.api.reporter.CoverageHTMLReporter;
 import org.utplsql.api.reporter.Reporter;
 import org.utplsql.api.reporter.ReporterFactory;
@@ -100,6 +104,7 @@ public class RunCommand {
 
 
     private CompatibilityProxy compatibilityProxy;
+    private ReporterFactory reporterFactory;
 
     public ConnectionInfo getConnectionInfo() {
         return connectionInfoList.get(0);
@@ -154,6 +159,7 @@ public class RunCommand {
 
             // First of all do a compatibility check and fail-fast
             compatibilityProxy = checkFrameworkCompatibility(conn);
+            reporterFactory = ReporterFactory.createDefault(compatibilityProxy);
 
             reporterList = initReporters(conn, reporterOptionsList);
 
@@ -218,7 +224,7 @@ public class RunCommand {
         final List<Reporter> reporterList = new ArrayList<>();
 
         for (ReporterOptions ro : reporterOptionsList) {
-            Reporter reporter = ReporterFactory.createReporter(ro.getReporterName());
+            Reporter reporter = reporterFactory.createReporter(ro.getReporterName());
 
             // Quick-hack for CoverageHTML Reporter
             if ( reporter instanceof CoverageHTMLReporter && ro.outputToFile() ) {
@@ -226,7 +232,7 @@ public class RunCommand {
                 CoverageHTMLReporter.writeReportAssetsTo(Paths.get(ro.getOutputFileName()+"_assets/"));
             }
 
-            reporter.init(conn);
+            reporter.init(conn, compatibilityProxy, reporterFactory);
             ro.setReporterObj(reporter);
             reporterList.add(reporter);
         }
@@ -259,7 +265,7 @@ public class RunCommand {
                         printStreams.add(fileOutStream);
                     }
 
-                    new OutputBuffer(ro.getReporterObj()).printAvailable(conn, printStreams);
+                    ro.getReporterObj().getOutputBuffer().printAvailable(conn, printStreams);
                 } catch (SQLException | FileNotFoundException e) {
                     System.out.println(e.getMessage());
                     returnCode[0] = Cli.DEFAULT_ERROR_CODE;
@@ -310,7 +316,7 @@ public class RunCommand {
 
         // If no reporter parameters were passed, use default reporter.
         if (reporterOptionsList.isEmpty()) {
-            reporterOptionsList.add(new ReporterOptions(CustomTypes.UT_DOCUMENTATION_REPORTER));
+            reporterOptionsList.add(new ReporterOptions(CoreReporters.UT_DOCUMENTATION_REPORTER.name()));
         }
 
         return reporterOptionsList;
