@@ -9,16 +9,15 @@ import org.utplsql.api.Version;
 import org.utplsql.api.compatibility.CompatibilityProxy;
 import org.utplsql.api.exception.SomeTestsFailedException;
 import org.utplsql.api.reporter.CoreReporters;
-import org.utplsql.api.reporter.CoverageHTMLReporter;
 import org.utplsql.api.reporter.Reporter;
 import org.utplsql.api.reporter.ReporterFactory;
 import org.utplsql.cli.exception.DatabaseConnectionFailed;
+import org.utplsql.cli.reporters.ReporterOptionsAware;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -159,7 +158,7 @@ public class RunCommand {
 
             // First of all do a compatibility check and fail-fast
             compatibilityProxy = checkFrameworkCompatibility(conn);
-            reporterFactory = ReporterFactory.createDefault(compatibilityProxy);
+            reporterFactory = ReporterFactoryProvider.createReporterFactory(compatibilityProxy);
 
             reporterList = initReporters(conn, reporterOptionsList);
 
@@ -226,14 +225,11 @@ public class RunCommand {
         for (ReporterOptions ro : reporterOptionsList) {
             Reporter reporter = reporterFactory.createReporter(ro.getReporterName());
 
+            if ( reporter instanceof ReporterOptionsAware )
+                ((ReporterOptionsAware) reporter).setReporterOptions(ro);
 
             reporter.init(conn, compatibilityProxy, reporterFactory);
 
-            // Quick-hack for CoverageHTML Reporter
-            if ( reporter instanceof CoverageHTMLReporter && ro.outputToFile() ) {
-                ((CoverageHTMLReporter)reporter).setAssetsPath(ro.getOutputFileName()+"_assets/");
-                CoverageHTMLReporter.writeReportAssetsTo(Paths.get(ro.getOutputFileName()+"_assets/"));
-            }
             ro.setReporterObj(reporter);
             reporterList.add(reporter);
         }
