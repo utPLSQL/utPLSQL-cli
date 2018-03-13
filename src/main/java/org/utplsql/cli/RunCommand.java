@@ -2,19 +2,17 @@ package org.utplsql.cli;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import org.utplsql.api.*;
+import org.utplsql.api.FileMapperOptions;
+import org.utplsql.api.KeyValuePair;
+import org.utplsql.api.TestRunner;
+import org.utplsql.api.Version;
 import org.utplsql.api.compatibility.CompatibilityProxy;
 import org.utplsql.api.exception.SomeTestsFailedException;
-import org.utplsql.api.reporter.CoverageHTMLReporter;
 import org.utplsql.api.reporter.Reporter;
 import org.utplsql.api.reporter.ReporterFactory;
 import org.utplsql.cli.exception.DatabaseConnectionFailed;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -100,6 +98,8 @@ public class RunCommand {
 
 
     private CompatibilityProxy compatibilityProxy;
+    private ReporterFactory reporterFactory;
+    private ReporterManager reporterManager;
 
     public ConnectionInfo getConnectionInfo() {
         return connectionInfoList.get(0);
@@ -116,7 +116,6 @@ public class RunCommand {
         final ConnectionInfo ci = getConnectionInfo();
 
         final List<Reporter> reporterList;
-        final List<ReporterOptions> reporterOptionsList = getReporterOptionsList();
         final List<String> testPaths = getTestPaths();
 
         final File baseDir = new File("").getAbsoluteFile();
@@ -154,8 +153,9 @@ public class RunCommand {
 
             // First of all do a compatibility check and fail-fast
             compatibilityProxy = checkFrameworkCompatibility(conn);
+            reporterFactory = ReporterFactoryProvider.createReporterFactory(compatibilityProxy);
 
-            reporterList = initReporters(conn, reporterOptionsList);
+            reporterList = getReporterManager().initReporters(conn, reporterFactory, compatibilityProxy);
 
         } catch (SQLException e) {
             if ( e.getErrorCode() == 1017 || e.getErrorCode() == 12514 ) {
@@ -199,78 +199,15 @@ public class RunCommand {
         });
 
         // Gather each reporter results on a separate thread.
-        startReporterGatherers(reporterOptionsList, executorService, ci, returnCode);
+        getReporterManager().startReporterGatherers(executorService, ci, returnCode);
 
         executorService.shutdown();
         executorService.awaitTermination(60, TimeUnit.MINUTES);
         return returnCode[0];
     }
 
-    /** Initializes the reporters so we can use the id to gather results
-     *
-     * @param conn Active Connection
-     * @param reporterOptionsList
-     * @return List of Reporters
-     * @throws SQLException
-     */
-    private List<Reporter> initReporters( Connection conn, List<ReporterOptions> reporterOptionsList ) throws SQLException
-    {
-        final List<Reporter> reporterList = new ArrayList<>();
 
-        for (ReporterOptions ro : reporterOptionsList) {
-            Reporter reporter = ReporterFactory.createReporter(ro.getReporterName());
 
-            // Quick-hack for CoverageHTML Reporter
-            if ( reporter instanceof CoverageHTMLReporter && ro.outputToFile() ) {
-                ((CoverageHTMLReporter)reporter).setAssetsPath(ro.getOutputFileName()+"_assets/");
-                CoverageHTMLReporter.writeReportAssetsTo(Paths.get(ro.getOutputFileName()+"_assets/"));
-            }
-
-            reporter.init(conn);
-            ro.setReporterObj(reporter);
-            reporterList.add(reporter);
-        }
-
-        return reporterList;
-    }
-
-    /** Starts a separate thread for each Reporter to gather its results
-     *
-      * @param reporterOptionsList
-     * @param executorService
-     * @param ci
-     * @param returnCode
-     */
-    private void startReporterGatherers(List<ReporterOptions> reporterOptionsList, ExecutorService executorService, final ConnectionInfo ci, final int[] returnCode)
-    {
-        // Gather each reporter results on a separate thread.
-        for (ReporterOptions ro : reporterOptionsList) {
-            executorService.submit(() -> {
-                List<PrintStream> printStreams = new ArrayList<>();
-                PrintStream fileOutStream = null;
-
-                try (Connection conn = ci.getConnection()) {
-                    if (ro.outputToScreen()) {
-                        printStreams.add(System.out);
-                    }
-
-                    if (ro.outputToFile()) {
-                        fileOutStream = new PrintStream(new FileOutputStream(ro.getOutputFileName()));
-                        printStreams.add(fileOutStream);
-                    }
-
-                    new OutputBuffer(ro.getReporterObj()).printAvailable(conn, printStreams);
-                } catch (SQLException | FileNotFoundException e) {
-                    System.out.println(e.getMessage());
-                    returnCode[0] = Cli.DEFAULT_ERROR_CODE;
-                    executorService.shutdownNow();
-                } finally {
-                    if (fileOutStream != null)
-                        fileOutStream.close();
-                }
-            });
-        }
-    }
 
     /** Returns FileMapperOptions for the first item of a given param list in a baseDir
      *
@@ -287,33 +224,6 @@ public class RunCommand {
         }
 
         return null;
-    }
-
-    public List<ReporterOptions> getReporterOptionsList() {
-        List<ReporterOptions> reporterOptionsList = new ArrayList<>();
-        ReporterOptions reporterOptions = null;
-
-        for (String p : reporterParams) {
-            if (reporterOptions == null || !p.startsWith("-")) {
-                reporterOptions = new ReporterOptions(p);
-                reporterOptionsList.add(reporterOptions);
-            }
-            else
-            if (p.startsWith("-o=")) {
-                reporterOptions.setOutputFileName(p.substring(3));
-            }
-            else
-            if (p.equals("-s")) {
-                reporterOptions.forceOutputToScreen(true);
-            }
-        }
-
-        // If no reporter parameters were passed, use default reporter.
-        if (reporterOptionsList.isEmpty()) {
-            reporterOptionsList.add(new ReporterOptions(CustomTypes.UT_DOCUMENTATION_REPORTER));
-        }
-
-        return reporterOptionsList;
     }
 
     /** Checks whether cli is compatible with the database framework
@@ -392,5 +302,16 @@ public class RunCommand {
             return compatibilityProxy.getDatabaseVersion();
 
         return null;
+    }
+
+    private ReporterManager getReporterManager() {
+        if ( reporterManager == null )
+            reporterManager = new ReporterManager(reporterParams);
+
+        return reporterManager;
+    }
+
+    public List<ReporterOptions> getReporterOptionsList() {
+        return getReporterManager().getReporterOptionsList();
     }
 }
