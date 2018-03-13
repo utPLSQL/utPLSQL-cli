@@ -20,7 +20,7 @@ public class RunCommandTest {
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
 
         ReporterOptions reporterOptions1 = reporterOptionsList.get(0);
-        assertEquals(CoreReporters.UT_DOCUMENTATION_REPORTER, reporterOptions1.getReporterName());
+        assertEquals(CoreReporters.UT_DOCUMENTATION_REPORTER.name(), reporterOptions1.getReporterName());
         assertNull(reporterOptions1.getOutputFileName());
         assertFalse(reporterOptions1.outputToFile());
         assertTrue(reporterOptions1.outputToScreen());
@@ -33,7 +33,7 @@ public class RunCommandTest {
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
 
         ReporterOptions reporterOptions1 = reporterOptionsList.get(0);
-        assertEquals(CoreReporters.UT_DOCUMENTATION_REPORTER, reporterOptions1.getReporterName());
+        assertEquals(CoreReporters.UT_DOCUMENTATION_REPORTER.name(), reporterOptions1.getReporterName());
         assertEquals(reporterOptions1.getOutputFileName(), "output.txt");
         assertTrue(reporterOptions1.outputToFile());
         assertFalse(reporterOptions1.outputToScreen());
@@ -46,7 +46,7 @@ public class RunCommandTest {
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
 
         ReporterOptions reporterOptions1 = reporterOptionsList.get(0);
-        assertEquals(CoreReporters.UT_DOCUMENTATION_REPORTER, reporterOptions1.getReporterName());
+        assertEquals(CoreReporters.UT_DOCUMENTATION_REPORTER.name(), reporterOptions1.getReporterName());
         assertEquals(reporterOptions1.getOutputFileName(), "output.txt");
         assertTrue(reporterOptions1.outputToFile());
         assertTrue(reporterOptions1.outputToScreen());
@@ -59,7 +59,7 @@ public class RunCommandTest {
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
 
         ReporterOptions reporterOptions1 = reporterOptionsList.get(0);
-        assertEquals(CoreReporters.UT_DOCUMENTATION_REPORTER, reporterOptions1.getReporterName());
+        assertEquals(CoreReporters.UT_DOCUMENTATION_REPORTER.name(), reporterOptions1.getReporterName());
         assertEquals(reporterOptions1.getOutputFileName(), "output.txt");
         assertTrue(reporterOptions1.outputToFile());
         assertTrue(reporterOptions1.outputToScreen());
@@ -74,13 +74,13 @@ public class RunCommandTest {
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
 
         ReporterOptions reporterOptions1 = reporterOptionsList.get(0);
-        assertEquals(CoreReporters.UT_DOCUMENTATION_REPORTER, reporterOptions1.getReporterName());
+        assertEquals(CoreReporters.UT_DOCUMENTATION_REPORTER.name(), reporterOptions1.getReporterName());
         assertNull(reporterOptions1.getOutputFileName());
         assertFalse(reporterOptions1.outputToFile());
         assertTrue(reporterOptions1.outputToScreen());
 
         ReporterOptions reporterOptions2 = reporterOptionsList.get(1);
-        assertEquals(CoreReporters.UT_COVERAGE_HTML_REPORTER, reporterOptions2.getReporterName());
+        assertEquals(CoreReporters.UT_COVERAGE_HTML_REPORTER.name(), reporterOptions2.getReporterName());
         assertEquals(reporterOptions2.getOutputFileName(), "coverage.html");
         assertTrue(reporterOptions2.outputToFile());
         assertTrue(reporterOptions2.outputToScreen());

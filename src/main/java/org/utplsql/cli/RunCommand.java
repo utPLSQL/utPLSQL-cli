@@ -226,13 +226,14 @@ public class RunCommand {
         for (ReporterOptions ro : reporterOptionsList) {
             Reporter reporter = reporterFactory.createReporter(ro.getReporterName());
 
+
+            reporter.init(conn, compatibilityProxy, reporterFactory);
+
             // Quick-hack for CoverageHTML Reporter
             if ( reporter instanceof CoverageHTMLReporter && ro.outputToFile() ) {
                 ((CoverageHTMLReporter)reporter).setAssetsPath(ro.getOutputFileName()+"_assets/");
                 CoverageHTMLReporter.writeReportAssetsTo(Paths.get(ro.getOutputFileName()+"_assets/"));
             }
-
-            reporter.init(conn, compatibilityProxy, reporterFactory);
             ro.setReporterObj(reporter);
             reporterList.add(reporter);
         }

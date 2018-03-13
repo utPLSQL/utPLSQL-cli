@@ -31,18 +31,6 @@
             </exclusion>
         </exclusions>
     </dependency>
-      <dependency>
-          <groupId>com.oracle.jdbc</groupId>
-          <artifactId>ojdbc8</artifactId>
-          <version>12.2.0.1</version>
-          <scope>compile</scope>
-      </dependency>
-      <dependency>
-          <groupId>com.oracle.jdbc</groupId>
-          <artifactId>orai18n</artifactId>
-          <version>12.2.0.1</version>
-          <scope>compile</scope>
-      </dependency>
     <dependency>
       <groupId>com.beust</groupId>
       <artifactId>jcommander</artifactId>
