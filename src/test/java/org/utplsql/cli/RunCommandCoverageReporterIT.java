@@ -111,6 +111,12 @@ public class RunCommandCoverageReporterIT {
 
         runCmd.run();
 
+        // Run twice to test overriding of assets
+        runCmd = RunCommandTestHelper.createRunCommand(RunCommandTestHelper.getConnectionString(),
+                "-f=ut_coverage_html_reporter", "-o=" + coveragePath, "-s");
+
+        runCmd.run();
+
         // Check application file exists
         File applicationJs = coverageAssetsPath.resolve(Paths.get("application.js")).toFile();
         assertTrue(applicationJs.exists());
@@ -118,6 +124,9 @@ public class RunCommandCoverageReporterIT {
         // Check correct script-part in HTML source exists
         String content = new Scanner(coveragePath).useDelimiter("\\Z").next();
         assertTrue(content.contains("<script src='" + coverageAssetsPath.toString() + "/application.js' type='text/javascript'>"));
+
+        // Check correct title exists
+        assertTrue(content.contains("<title>Code coverage</title>"));
     }
 
     @AfterEach
