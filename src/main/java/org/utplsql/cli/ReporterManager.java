@@ -92,6 +92,7 @@ class ReporterManager {
                 try (Connection conn = ci.getConnection()) {
                     if (ro.outputToScreen()) {
                         printStreams.add(System.out);
+                        ro.getReporterObj().getOutputBuffer().setFetchSize(1);
                     }
 
                     if (ro.outputToFile()) {

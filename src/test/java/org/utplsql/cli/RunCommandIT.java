@@ -14,6 +14,7 @@ public class RunCommandIT {
     public void run_Default() throws Exception {
         RunCommand runCmd = RunCommandTestHelper.createRunCommand(RunCommandTestHelper.getConnectionString(),
                 "-f=ut_documentation_reporter",
+                "-s",
                 "-c",
                 "--failure-exit-code=2");
 
