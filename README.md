@@ -24,8 +24,8 @@ You can also download all development versions from [Bintray](https://bintray.co
   * All of the above can be downloaded from [Oracle download site](http://www.oracle.com/technetwork/database/features/jdbc/jdbc-ucp-122-3110062.html)
 
 ## Compatibility
-The latest CLI is always compatible with all database frameworks of the same minor version.
-For example CLI-3.0.4 is compatible with database framework 3.0.0-3.0.4 but not with database framework 2.x and 3.1.x.
+The latest CLI is always compatible with all database frameworks of the same major version.
+For example CLI-3.1.0 is compatible with database framework 3.0.0-3.1.0 but not with database framework 2.x.
 
 ## Localization and NLS settings
 utPLSQL-cli will use the environment variables (in that order) "NLS_LANG", "LC_ALL" or "LANG" to change the locale and therefore the NLS settings.
@@ -133,6 +133,14 @@ utplsql run hr/hr@xe
 
 Invokes all unit test suites from schema "hr". Results are displayed to screen using default ut_documentation_reporter.
 
-##### Enabling Color Outputs on Windows
+#### Enabling Color Outputs on Windows
 
 To enable color outputs on Windows cmd you need to install an open-source utility called [ANSICON](http://adoxa.altervista.org/ansicon/).
+
+## Custom Reporters
+
+Since v3.1.0 you can call custom reporters (PL/SQL) via cli, too. Just call the name of the custom reporter as you would do for the core reporters.
+
+```
+utplsql run hr/hr@xe -p=hr_test -f=my_custom_reporter -o=run.log -s
+```
