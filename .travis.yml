@@ -54,7 +54,7 @@ deploy:
     key: ${BINTRAY_API_KEY}
     dry-run: false
     on:
-      repository: utPLSQL/utPLSQL-cli
+      repository: utplsql/generic/utplsql-cli
       branch: develop
 
 notifications:
