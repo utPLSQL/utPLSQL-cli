@@ -12,7 +12,7 @@ Provides an easy way of invoking utPLSQL from command-line. Main features:
 
 Published releases are available for download on the [utPLSQL-cli GitHub Releases Page.](https://github.com/utPLSQL/utPLSQL-cli/releases)
 
-You can also download all development versions from [Bintray](https://bintray.com/viniciusam/utPLSQL-cli/utPLSQL-cli-develop#files).
+You can also download all development versions from [Bintray](https://bintray.com/utplsql/utPLSQL-cli/utPLSQL-cli-develop#files).
 
 
 ## Requirements
