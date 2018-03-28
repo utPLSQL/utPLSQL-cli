@@ -21,7 +21,7 @@ cat > bintray.json <<EOF
   "package": {
     "name": "utPLSQL-cli-${TRAVIS_BRANCH}",
     "repo": "utPLSQL-cli",
-    "subject": "${BINTRAY_USER}",
+    "subject": "utplsql",
     "website_url": "https://github.com/utPLSQL/utPLSQL-cli",
     "vcs_url": "https://github.com/utPLSQL/utPLSQL-cli.git",
     "licenses": [ "MIT" ]
