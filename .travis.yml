@@ -53,6 +53,7 @@ deploy:
     user: ${BINTRAY_USER}
     key: ${BINTRAY_API_KEY}
     dry-run: false
+    skip_cleanup: true
     on:
       repository: utPLSQL/utPLSQL-cli
       branch: develop
