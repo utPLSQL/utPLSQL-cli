@@ -9,6 +9,8 @@ import org.utplsql.cli.reporters.ReporterOptionsAware;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -96,12 +98,12 @@ class ReporterManager {
                     }
 
                     if (ro.outputToFile()) {
-                        fileOutStream = new PrintStream(new FileOutputStream(ro.getOutputFileName()));
+                        fileOutStream = new PrintStream(new FileOutputStream(ro.getOutputFileName()), false, StandardCharsets.UTF_8.name());
                         printStreams.add(fileOutStream);
                     }
 
                     ro.getReporterObj().getOutputBuffer().printAvailable(conn, printStreams);
-                } catch (SQLException | FileNotFoundException e) {
+                } catch (SQLException | FileNotFoundException | UnsupportedEncodingException e) {
                     System.out.println(e.getMessage());
                     returnCode[0] = Cli.DEFAULT_ERROR_CODE;
                     executorService.shutdownNow();
