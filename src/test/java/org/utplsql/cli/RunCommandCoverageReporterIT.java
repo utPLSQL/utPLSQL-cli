@@ -90,10 +90,9 @@ public class RunCommandCoverageReporterIT {
         RunCommand runCmd = RunCommandTestHelper.createRunCommand(RunCommandTestHelper.getConnectionString(),
                 "-f=ut_coverage_html_reporter", "-o=" + coveragePath, "-s", "-exclude=app.award_bonus,app.betwnstr");
 
-
         int result = runCmd.run();
 
-        String content = new Scanner(coveragePath).useDelimiter("\\Z").next();
+        String content = new String(Files.readAllBytes(coveragePath));
 
         assertEquals(true, hasCoverageListed(content, "app.remove_rooms_by_name"));
         assertEquals(false, hasCoverageListed(content, "app.award_bonus"));
