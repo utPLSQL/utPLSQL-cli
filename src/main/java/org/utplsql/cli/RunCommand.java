@@ -113,7 +113,6 @@ public class RunCommand {
 
         RunCommandChecker.checkOracleJDBCExists();
 
-        final ConnectionInfo ci = getConnectionInfo();
 
         final List<Reporter> reporterList;
         final List<String> testPaths = getTestPaths();
@@ -144,6 +143,9 @@ public class RunCommand {
 
         final ArrayList<String> finalIncludeObjectsList = includeObjectsList;
         final ArrayList<String> finalExcludeObjectsList = excludeObjectsList;
+
+        final ConnectionInfo ci = getConnectionInfo();
+        ci.setMaxConnections(getReporterManager().getNumberOfReporters()+1);
 
         // Do the reporters initialization, so we can use the id to run and gather results.
         try (Connection conn = ci.getConnection()) {
