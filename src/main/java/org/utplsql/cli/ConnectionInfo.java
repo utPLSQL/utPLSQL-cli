@@ -27,7 +27,10 @@ public class ConnectionInfo {
 
         pds.setJdbcUrl("jdbc:oracle:thin:" + connectionInfo);
         pds.setAutoCommit(false);
+    }
 
+    public void setMaxConnections( int maxConnections ) {
+        pds.setMaximumPoolSize(maxConnections);
     }
 
     public Connection getConnection() throws SQLException {

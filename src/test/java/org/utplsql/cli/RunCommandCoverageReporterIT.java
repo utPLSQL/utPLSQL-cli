@@ -22,15 +22,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @author pesse
  */
-public class RunCommandCoverageReporterIT {
+public class RunCommandCoverageReporterIT extends AbstractFileOutputTest {
 
     private static final Pattern REGEX_COVERAGE_TITLE = Pattern.compile("<a href=\"[a-zA-Z0-9#]+\" class=\"src_link\" title=\"[a-zA-Z\\._]+\">([a-zA-Z0-9\\._]+)<\\/a>");
 
-    private Set<Path> tempPaths;
-
-    private void addTempPath(Path path) {
-        tempPaths.add(path);
-    }
 
     private String getTempCoverageFileName(int counter) {
 
@@ -47,7 +42,7 @@ public class RunCommandCoverageReporterIT {
         int i = 1;
         Path p = Paths.get(getTempCoverageFileName(i));
 
-        while ((Files.exists(p) || tempPaths.contains(p)) && i < 100)
+        while ((Files.exists(p) || tempPathExists(p)) && i < 100)
             p = Paths.get(getTempCoverageFileName(i++));
 
         if (i >= 100)
@@ -77,11 +72,6 @@ public class RunCommandCoverageReporterIT {
         return false;
     }
 
-    @BeforeEach
-    public void setupTest() {
-        tempPaths = new HashSet<>();
-    }
-
     @Test
     public void run_CodeCoverageWithIncludeAndExclude() throws Exception {
 
@@ -90,10 +80,9 @@ public class RunCommandCoverageReporterIT {
         RunCommand runCmd = RunCommandTestHelper.createRunCommand(RunCommandTestHelper.getConnectionString(),
                 "-f=ut_coverage_html_reporter", "-o=" + coveragePath, "-s", "-exclude=app.award_bonus,app.betwnstr");
 
-
         int result = runCmd.run();
 
-        String content = new Scanner(coveragePath).useDelimiter("\\Z").next();
+        String content = new String(Files.readAllBytes(coveragePath));
 
         assertEquals(true, hasCoverageListed(content, "app.remove_rooms_by_name"));
         assertEquals(false, hasCoverageListed(content, "app.award_bonus"));
@@ -122,27 +111,11 @@ public class RunCommandCoverageReporterIT {
         assertTrue(applicationJs.exists());
 
         // Check correct script-part in HTML source exists
-        String content = new Scanner(coveragePath).useDelimiter("\\Z").next();
+        String content = new String(Files.readAllBytes(coveragePath));
         assertTrue(content.contains("<script src='" + coverageAssetsPath.toString() + "/application.js' type='text/javascript'>"));
 
         // Check correct title exists
         assertTrue(content.contains("<title>Code coverage</title>"));
     }
 
-    @AfterEach
-    public void deleteTempFiles() {
-        tempPaths.forEach(p -> deleteDir(p.toFile()));
-    }
-
-    void deleteDir(File file) {
-        if (file.exists()) {
-            File[] contents = file.listFiles();
-            if (contents != null) {
-                for (File f : contents) {
-                    deleteDir(f);
-                }
-            }
-            file.delete();
-        }
-    }
 }
