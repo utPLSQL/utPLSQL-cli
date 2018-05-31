@@ -13,6 +13,7 @@ public class Cli {
 
     static final String HELP_CMD = "-h";
     private static final String RUN_CMD = "run";
+    private static final String VERSION_CMD = "info";
 
     public static void main(String[] args) {
 
@@ -22,8 +23,9 @@ public class Cli {
         jc.setProgramName("utplsql");
         // jc.addCommand(HELP_CMD, new HelpCommand());
         RunCommand runCmd = new RunCommand();
+        VersionInfoCommand infoCmd = new VersionInfoCommand();
         jc.addCommand(RUN_CMD, runCmd);
-
+        jc.addCommand(VERSION_CMD, infoCmd);
         int exitCode = DEFAULT_ERROR_CODE;
 
         try {
@@ -31,7 +33,11 @@ public class Cli {
 
             if (RUN_CMD.equals(jc.getParsedCommand())) {
                 exitCode = runCmd.run();
-            } else {
+            }
+            else if ( VERSION_CMD.equals(jc.getParsedCommand()) ) {
+                exitCode = infoCmd.run();
+            }
+            else {
                 throw new ParameterException("Command not specified.");
             }
         } catch (ParameterException e) {
