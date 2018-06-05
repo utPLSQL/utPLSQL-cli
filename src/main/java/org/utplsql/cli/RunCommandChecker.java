@@ -1,7 +1,11 @@
 package org.utplsql.cli;
 
+import org.utplsql.api.DBHelper;
 import org.utplsql.api.Version;
 import org.utplsql.api.compatibility.OptionalFeatures;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /** Helper class to check several circumstances with RunCommand. Might need refactoring.
  *
@@ -9,26 +13,12 @@ import org.utplsql.api.compatibility.OptionalFeatures;
  */
 class RunCommandChecker {
 
-    /** Checks that ojdbc library exists
-     *
-     */
-    static void checkOracleJDBCExists()
-    {
-        if ( !OracleLibraryChecker.checkOjdbcExists() )
-        {
-            System.out.println("Could not find Oracle JDBC driver in classpath. Please download the jar from Oracle website" +
-                    " and copy it to the 'lib' folder of your utPLSQL-cli installation.");
-            System.out.println("Download from http://www.oracle.com/technetwork/database/features/jdbc/jdbc-ucp-122-3110062.html");
-
-            throw new RuntimeException("Can't run utPLSQL-cli without Oracle JDBC driver");
-        }
-    }
-
     /** Checks that orai18n library exists if database is an oracle 11
      *
      */
-    static void checkOracleI18nExists(String oracleDatabaseVersion )
-    {
+    static void checkOracleI18nExists(Connection con) throws SQLException {
+
+        String oracleDatabaseVersion = DBHelper.getOracleDatabaseVersion(con);
         if ( oracleDatabaseVersion.startsWith("11.") && !OracleLibraryChecker.checkOrai18nExists() )
         {
             System.out.println("Warning: Could not find Oracle i18n driver in classpath. Depending on the database charset " +

@@ -12,6 +12,7 @@ import org.utplsql.api.reporter.Reporter;
 import org.utplsql.api.reporter.ReporterFactory;
 import org.utplsql.cli.exception.DatabaseConnectionFailed;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -35,7 +36,7 @@ public class RunCommand {
             required = true,
             converter = ConnectionInfo.ConnectionStringConverter.class,
             arity = 1,
-            description = "<user>/<password>@//<host>[:<port>]/<service> OR <user>/<password>@<TNSName> OR <user>/<password>@<host>:<port>:<SID>")
+            description = ConnectionInfo.COMMANDLINE_PARAM_DESCRIPTION)
     private List<ConnectionInfo> connectionInfoList = new ArrayList<>();
 
     @Parameter(
@@ -111,9 +112,6 @@ public class RunCommand {
 
     public int run() throws Exception {
 
-        RunCommandChecker.checkOracleJDBCExists();
-
-
         final List<Reporter> reporterList;
         final List<String> testPaths = getTestPaths();
 
@@ -144,14 +142,13 @@ public class RunCommand {
         final ArrayList<String> finalIncludeObjectsList = includeObjectsList;
         final ArrayList<String> finalExcludeObjectsList = excludeObjectsList;
 
-        final ConnectionInfo ci = getConnectionInfo();
-        ci.setMaxConnections(getReporterManager().getNumberOfReporters()+1);
+        final DataSource dataSource = DataSourceProvider.getDataSource(getConnectionInfo(), getReporterManager().getNumberOfReporters()+1);
 
         // Do the reporters initialization, so we can use the id to run and gather results.
-        try (Connection conn = ci.getConnection()) {
+        try (Connection conn = dataSource.getConnection()) {
 
             // Check if orai18n exists if database version is 11g
-            RunCommandChecker.checkOracleI18nExists(ci.getOracleDatabaseVersion(conn));
+            RunCommandChecker.checkOracleI18nExists(conn);
 
             // First of all do a compatibility check and fail-fast
             compatibilityProxy = checkFrameworkCompatibility(conn);
@@ -178,7 +175,7 @@ public class RunCommand {
 
         // Run tests.
         executorService.submit(() -> {
-            try (Connection conn = ci.getConnection()) {
+            try (Connection conn = dataSource.getConnection()) {
                 TestRunner testRunner = new TestRunner()
                         .addPathList(testPaths)
                         .addReporterList(reporterList)
@@ -201,7 +198,7 @@ public class RunCommand {
         });
 
         // Gather each reporter results on a separate thread.
-        getReporterManager().startReporterGatherers(executorService, ci, returnCode);
+        getReporterManager().startReporterGatherers(executorService, dataSource, returnCode);
 
         executorService.shutdown();
         executorService.awaitTermination(60, TimeUnit.MINUTES);

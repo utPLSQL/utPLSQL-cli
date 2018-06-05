@@ -8,6 +8,7 @@ import org.utplsql.api.JavaApiVersionInfo;
 import org.utplsql.api.Version;
 import org.utplsql.api.exception.UtPLSQLNotInstalledException;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,7 @@ public class VersionInfoCommand {
     @Parameter(
             converter = ConnectionInfo.ConnectionStringConverter.class,
             variableArity = true,
-            description = "<user>/<password>@//<host>[:<port>]/<service> OR <user>/<password>@<TNSName> OR <user>/<password>@<host>:<port>:<SID>")
+            description = ConnectionInfo.COMMANDLINE_PARAM_DESCRIPTION)
     private List<ConnectionInfo> connectionInfoList = new ArrayList<>();
 
     public ConnectionInfo getConnectionInfo() {
@@ -28,16 +29,17 @@ public class VersionInfoCommand {
             return null;
     }
 
-    public int run() throws Exception {
+    public int run() {
 
         System.out.println(CliVersionInfo.getInfo());
-        System.out.println("Java-API " + JavaApiVersionInfo.getVersion());
+        System.out.println(JavaApiVersionInfo.getInfo());
 
         ConnectionInfo ci = getConnectionInfo();
         if ( ci != null ) {
-            // TODO: Ora-check
-            ci.setMaxConnections(1);
-            try (Connection con = ci.getConnection()) {
+
+            DataSource dataSource = DataSourceProvider.getDataSource(ci, 1);
+
+            try (Connection con = dataSource.getConnection()) {
                 Version v = DBHelper.getDatabaseFrameworkVersion( con );
                 System.out.println("utPLSQL " + v.getNormalizedString());
             }
