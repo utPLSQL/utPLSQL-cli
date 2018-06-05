@@ -15,16 +15,16 @@ public class RunCommandIT extends AbstractFileOutputTest {
 
     @Test
     public void run_Default() throws Exception {
-        RunCommand runCmd = RunCommandTestHelper.createRunCommand(RunCommandTestHelper.getConnectionString(),
+
+        int result = TestHelper.runApp("run",
+                TestHelper.getConnectionString(),
                 "-f=ut_documentation_reporter",
                 "-s",
                 "-c",
                 "--failure-exit-code=2");
 
-        int result = runCmd.run();
-
         // Only expect failure-exit-code to work on several framework versions
-        if (OptionalFeatures.FAIL_ON_ERROR.isAvailableFor(runCmd.getDatabaseVersion()))
+        if (OptionalFeatures.FAIL_ON_ERROR.isAvailableFor(TestHelper.getFrameworkVersion()))
             assertEquals(2, result);
         else
             assertEquals(0, result);
@@ -35,7 +35,8 @@ public class RunCommandIT extends AbstractFileOutputTest {
         String outputFileName = "output_" + System.currentTimeMillis() + ".xml";
         addTempPath(Paths.get(outputFileName));
 
-        RunCommand runCmd = RunCommandTestHelper.createRunCommand(RunCommandTestHelper.getConnectionString(),
+        int result = TestHelper.runApp("run",
+                TestHelper.getConnectionString(),
                 "-f=ut_documentation_reporter",
                 "-s",
                 "-f=" + CoreReporters.UT_SONAR_TEST_REPORTER.name(),
@@ -43,10 +44,8 @@ public class RunCommandIT extends AbstractFileOutputTest {
                 "-c",
                 "--failure-exit-code=2");
 
-        int result = runCmd.run();
-
         // Only expect failure-exit-code to work on several framework versions
-        if (OptionalFeatures.FAIL_ON_ERROR.isAvailableFor(runCmd.getDatabaseVersion()))
+        if (OptionalFeatures.FAIL_ON_ERROR.isAvailableFor(TestHelper.getFrameworkVersion()))
             assertEquals(2, result);
         else
             assertEquals(0, result);

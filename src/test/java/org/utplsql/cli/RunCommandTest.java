@@ -1,7 +1,6 @@
 package org.utplsql.cli;
 
 import org.junit.jupiter.api.Test;
-import org.utplsql.api.CustomTypes;
 import org.utplsql.api.reporter.CoreReporters;
 
 import java.util.List;
@@ -15,7 +14,7 @@ public class RunCommandTest {
 
     @Test
     public void reporterOptions_Default() {
-        RunCommand runCmd = RunCommandTestHelper.createRunCommand(RunCommandTestHelper.getConnectionString());
+        RunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString());
 
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
 
@@ -28,7 +27,7 @@ public class RunCommandTest {
 
     @Test
     public void reporterOptions_OneReporter() {
-        RunCommand runCmd = RunCommandTestHelper.createRunCommand(RunCommandTestHelper.getConnectionString(), "-f=ut_documentation_reporter", "-o=output.txt");
+        RunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(), "-f=ut_documentation_reporter", "-o=output.txt");
 
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
 
@@ -41,7 +40,7 @@ public class RunCommandTest {
 
     @Test
     public void reporterOptions_OneReporterForceScreen() {
-        RunCommand runCmd = RunCommandTestHelper.createRunCommand(RunCommandTestHelper.getConnectionString(), "-f=ut_documentation_reporter", "-o=output.txt", "-s");
+        RunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(), "-f=ut_documentation_reporter", "-o=output.txt", "-s");
 
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
 
@@ -54,7 +53,7 @@ public class RunCommandTest {
 
     @Test
     public void reporterOptions_OneReporterForceScreenInverse() {
-        RunCommand runCmd = RunCommandTestHelper.createRunCommand(RunCommandTestHelper.getConnectionString(), "-f=ut_documentation_reporter", "-s", "-o=output.txt");
+        RunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(), "-f=ut_documentation_reporter", "-s", "-o=output.txt");
 
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
 
@@ -67,7 +66,7 @@ public class RunCommandTest {
 
     @Test
     public void reporterOptions_TwoReporters() {
-        RunCommand runCmd = RunCommandTestHelper.createRunCommand(RunCommandTestHelper.getConnectionString(),
+        RunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(),
                 "-f=ut_documentation_reporter",
                 "-f=ut_coverage_html_reporter", "-o=coverage.html", "-s");
 

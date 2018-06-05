@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Parameters(separators = "=", commandDescription = "prints version information of cli, java-api and - if connection is given - database utPLSQL framework")
-public class VersionInfoCommand {
+public class VersionInfoCommand implements ICommand {
 
     @Parameter(
             converter = ConnectionInfo.ConnectionStringConverter.class,
@@ -53,5 +53,10 @@ public class VersionInfoCommand {
         }
 
         return 0;
+    }
+
+    @Override
+    public String getCommand() {
+        return "info";
     }
 }

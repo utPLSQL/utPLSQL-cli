@@ -1,16 +1,11 @@
 package org.utplsql.cli;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.Scanner;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -77,10 +72,9 @@ public class RunCommandCoverageReporterIT extends AbstractFileOutputTest {
 
         Path coveragePath = getTempCoverageFilePath();
 
-        RunCommand runCmd = RunCommandTestHelper.createRunCommand(RunCommandTestHelper.getConnectionString(),
+        int result = TestHelper.runApp("run", TestHelper.getConnectionString(),
                 "-f=ut_coverage_html_reporter", "-o=" + coveragePath, "-s", "-exclude=app.award_bonus,app.betwnstr");
 
-        int result = runCmd.run();
 
         String content = new String(Files.readAllBytes(coveragePath));
 
@@ -95,16 +89,13 @@ public class RunCommandCoverageReporterIT extends AbstractFileOutputTest {
         Path coveragePath = getTempCoverageFilePath();
         Path coverageAssetsPath = Paths.get(coveragePath.toString() + "_assets");
 
-        RunCommand runCmd = RunCommandTestHelper.createRunCommand(RunCommandTestHelper.getConnectionString(),
+        TestHelper.runApp("run", TestHelper.getConnectionString(),
                 "-f=ut_coverage_html_reporter", "-o=" + coveragePath, "-s");
-
-        runCmd.run();
 
         // Run twice to test overriding of assets
-        runCmd = RunCommandTestHelper.createRunCommand(RunCommandTestHelper.getConnectionString(),
+        TestHelper.runApp("run", TestHelper.getConnectionString(),
                 "-f=ut_coverage_html_reporter", "-o=" + coveragePath, "-s");
 
-        runCmd.run();
 
         // Check application file exists
         File applicationJs = coverageAssetsPath.resolve(Paths.get("application.js")).toFile();
