@@ -42,6 +42,7 @@ The charset-part of LC_ALL is ignored.
 Currently, utPLSQL-cli knows the following commands:
 - run
 - info
+- reporters
 
 ### run
 `utplsql run <ConnectionURL> [<options>]`
@@ -68,7 +69,7 @@ Currently, utPLSQL-cli knows the following commands:
                       
 -f=format           - A reporter to be used for reporting.
                       If no -f option is provided, the default ut_documentation_reporter is used.
-                      See reporters list for possible values
+                      See reporters command for possible values
   -o=output         - Defines file name to save the output from the specified reporter.
                       If defined, the output is not displayed on screen by default. This can be changed with the -s parameter.
                       If not defined, then output will be displayed on screen, even if the parameter -s is not specified.
@@ -115,7 +116,7 @@ Sonar and Coveralls reporter will only provide valid reports, when source_path a
 #### Examples
 
 ```
-utplsql run hr/hr@xe -p=hr_test -f=ut_documentation_reporter -o=run.log -s -f=ut_coverage_html_reporter -o=coverage.html -source_path=source
+> utplsql run hr/hr@xe -p=hr_test -f=ut_documentation_reporter -o=run.log -s -f=ut_coverage_html_reporter -o=coverage.html -source_path=source
 ```
 
 Invokes all Unit tests from schema/package "hr_test" with two reporters:
@@ -124,7 +125,7 @@ Invokes all Unit tests from schema/package "hr_test" with two reporters:
 * ut_coverage_html_reporter - will report only on database objects that are mapping to file structure from "source" folder and save output to file "coverage.html"
 
 ```
-utplsql run hr/hr@xe
+> utplsql run hr/hr@xe
 ```
 
 Invokes all unit test suites from schema "hr". Results are displayed to screen using default ut_documentation_reporter.
@@ -145,19 +146,73 @@ Invokes all unit test suites from schema "hr". Results are displayed to screen u
 #### Examples
 
 ```
-utplsql info
+> utplsql info
 
-> cli 3.1.1-SNAPSHOT.local
-> utPLSQL-java-api 3.1.1-SNAPSHOT.123
+cli 3.1.1-SNAPSHOT.local
+utPLSQL-java-api 3.1.1-SNAPSHOT.123
 ```
 ```
-utplsql info app/app@localhost:1521/ORCLPDB1
+> utplsql info app/app@localhost:1521/ORCLPDB1
 
-> cli 3.1.1-SNAPSHOT.local
-> utPLSQL-java-api 3.1.1-SNAPSHOT.123
-> utPLSQL 3.1.2.1913
+cli 3.1.1-SNAPSHOT.local
+utPLSQL-java-api 3.1.1-SNAPSHOT.123
+utPLSQL 3.1.2.1913
 ```
 
+### reporters
+`utplsql info <ConnectionURL>`
+
+```
+<ConnectionURL>     - accepted formats:
+                        <user>/<password>@//<host>[:<port>]/<service>
+                        <user>/<password>@<host>:<port>:<SID> 
+                        <user>/<password>@<TNSName> 
+                      To connect using TNS, you need to have the ORACLE_HOME environment variable set.
+                      The file tnsnames.ora must exist in path %ORACLE_HOME%/network/admin
+                      The file tnsnames.ora must contain valid TNS entries. 
+```
+
+#### Examples
+```
+> utplsql reporters app/app@localhost:1521/ORCLPDB1
+
+UT_COVERAGE_COBERTURA_REPORTER (SQL): Generates a Cobertura coverage report providing information on code coverage with line numbers.
+Designed for Jenkins and TFS to report coverage. 
+Cobertura Document Type Definition can be found: http://cobertura.sourceforge.net/xml/coverage-04.dtd.
+Sample file: https://github.com/leobalter/testing-examples/blob/master/solutions/3/report/cobertura-coverage.xml.
+
+UT_COVERAGE_HTML_REPORTER (SQL_WITH_JAVA): Generates a HTML coverage report with summary and line by line information on code coverage.
+Based on open-source simplecov-html coverage reporter for Ruby.
+Includes source code in the report.
+Will copy all necessary assets to a folder named after the Output-File
+
+UT_COVERAGE_SONAR_REPORTER (SQL): Generates a JSON coverage report providing information on code coverage with line numbers.
+Designed for [SonarQube](https://about.sonarqube.com/) to report coverage.
+JSON format returned conforms with the Sonar specification: https://docs.sonarqube.org/display/SONAR/Generic+Test+Data
+
+UT_COVERALLS_REPORTER (SQL): Generates a JSON coverage report providing information on code coverage with line numbers.
+Designed for [Coveralls](https://coveralls.io/).
+JSON format conforms with specification: https://docs.coveralls.io/api-introduction
+
+UT_DOCUMENTATION_REPORTER (SQL_WITH_JAVA): A textual pretty-print of unit test results (usually use for console output)
+Provides additional properties lvl and failed
+
+UT_JUNIT_REPORTER (SQL): Provides outcomes in a format conforming with JUnit 4 and above as defined in: https://gist.github.com/kuzuha/232902acab1344d6b578
+
+UT_SONAR_TEST_REPORTER (SQL): Generates a JSON report providing detailed information on test execution.
+Designed for [SonarQube](https://about.sonarqube.com/) to report test execution.
+JSON format returned conforms with the Sonar specification: https://docs.sonarqube.org/display/SONAR/Generic+Test+Data
+
+UT_TEAMCITY_REPORTER (SQL): Provides the TeamCity (a CI server by jetbrains) reporting-format that allows tracking of progress of a CI step/task as it executes.
+https://confluence.jetbrains.com/display/TCD9/Build+Script+Interaction+with+TeamCity
+
+UT_TFS_JUNIT_REPORTER (SQL): Provides outcomes in a format conforming with JUnit version for TFS / VSTS.
+    As defined by specs :https://docs.microsoft.com/en-us/vsts/build-release/tasks/test/publish-test-results?view=vsts
+    Version is based on windy road junit https://github.com/windyroad/JUnit-Schema/blob/master/JUnit.xsd.
+
+UT_XUNIT_REPORTER (SQL): Depracated reporter. Please use Junit.
+    Provides outcomes in a format conforming with JUnit 4 and above as defined in: https://gist.github.com/kuzuha/232902acab1344d6b578
+```
 
 ## Enabling Color Outputs on Windows
 
