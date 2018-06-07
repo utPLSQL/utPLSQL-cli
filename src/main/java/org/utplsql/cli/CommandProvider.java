@@ -17,6 +17,7 @@ public class CommandProvider {
 
         addCommand(new RunCommand());
         addCommand(new VersionInfoCommand());
+        addCommand(new ReportersCommand());
     }
 
     private void addCommand( ICommand command ) {
