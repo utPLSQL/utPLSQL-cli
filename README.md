@@ -39,23 +39,28 @@ export LC_ALL=en_US.utf-8
 The charset-part of LC_ALL is ignored.
 
 ## Usage
-Currently, utPLSQL-cli knows the following commands:
+Currently, utPLSQL-cli supports the following commands:
 - run
 - info
 - reporters
 
+#### \<ConnectionURL>
+
+This is used in all commands as first parameter (though it's optional for `info`).
+
+Accepted formats:
+
+- `<user>/<password>@//<host>[:<port>]/<service>`
+- `<user>/<password>@<host>:<port>:<SID>` 
+- `<user>/<password>@<TNSName>`
+                         
+To connect using TNS, you need to have the ORACLE_HOME environment variable set.
+The file tnsnames.ora must exist in path %ORACLE_HOME%/network/admin
+The file tnsnames.ora must contain valid TNS entries. 
+
 ### run
 `utplsql run <ConnectionURL> [<options>]`
                                                                  
-```
-<ConnectionURL>     - accepted formats:
-                        <user>/<password>@//<host>[:<port>]/<service>
-                        <user>/<password>@<host>:<port>:<SID> 
-                        <user>/<password>@<TNSName> 
-                      To connect using TNS, you need to have the ORACLE_HOME environment variable set.
-                      The file tnsnames.ora must exist in path %ORACLE_HOME%/network/admin
-                      The file tnsnames.ora must contain valid TNS entries. 
-```
 
 #### Options
 ```                       
@@ -133,15 +138,6 @@ Invokes all unit test suites from schema "hr". Results are displayed to screen u
 ### info
 `utplsql info [<ConnectionURL>]`
 
-```
-<ConnectionURL>     - accepted formats:
-                        <user>/<password>@//<host>[:<port>]/<service>
-                        <user>/<password>@<host>:<port>:<SID> 
-                        <user>/<password>@<TNSName> 
-                      To connect using TNS, you need to have the ORACLE_HOME environment variable set.
-                      The file tnsnames.ora must exist in path %ORACLE_HOME%/network/admin
-                      The file tnsnames.ora must contain valid TNS entries. 
-```
 
 #### Examples
 
@@ -160,17 +156,7 @@ utPLSQL 3.1.2.1913
 ```
 
 ### reporters
-`utplsql info <ConnectionURL>`
-
-```
-<ConnectionURL>     - accepted formats:
-                        <user>/<password>@//<host>[:<port>]/<service>
-                        <user>/<password>@<host>:<port>:<SID> 
-                        <user>/<password>@<TNSName> 
-                      To connect using TNS, you need to have the ORACLE_HOME environment variable set.
-                      The file tnsnames.ora must exist in path %ORACLE_HOME%/network/admin
-                      The file tnsnames.ora must contain valid TNS entries. 
-```
+`utplsql reporters <ConnectionURL>`
 
 #### Examples
 ```
