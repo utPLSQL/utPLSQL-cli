@@ -162,42 +162,42 @@ utPLSQL 3.1.2.1913
 ```
 > utplsql reporters app/app@localhost:1521/ORCLPDB1
 
-UT_COVERAGE_COBERTURA_REPORTER (SQL): Generates a Cobertura coverage report providing information on code coverage with line numbers.
-Designed for Jenkins and TFS to report coverage. 
-Cobertura Document Type Definition can be found: http://cobertura.sourceforge.net/xml/coverage-04.dtd.
-Sample file: https://github.com/leobalter/testing-examples/blob/master/solutions/3/report/cobertura-coverage.xml.
+UT_COVERAGE_COBERTURA_REPORTER Generates a Cobertura coverage report providing information on code coverage with line numbers.
+                               Designed for Jenkins and TFS to report coverage.
+                               Cobertura Document Type Definition can be found: http://cobertura.sourceforge.net/xml/coverage-04.dtd.
+                               Sample file: https://github.com/leobalter/testing-examples/blob/master/solutions/3/report/cobertura-coverage.xml.
 
-UT_COVERAGE_HTML_REPORTER (SQL_WITH_JAVA): Generates a HTML coverage report with summary and line by line information on code coverage.
-Based on open-source simplecov-html coverage reporter for Ruby.
-Includes source code in the report.
-Will copy all necessary assets to a folder named after the Output-File
+UT_COVERAGE_HTML_REPORTER      Generates a HTML coverage report with summary and line by line information on code coverage.
+                               Based on open-source simplecov-html coverage reporter for Ruby.
+                               Includes source code in the report.
+                               Will copy all necessary assets to a folder named after the Output-File
 
-UT_COVERAGE_SONAR_REPORTER (SQL): Generates a JSON coverage report providing information on code coverage with line numbers.
-Designed for [SonarQube](https://about.sonarqube.com/) to report coverage.
-JSON format returned conforms with the Sonar specification: https://docs.sonarqube.org/display/SONAR/Generic+Test+Data
+UT_COVERAGE_SONAR_REPORTER     Generates a JSON coverage report providing information on code coverage with line numbers.
+                               Designed for [SonarQube](https://about.sonarqube.com/) to report coverage.
+                               JSON format returned conforms with the Sonar specification: https://docs.sonarqube.org/display/SONAR/Generic+Test+Data
 
-UT_COVERALLS_REPORTER (SQL): Generates a JSON coverage report providing information on code coverage with line numbers.
-Designed for [Coveralls](https://coveralls.io/).
-JSON format conforms with specification: https://docs.coveralls.io/api-introduction
+UT_COVERALLS_REPORTER          Generates a JSON coverage report providing information on code coverage with line numbers.
+                               Designed for [Coveralls](https://coveralls.io/).
+                               JSON format conforms with specification: https://docs.coveralls.io/api-introduction
 
-UT_DOCUMENTATION_REPORTER (SQL_WITH_JAVA): A textual pretty-print of unit test results (usually use for console output)
-Provides additional properties lvl and failed
+UT_DOCUMENTATION_REPORTER      A textual pretty-print of unit test results (usually use for console output)
+                               Provides additional properties lvl and failed
 
-UT_JUNIT_REPORTER (SQL): Provides outcomes in a format conforming with JUnit 4 and above as defined in: https://gist.github.com/kuzuha/232902acab1344d6b578
+UT_JUNIT_REPORTER              Provides outcomes in a format conforming with JUnit 4 and above as defined in: https://gist.github.com/kuzuha/232902acab1344d6b578
 
-UT_SONAR_TEST_REPORTER (SQL): Generates a JSON report providing detailed information on test execution.
-Designed for [SonarQube](https://about.sonarqube.com/) to report test execution.
-JSON format returned conforms with the Sonar specification: https://docs.sonarqube.org/display/SONAR/Generic+Test+Data
+UT_SONAR_TEST_REPORTER         Generates a JSON report providing detailed information on test execution.
+                               Designed for [SonarQube](https://about.sonarqube.com/) to report test execution.
+                               JSON format returned conforms with the Sonar specification: https://docs.sonarqube.org/display/SONAR/Generic+Test+Data
 
-UT_TEAMCITY_REPORTER (SQL): Provides the TeamCity (a CI server by jetbrains) reporting-format that allows tracking of progress of a CI step/task as it executes.
-https://confluence.jetbrains.com/display/TCD9/Build+Script+Interaction+with+TeamCity
+UT_TEAMCITY_REPORTER           Provides the TeamCity (a CI server by jetbrains) reporting-format that allows tracking of progress of a CI step/task as it executes.
+                               https://confluence.jetbrains.com/display/TCD9/Build+Script+Interaction+with+TeamCity
 
-UT_TFS_JUNIT_REPORTER (SQL): Provides outcomes in a format conforming with JUnit version for TFS / VSTS.
-    As defined by specs :https://docs.microsoft.com/en-us/vsts/build-release/tasks/test/publish-test-results?view=vsts
-    Version is based on windy road junit https://github.com/windyroad/JUnit-Schema/blob/master/JUnit.xsd.
+UT_TFS_JUNIT_REPORTER          Provides outcomes in a format conforming with JUnit version for TFS / VSTS.
+                               As defined by specs :https://docs.microsoft.com/en-us/vsts/build-release/tasks/test/publish-test-results?view=vsts
+                               Version is based on windy road junit https://github.com/windyroad/JUnit-Schema/blob/master/JUnit.xsd.
 
-UT_XUNIT_REPORTER (SQL): Depracated reporter. Please use Junit.
-    Provides outcomes in a format conforming with JUnit 4 and above as defined in: https://gist.github.com/kuzuha/232902acab1344d6b578
+UT_XUNIT_REPORTER              Depracated reporter. Please use Junit.
+                               Provides outcomes in a format conforming with JUnit 4 and above as defined in: https://gist.github.com/kuzuha/232902acab1344d6b578
 ```
 
 ## Enabling Color Outputs on Windows
