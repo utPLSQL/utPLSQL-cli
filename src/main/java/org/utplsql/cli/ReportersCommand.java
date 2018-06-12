@@ -59,10 +59,10 @@ public class ReportersCommand implements ICommand {
     }
 
     private void writeReporters(List<ReporterInfo> reporterInfos, PrintStream out) {
-        int padding = getMaxNameLength(reporterInfos)+1;
+        //int padding = getMaxNameLength(reporterInfos)+1;
         reporterInfos.stream()
                 .sorted(Comparator.comparing(ReporterInfo::getName))
-                .forEach(info -> writeReporter(info, padding, out));
+                .forEach(info -> writeReporter(info, 4, out));
     }
 
     private void writeReporter(ReporterInfo info, int padding, PrintStream out) {
@@ -74,23 +74,13 @@ public class ReportersCommand implements ICommand {
     }
 
     private void writeReporterName( ReporterInfo info, int paddingRight, PrintStream out ) {
-        out.print(String.format("%1$-" + paddingRight + "s", info.getName()));
+        out.println(info.getName()+":");
+
     }
 
     private void writeReporterDescription( ReporterInfo info, int paddingLeft, PrintStream out ) {
         String[] lines = info.getDescription().split("\n");
-
-        boolean firstLine = true;
-        for ( String line : lines ) {
-
-            line = line.trim();
-
-            if ( !firstLine )
-                out.print(String.format("%1$" + paddingLeft + "s", ""));
-
-            out.println(line);
-            firstLine = false;
-        }
-
+        String paddingLeftStr = String.format("%1$"+paddingLeft+"s", "");
+        Arrays.stream(lines).forEach(line -> out.println(paddingLeftStr+line.trim()));
     }
 }
