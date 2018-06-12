@@ -20,11 +20,12 @@ public class ReportersCommand implements ICommand {
             description = ConnectionInfo.COMMANDLINE_PARAM_DESCRIPTION)
     private List<ConnectionInfo> connectionInfoList = new ArrayList<>();
 
-    public ConnectionInfo getConnectionInfo() {
-        if ( connectionInfoList != null && connectionInfoList.size() > 0 )
-            return connectionInfoList.get(0);
-        else
-            return null;
+    private ConnectionInfo getConnectionInfo() {
+        assert connectionInfoList != null;
+        assert connectionInfoList.size() > 0;
+        assert connectionInfoList.get(0) != null;
+
+        return connectionInfoList.get(0);
     }
 
     @Override

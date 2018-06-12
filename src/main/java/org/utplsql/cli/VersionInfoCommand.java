@@ -10,6 +10,7 @@ import org.utplsql.api.exception.UtPLSQLNotInstalledException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +35,18 @@ public class VersionInfoCommand implements ICommand {
         System.out.println(CliVersionInfo.getInfo());
         System.out.println(JavaApiVersionInfo.getInfo());
 
-        ConnectionInfo ci = getConnectionInfo();
+        try {
+            writeUtPlsqlVersion(getConnectionInfo());
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            return 1;
+        }
+
+        return 0;
+    }
+
+    private void writeUtPlsqlVersion( ConnectionInfo ci ) throws SQLException {
         if ( ci != null ) {
 
             DataSource dataSource = DataSourceProvider.getDataSource(ci, 1);
@@ -46,13 +58,7 @@ public class VersionInfoCommand implements ICommand {
             catch ( UtPLSQLNotInstalledException e ) {
                 System.out.println("utPLSQL framework is not installed in database.");
             }
-            catch ( Exception e ) {
-                e.printStackTrace();
-                return 1;
-            }
         }
-
-        return 0;
     }
 
     @Override
