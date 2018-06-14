@@ -1,0 +1,22 @@
+# utPLSQL cli Test-Config
+---
+connectString: app/app@localhost:1522/ORCLPDB1
+suitePaths:
+  - app.betwnstr
+  - app
+reporters:
+  - name: ut_documentation_reporter
+  - name: ut_coverage_html_reporter
+    output: coverage.html
+  - name: ut_sonar_test_reporter
+    output: sonar.txt
+    screen: true
+outputAnsiColor: true
+failureExitCode: 2
+skipCompatibilityCheck: true
+includePackages: [app.betwnstr, mypackage]
+excludePackages:
+  - mypackage.blubb
+  - stuff
+sourcePath: path/to/source
+testPath: path/to/test
