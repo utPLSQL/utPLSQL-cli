@@ -18,5 +18,27 @@ includePackages: [app.betwnstr, mypackage]
 excludePackages:
   - mypackage.blubb
   - stuff
-sourcePath: path/to/source
-testPath: path/to/test
+sourceMapping:
+  path: path/to/source
+  owner: app
+  regexExpression: /(\w+)/(\w+)/(\w+)\..{3}$
+  typeMapping:
+    packages_bodies: PACKAGE BODY
+    types_bodies: TYPE BODY
+    triggers: TRIGGER
+    procedures: PROCEDURE
+    functions: FUNCTION
+  ownerSubexpression: 1
+  nameSubexpression: 3
+  typeSubexpression: 2
+testMapping:
+  path: path/to/test
+  owner: app
+  regexExpression: /(\w+)/(\w+)/(\w+)\..{3}$
+  typeMapping:
+    body: PACKAGE BODY
+    type_body: TYPE BODY
+    trigger: TRIGGER
+  ownerSubexpression: 1
+  nameSubexpression: 3
+  typeSubexpression: 2

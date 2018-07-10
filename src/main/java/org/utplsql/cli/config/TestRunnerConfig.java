@@ -12,11 +12,11 @@ public class TestRunnerConfig extends ConnectionConfig {
     private boolean skipCompatibilityCheck = false;
     private final String[] includePackages;
     private final String[] excludePackages;
-    private final String sourcePath;
-    private final String testPath;
+    private final FileMapperConfig sourceMapping;
+    private final FileMapperConfig testMapping;
 
-    @ConstructorProperties({"connectString", "suitePaths", "reporters", "outputAnsiColor", "failureExitCode", "skipCompatibilityCheck", "includePackages", "excludePackages", "sourcePath", "testPath"})
-    public TestRunnerConfig(String connectString, String[] suitePaths, ReporterConfig[] reporters, boolean outputAnsiColor, Integer failureExitCode, boolean skipCompatibilityCheck, String[] includePackages, String[] excludePackages, String sourcePath, String testPath) {
+    @ConstructorProperties({"connectString", "suitePaths", "reporters", "outputAnsiColor", "failureExitCode", "skipCompatibilityCheck", "includePackages", "excludePackages", "sourceMapping", "testMapping"})
+    public TestRunnerConfig(String connectString, String[] suitePaths, ReporterConfig[] reporters, boolean outputAnsiColor, Integer failureExitCode, boolean skipCompatibilityCheck, String[] includePackages, String[] excludePackages, FileMapperConfig sourceMapping, FileMapperConfig testMapping) {
         super(connectString);
         this.suitePaths = suitePaths;
         this.reporters = reporters;
@@ -25,8 +25,8 @@ public class TestRunnerConfig extends ConnectionConfig {
         this.skipCompatibilityCheck = skipCompatibilityCheck;
         this.includePackages = includePackages;
         this.excludePackages = excludePackages;
-        this.sourcePath = sourcePath;
-        this.testPath = testPath;
+        this.sourceMapping = sourceMapping;
+        this.testMapping = testMapping;
     }
 
     public String[] getSuitePaths() {
@@ -57,11 +57,11 @@ public class TestRunnerConfig extends ConnectionConfig {
         return excludePackages;
     }
 
-    public String getSourcePath() {
-        return sourcePath;
+    public FileMapperConfig getSourceMapping() {
+        return sourceMapping;
     }
 
-    public String getTestPath() {
-        return testPath;
+    public FileMapperConfig getTestMapping() {
+        return testMapping;
     }
 }
