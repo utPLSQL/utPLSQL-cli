@@ -10,8 +10,11 @@ import org.utplsql.api.compatibility.CompatibilityProxy;
 import org.utplsql.api.exception.DatabaseNotCompatibleException;
 import org.utplsql.api.exception.SomeTestsFailedException;
 import org.utplsql.api.exception.UtPLSQLNotInstalledException;
+import org.utplsql.api.reporter.CoreReporters;
 import org.utplsql.api.reporter.Reporter;
 import org.utplsql.api.reporter.ReporterFactory;
+import org.utplsql.cli.config.ReporterConfig;
+import org.utplsql.cli.config.TestRunnerConfig;
 import org.utplsql.cli.exception.DatabaseConnectionFailed;
 
 import javax.sql.DataSource;
@@ -36,10 +39,10 @@ public class RunCommand implements ICommand {
 
     @Parameter(
             required = true,
-            converter = ConnectionInfo.ConnectionStringConverter.class,
+            //converter = ConnectionInfo.ConnectionStringConverter.class,
             arity = 1,
             description = ConnectionInfo.COMMANDLINE_PARAM_DESCRIPTION)
-    private List<ConnectionInfo> connectionInfoList = new ArrayList<>();
+    private String connectionInfo = "";
 
     @Parameter(
             names = {"-p", "--path"},
@@ -100,12 +103,16 @@ public class RunCommand implements ICommand {
     private String excludeObjects = null;
 
 
+    private ConnectionInfo connectionInfoObj;
     private CompatibilityProxy compatibilityProxy;
     private ReporterFactory reporterFactory;
     private ReporterManager reporterManager;
 
     public ConnectionInfo getConnectionInfo() {
-        return connectionInfoList.get(0);
+        if ( connectionInfoObj == null )
+            connectionInfoObj = new ConnectionInfo(connectionInfo);
+
+        return connectionInfoObj;
     }
 
     public List<String> getTestPaths() {
@@ -325,5 +332,82 @@ public class RunCommand implements ICommand {
 
     public List<ReporterOptions> getReporterOptionsList() {
         return getReporterManager().getReporterOptionsList();
+    }
+
+    private List<ReporterConfig> getReporterConfigs() {
+        List<ReporterConfig> reporterConfigs = new ArrayList<>(5);
+
+        String reporterName = null;
+        String outputFile = null;
+        Boolean forceToScreen = null;
+        for (String p : reporterParams) {
+            if (!p.startsWith("-")) {
+                if ( reporterName != null ) {
+                    reporterConfigs.add(new ReporterConfig(reporterName, outputFile, forceToScreen));
+                    reporterName = null;
+                    outputFile = null;
+                    forceToScreen = null;
+                }
+                reporterName = p;
+            }
+            else if (p.startsWith("-o="))
+                outputFile = p.substring(3);
+            else if (p.equals("-s"))
+                forceToScreen = true;
+        }
+
+        if ( reporterName != null )
+            reporterConfigs.add(new ReporterConfig(reporterName, outputFile, forceToScreen));
+
+        return reporterConfigs;
+    }
+
+    private String[] getSplitList( String delimitedList ) {
+        if ( delimitedList != null && !delimitedList.isEmpty() )
+            return delimitedList.split(",");
+        else
+            return null;
+    }
+
+    public TestRunnerConfig getConfig() {
+        final List<Reporter> reporterList;
+        List<ReporterOptions> reporterOptionsList = new ArrayList<>();
+        ReporterOptions reporterOptions = null;
+
+        List<ReporterConfig> reporterConfigs = getReporterConfigs();
+
+        // If no reporter parameters were passed, use default reporter.
+        if (reporterOptionsList.isEmpty()) {
+            reporterOptionsList.add(new ReporterOptions(CoreReporters.UT_DOCUMENTATION_REPORTER.name()));
+        }
+        final List<String> testPaths = getTestPaths();
+
+        final File baseDir = new File("").getAbsoluteFile();
+        final FileMapperOptions[] sourceMappingOptions = {null};
+        final FileMapperOptions[] testMappingOptions = {null};
+
+        final int[] returnCode = {0};
+
+        sourceMappingOptions[0] = getFileMapperOptionsByParamListItem(this.sourcePathParams, baseDir);
+        testMappingOptions[0] = getFileMapperOptionsByParamListItem(this.testPathParams, baseDir);
+
+        String[] testPathArr = new String[testPaths.size()];
+        testPathArr = testPaths.toArray(testPathArr);
+
+        ReporterConfig[] reporterConfigArr = new ReporterConfig[reporterConfigs.size()];
+        reporterConfigArr = reporterConfigs.toArray(reporterConfigArr);
+
+        return new TestRunnerConfig(
+                connectionInfo,
+                testPathArr,
+                reporterConfigArr,
+                colorConsole,
+                failureExitCode,
+                skipCompatibilityCheck,
+                getSplitList(includeObjects),
+                getSplitList(excludeObjects),
+                null,
+                null
+        );
     }
 }

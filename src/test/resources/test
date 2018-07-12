@@ -1,0 +1,26 @@
+utPLSQL-cli/bin/utplsql run test_runner/pass@db_url \
+ -p=hr,app \
+ -f=ut_documentation_reporter \
+ -f=ut_coverage_html_reporter \
+ -o=coverage.html \
+ -f=ut_sonar_test_reporter \
+ -o=sonar.txt \
+ -s \
+ -c \
+ --failure-exit-code=2 \
+ -scc \
+ -include=app.betwnstr,mypackage \
+ -exclude=mypackage.blugg,stuff \
+ -source_path=sources \
+ -regex_expression="/(\w+)/(\w+)/(\w+)\..{3}$" \
+ -type_mapping="packages_bodies=PACKAGE BODY/types_bodies=TYPE BODY/triggers=TRIGGER/procedures=PROCEDURE/functions=FUNCTION" \
+ -owner_subexpression=2 \
+ -name_subexpression=3 \
+ -type_subexpression=4 \
+ -test_path=tests -regex_expression="/(\w+)/(\w+)/(\w+)\..{3}$" \
+ -type_mapping="body=PACKAGE BODY/type_body=TYPE BODY/trigger=TRIGGER" \
+ -owner_subexpression=2 \
+ -name_subexpression=3 \
+ -type_subexpression=4 \
+ -f=ut_coverage_html_reporter -o=coverage.html \
+ -f=ut_sonar_test_reporter -o=test_results.xml

@@ -9,10 +9,10 @@ public class ReporterConfig {
     private boolean screen = false;
 
     @ConstructorProperties({"name", "output", "screen"})
-    public ReporterConfig( String name, String output, boolean screen ) {
+    public ReporterConfig( String name, String output, Boolean screen ) {
         this.name = name;
         this.output = output;
-        this.screen = screen;
+        if ( screen != null ) this.screen = screen;
     }
 
     public String getName() {
