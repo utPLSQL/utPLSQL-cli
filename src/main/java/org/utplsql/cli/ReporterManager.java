@@ -6,6 +6,7 @@ import org.utplsql.api.reporter.Reporter;
 import org.utplsql.api.reporter.ReporterFactory;
 import org.utplsql.cli.reporters.ReporterOptionsAware;
 
+import javax.sql.DataSource;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -77,10 +78,10 @@ class ReporterManager {
     /** Starts a separate thread for each Reporter to gather its results
      *
      * @param executorService
-     * @param ci
+     * @param dataSource
      * @param returnCode
      */
-    public void startReporterGatherers(ExecutorService executorService, final ConnectionInfo ci, final int[] returnCode)
+    public void startReporterGatherers(ExecutorService executorService, final DataSource dataSource, final int[] returnCode)
     {
         // TODO: Implement Init-check
         // Gather each reporter results on a separate thread.
@@ -89,7 +90,7 @@ class ReporterManager {
                 List<PrintStream> printStreams = new ArrayList<>();
                 PrintStream fileOutStream = null;
 
-                try (Connection conn = ci.getConnection()) {
+                try (Connection conn = dataSource.getConnection()) {
                     if (ro.outputToScreen()) {
                         printStreams.add(System.out);
                         ro.getReporterObj().getOutputBuffer().setFetchSize(1);

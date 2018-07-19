@@ -12,28 +12,31 @@ public class Cli {
     static final int DEFAULT_ERROR_CODE = 1;
 
     static final String HELP_CMD = "-h";
-    private static final String RUN_CMD = "run";
 
     public static void main(String[] args) {
 
+        int exitCode = runWithExitCode(args);
+
+        System.exit(exitCode);
+    }
+
+    static int runWithExitCode( String[] args ) {
         LocaleInitializer.initLocale();
 
         JCommander jc = new JCommander();
         jc.setProgramName("utplsql");
-        // jc.addCommand(HELP_CMD, new HelpCommand());
-        RunCommand runCmd = new RunCommand();
-        jc.addCommand(RUN_CMD, runCmd);
+
+        CommandProvider cmdProvider = new CommandProvider();
+
+        cmdProvider.commands().forEach(cmd -> jc.addCommand(cmd.getCommand(), cmd));
 
         int exitCode = DEFAULT_ERROR_CODE;
 
         try {
             jc.parse(args);
 
-            if (RUN_CMD.equals(jc.getParsedCommand())) {
-                exitCode = runCmd.run();
-            } else {
-                throw new ParameterException("Command not specified.");
-            }
+            exitCode = cmdProvider.getCommand(jc.getParsedCommand()).run();
+
         } catch (ParameterException e) {
             if (jc.getParsedCommand() != null) {
                 System.err.println(e.getMessage());
@@ -41,13 +44,11 @@ public class Cli {
             } else {
                 jc.usage();
             }
-        } catch ( DatabaseNotCompatibleException | UtPLSQLNotInstalledException | DatabaseConnectionFailed e ) {
-            System.out.println(e.getMessage());
-        } catch (Exception e) {
+        }  catch (Exception e) {
             e.printStackTrace();
         }
 
-        System.exit(exitCode);
+        return exitCode;
     }
 
     private static class HelpCommand {

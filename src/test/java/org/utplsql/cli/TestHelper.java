@@ -1,9 +1,15 @@
 package org.utplsql.cli;
 
 import com.beust.jcommander.JCommander;
+import org.utplsql.api.DBHelper;
 import org.utplsql.api.EnvironmentVariableUtil;
+import org.utplsql.api.Version;
 
-class RunCommandTestHelper {
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+class TestHelper {
     private static String sUrl;
     private static String sUser;
     private static String sPass;
@@ -23,6 +29,17 @@ class RunCommandTestHelper {
                 .build();
 
         return runCmd;
+    }
+
+    static int runApp(String... args) {
+        return Cli.runWithExitCode(args);
+    }
+
+    static Version getFrameworkVersion() throws SQLException {
+        DataSource ds = DataSourceProvider.getDataSource(new ConnectionInfo(TestHelper.getConnectionString()), 1);
+        try (Connection con = ds.getConnection() ) {
+            return DBHelper.getDatabaseFrameworkVersion(con);
+        }
     }
 
     static String getConnectionString() {
