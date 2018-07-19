@@ -10,25 +10,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DataSourceProvider {
+public class TestedDataSourceProvider {
 
     interface ConnectStringPossibility {
         String getConnectString(ConnectionConfig config);
         String getMaskedConnectString(ConnectionConfig config);
     }
 
-    static {
-        String oracleHome = System.getenv("ORACLE_HOME");
-        if (oracleHome != null && System.getProperty("oracle.net.tns_admin") == null) {
-            System.setProperty("oracle.net.tns_admin",
-                    String.join(File.separator, oracleHome, "NETWORK", "ADMIN"));
-        }
-    }
 
     private final ConnectionConfig config;
     private List<ConnectStringPossibility> possibilities = new ArrayList<>();
 
-    public DataSourceProvider(ConnectionConfig config) {
+    public TestedDataSourceProvider(ConnectionConfig config) {
         this.config = config;
 
         possibilities.add(new ThickConnectStringPossibility());

@@ -1,7 +1,7 @@
 package org.utplsql.cli;
 
 import org.junit.jupiter.api.Test;
-import org.utplsql.cli.datasource.DataSourceProvider;
+import org.utplsql.cli.datasource.TestedDataSourceProvider;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -14,9 +14,9 @@ public class DataSourceProviderIT {
     @Test
     public void connectToDatabase() throws IOException, SQLException {
 
-        ConnectionConfig config = new ConnectionConfig(RunCommandTestHelper.getConnectionString());
+        ConnectionConfig config = new ConnectionConfig(TestHelper.getConnectionString());
 
-        DataSource dataSource = new DataSourceProvider(config).getDataSource();
+        DataSource dataSource = new TestedDataSourceProvider(config).getDataSource();
 
         assertNotNull(dataSource);
     }
