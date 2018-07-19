@@ -2,8 +2,8 @@ package org.utplsql.cli;
 
 import com.beust.jcommander.IStringConverter;
 import com.zaxxer.hikari.HikariDataSource;
+import org.utplsql.cli.datasource.DataSourceProvider;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,20 +12,12 @@ import java.sql.SQLException;
 public class ConnectionInfo {
 
     private String databaseVersion;
-
-    static {
-        String oracleHome = System.getenv("ORACLE_HOME");
-        if (oracleHome != null) {
-            System.setProperty("oracle.net.tns_admin",
-                    String.join(File.separator, oracleHome, "NETWORK", "ADMIN"));
-        }
-    }
-
-    private HikariDataSource pds = new HikariDataSource();
+    private HikariDataSource pds;
+    private ConnectionConfig config;
 
     public ConnectionInfo(String connectionInfo) {
-
-        pds.setJdbcUrl("jdbc:oracle:thin:" + connectionInfo);
+        config = new ConnectionConfig(connectionInfo);
+        pds = new HikariDataSource();
         pds.setAutoCommit(false);
     }
 
@@ -34,6 +26,9 @@ public class ConnectionInfo {
     }
 
     public Connection getConnection() throws SQLException {
+        if ( pds.getJdbcUrl() == null ) {
+            new DataSourceProvider(config).testAndSetJdbcUrl(pds);
+        }
         return pds.getConnection();
     }
 
