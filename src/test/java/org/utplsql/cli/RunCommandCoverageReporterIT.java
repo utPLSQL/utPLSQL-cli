@@ -103,7 +103,7 @@ public class RunCommandCoverageReporterIT extends AbstractFileOutputTest {
 
         // Check correct script-part in HTML source exists
         String content = new String(Files.readAllBytes(coveragePath));
-        assertTrue(content.contains("<script src='" + coverageAssetsPath.toString() + "/application.js' type='text/javascript'>"));
+        assertTrue(content.contains("<script src='" + coverageAssetsPath.toString() + "/application.js'"));
 
         // Check correct title exists
         assertTrue(content.contains("<title>Code coverage</title>"));

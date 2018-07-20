@@ -31,14 +31,15 @@ public class ReportersCommand implements ICommand {
     @Override
     public int run() {
 
-        DataSource ds = DataSourceProvider.getDataSource(getConnectionInfo(), 1);
-        try (Connection con = ds.getConnection() ) {
+        try {
+            DataSource ds = DataSourceProvider.getDataSource(getConnectionInfo(), 1);
+            try (Connection con = ds.getConnection()) {
 
-            ReporterFactory reporterFactory = ReporterFactoryProvider.createReporterFactory(con);
+                ReporterFactory reporterFactory = ReporterFactoryProvider.createReporterFactory(con);
 
-            writeReporters(ReporterInspector.create(reporterFactory, con).getReporterInfos(), System.out);
-        }
-        catch ( Exception e ) {
+                writeReporters(ReporterInspector.create(reporterFactory, con).getReporterInfos(), System.out);
+            }
+        } catch (Exception e) {
             e.printStackTrace();
             return 1;
         }

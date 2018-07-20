@@ -2,9 +2,11 @@ package org.utplsql.cli;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.utplsql.api.EnvironmentVariableUtil;
+import org.utplsql.cli.datasource.TestedDataSourceProvider;
 
 import javax.sql.DataSource;
 import java.io.File;
+import java.sql.SQLException;
 
 /** Helper class to give you a ready-to-use datasource
  *
@@ -13,19 +15,20 @@ import java.io.File;
 public class DataSourceProvider {
 
     static {
-        String oracleHome = EnvironmentVariableUtil.getEnvValue("ORACLE_HOME");
-        if (oracleHome != null) {
+        String oracleHome = System.getenv("ORACLE_HOME");
+        if (oracleHome != null && System.getProperty("oracle.net.tns_admin") == null) {
             System.setProperty("oracle.net.tns_admin",
                     String.join(File.separator, oracleHome, "NETWORK", "ADMIN"));
         }
     }
 
-    public static DataSource getDataSource(ConnectionInfo info, int maxConnections ) {
+    public static DataSource getDataSource(ConnectionInfo info, int maxConnections ) throws SQLException {
 
         requireOjdbc();
 
-        HikariDataSource pds = new HikariDataSource();
-        pds.setJdbcUrl("jdbc:oracle:thin:" + info.getConnectionString());
+        ConnectionConfig config = new ConnectionConfig(info.getConnectionString());
+
+        HikariDataSource pds = new TestedDataSourceProvider(config).getDataSource();
         pds.setAutoCommit(false);
         pds.setMaximumPoolSize(maxConnections);
         return pds;
