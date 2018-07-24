@@ -109,4 +109,26 @@ public class RunCommandCoverageReporterIT extends AbstractFileOutputTest {
         assertTrue(content.contains("<title>Code coverage</title>"));
     }
 
+    @Test
+    public void coverageReporterWriteAssetsToSubfolder() throws Exception {
+
+        Path origCoveratePath = getTempCoverageFilePath();
+        Path coveragePath = Paths.get(origCoveratePath.toString(), origCoveratePath.toString());
+        Path coverageAssetsPath = Paths.get(coveragePath.toString() + "_assets");
+
+        TestHelper.runApp("run", TestHelper.getConnectionString(),
+                "-f=ut_coverage_html_reporter", "-o=" + coveragePath, "-s");
+
+
+        // Check application file exists
+        File applicationJs = coverageAssetsPath.resolve(Paths.get("application.js")).toFile();
+        assertTrue(applicationJs.exists());
+
+        // Check correct script-part in HTML source exists
+        String content = new String(Files.readAllBytes(coveragePath));
+        assertTrue(content.contains("<script src='" + origCoveratePath.toString() + "_assets" + "/application.js'"));
+
+        // Check correct title exists
+        assertTrue(content.contains("<title>Code coverage</title>"));
+    }
 }

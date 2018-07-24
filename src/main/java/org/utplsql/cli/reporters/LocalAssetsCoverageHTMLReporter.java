@@ -6,6 +6,7 @@ import org.utplsql.api.reporter.Reporter;
 import org.utplsql.api.reporter.ReporterFactory;
 import org.utplsql.cli.ReporterOptions;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -27,15 +28,34 @@ public class LocalAssetsCoverageHTMLReporter extends CoverageHTMLReporter implem
     public Reporter init(Connection con, CompatibilityProxy compatibilityProxy, ReporterFactory reporterFactory) throws SQLException {
         super.init(con, compatibilityProxy, reporterFactory);
 
-        if ( options != null && options.outputToFile() )
-            writeReportAssetsTo(Paths.get(getAssetsPath()));
+        if ( hasOutputToFile() ) {
+            writeReportAssetsTo(getPhysicalAssetPath());
+        }
 
         return this;
     }
 
+    private String getNameOfOutputFile() {
+        Path outputPath = Paths.get(options.getOutputFileName());
+        return outputPath.getName(outputPath.getNameCount()-1).toString();
+    }
+
+    private Path getPhysicalAssetPath() {
+        Path outputPath = Paths.get(options.getOutputFileName());
+        if ( outputPath.getNameCount() > 1 )
+            return outputPath.getParent().resolve(getAssetsPath());
+        else
+            return Paths.get(getAssetsPath());
+    }
+
     private void setAssetsPathFromOptions() {
-        if ( options != null && options.outputToFile() )
-            setAssetsPath(options.getOutputFileName()+"_assets/");
+        if ( hasOutputToFile() ) {
+            setAssetsPath(getNameOfOutputFile() + "_assets/");
+        }
+    }
+
+    private boolean hasOutputToFile() {
+        return (options != null && options.outputToFile());
     }
 
     @Override
