@@ -3,15 +3,13 @@ set -ev
 cd $(dirname $(readlink -f $0))
 
 # Download the specified version of utPLSQL.
-UTPLSQL_VERSION="v3.0.4"
-UTPLSQL_FILE="utPLSQL"
-curl -L -O "https://github.com/utPLSQL/utPLSQL/releases/download/$UTPLSQL_VERSION/$UTPLSQL_FILE.tar.gz"
-
-# Download develop branch of utPLSQL.
-#UTPLSQL_VERSION="develop"
-#UTPLSQL_FILE="utPLSQL"
-#git clone -b develop --single-branch https://github.com/utPLSQL/utPLSQL.git
-# tar -czf $UTPLSQL_FILE.tar.gz $UTPLSQL_FILE && rm -rf $UTPLSQL_FILE
+if [ "$UTPLSQL_VERSION" == "develop" ]
+    then
+        git clone -b develop --single-branch https://github.com/utPLSQL/utPLSQL.git
+        tar -czf $UTPLSQL_FILE.tar.gz $UTPLSQL_FILE && rm -rf $UTPLSQL_FILE
+else
+    curl -L -O "https://github.com/utPLSQL/utPLSQL/releases/download/$UTPLSQL_VERSION/$UTPLSQL_FILE.tar.gz"
+fi
 
 # Create a temporary install script.
 cat > install.sh.tmp <<EOF
