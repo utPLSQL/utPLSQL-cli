@@ -19,6 +19,7 @@ env:
     - DB_PASS=app
     - ORACLE_VERSION="11g-r2-xe"
     - DOCKER_OPTIONS="--shm-size=1g"
+    - UTPLSQL_FILE="utPLSQL"
   matrix:
     - UTPLSQL_VERSION="v3.0.0"
       UTPLSQL_FILE="utPLSQLv3.0.0"
