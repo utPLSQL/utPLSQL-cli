@@ -31,6 +31,20 @@ env:
     - UTPLSQL_VERSION="v3.1.2"
     - UTPLSQL_VERSION="develop"
       UTPLSQL_FILE="utPLSQL"
+    # test with 12.2, latest release
+    - UTPLSQL_VERSION="v3.1.2"
+      ORACLE_VERSION="${DOCKER_TAG_12C2:-12c-r2-se2}"
+      CONNECTION_STR='127.0.0.1:1521/ORCLPDB1'
+      DB_URL='127.0.0.1:1521/ORCLPDB1'
+      DOCKER_OPTIONS="-v /dev/pdbs:/opt/oracle/oradata/pdbs"
+    # test with 18c, latest release
+    - UTPLSQL_VERSION="v3.1.2"
+      ORACLE_VERSION="${DOCKER_TAG_18:-18c-se2}"
+      CONNECTION_STR='127.0.0.1:1521/ORCLPDB1'
+      DB_URL='127.0.0.1:1521/ORCLPDB1'
+      DOCKER_OPTIONS="-v /dev/pdbs:/opt/oracle/oradata/pdbs"
+
+
 
 cache:
   directories:
