@@ -61,15 +61,7 @@ public class ReportersCommand implements ICommand {
         return "reporters";
     }
 
-    private int getMaxNameLength(List<ReporterInfo> reporterInfos) {
-        return reporterInfos.stream()
-                .mapToInt(info -> info.getName().length())
-                .max()
-                .orElse(0);
-    }
-
     private void writeReporters(List<ReporterInfo> reporterInfos, PrintStream out) {
-        //int padding = getMaxNameLength(reporterInfos)+1;
         reporterInfos.stream()
                 .sorted(Comparator.comparing(ReporterInfo::getName))
                 .forEach(info -> writeReporter(info, 4, out));
