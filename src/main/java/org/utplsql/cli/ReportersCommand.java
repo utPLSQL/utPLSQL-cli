@@ -2,9 +2,12 @@ package org.utplsql.cli;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
+import org.utplsql.api.exception.DatabaseNotCompatibleException;
+import org.utplsql.api.exception.UtPLSQLNotInstalledException;
 import org.utplsql.api.reporter.ReporterFactory;
 import org.utplsql.api.reporter.inspect.ReporterInfo;
 import org.utplsql.api.reporter.inspect.ReporterInspector;
+import org.utplsql.cli.exception.DatabaseConnectionFailed;
 
 import javax.sql.DataSource;
 import java.io.PrintStream;
@@ -21,9 +24,11 @@ public class ReportersCommand implements ICommand {
     private List<ConnectionInfo> connectionInfoList = new ArrayList<>();
 
     private ConnectionInfo getConnectionInfo() {
-        assert connectionInfoList != null;
-        assert connectionInfoList.size() > 0;
-        assert connectionInfoList.get(0) != null;
+        Objects.requireNonNull(connectionInfoList);
+
+        if ( connectionInfoList.size() <=  0
+                || connectionInfoList.get(0) == null)
+            throw new IllegalArgumentException("No Connection-Info given");
 
         return connectionInfoList.get(0);
     }
@@ -39,7 +44,11 @@ public class ReportersCommand implements ICommand {
 
                 writeReporters(ReporterInspector.create(reporterFactory, con).getReporterInfos(), System.out);
             }
-        } catch (Exception e) {
+        }
+        catch ( DatabaseNotCompatibleException | UtPLSQLNotInstalledException | DatabaseConnectionFailed | IllegalArgumentException e ) {
+            System.out.println(e.getMessage());
+        }
+        catch (Exception e) {
             e.printStackTrace();
             return 1;
         }

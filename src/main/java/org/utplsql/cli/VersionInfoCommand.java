@@ -6,6 +6,8 @@ import com.beust.jcommander.Parameters;
 import org.utplsql.api.DBHelper;
 import org.utplsql.api.JavaApiVersionInfo;
 import org.utplsql.api.Version;
+import org.utplsql.api.db.DatabaseInformation;
+import org.utplsql.api.db.DefaultDatabaseInformation;
 import org.utplsql.api.exception.UtPLSQLNotInstalledException;
 
 import javax.sql.DataSource;
@@ -52,11 +54,11 @@ public class VersionInfoCommand implements ICommand {
             DataSource dataSource = DataSourceProvider.getDataSource(ci, 1);
 
             try (Connection con = dataSource.getConnection()) {
-                Version v = DBHelper.getDatabaseFrameworkVersion( con );
+                Version v = new DefaultDatabaseInformation().getUtPlsqlFrameworkVersion(con);
                 System.out.println("utPLSQL " + v.getNormalizedString());
             }
             catch ( UtPLSQLNotInstalledException e ) {
-                System.out.println("utPLSQL framework is not installed in database.");
+                System.out.println(e.getMessage());
             }
         }
     }
