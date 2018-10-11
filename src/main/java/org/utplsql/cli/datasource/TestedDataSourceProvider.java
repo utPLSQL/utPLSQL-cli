@@ -5,7 +5,6 @@ import org.utplsql.api.EnvironmentVariableUtil;
 import org.utplsql.cli.ConnectionConfig;
 import org.utplsql.cli.exception.DatabaseConnectionFailed;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -19,7 +18,6 @@ public class TestedDataSourceProvider {
         String getConnectString(ConnectionConfig config);
         String getMaskedConnectString(ConnectionConfig config);
     }
-
 
     private final ConnectionConfig config;
     private List<ConnectStringPossibility> possibilities = new ArrayList<>();
@@ -35,13 +33,13 @@ public class TestedDataSourceProvider {
 
         HikariDataSource ds = new HikariDataSource();
 
-        setInitSql(ds);
-        testAndSetJdbcUrl(ds);
+        setInitSqlFrom_NLS_LANG(ds);
+        setThickOrThinJdbcUrl(ds);
 
         return ds;
     }
 
-    private void testAndSetJdbcUrl( HikariDataSource ds ) throws SQLException
+    private void setThickOrThinJdbcUrl(HikariDataSource ds ) throws SQLException
     {
         List<String> errors = new ArrayList<>();
         Throwable lastException = null;
@@ -59,7 +57,7 @@ public class TestedDataSourceProvider {
         throw new DatabaseConnectionFailed(lastException);
     }
 
-    private void setInitSql( HikariDataSource ds ) {
+    private void setInitSqlFrom_NLS_LANG(HikariDataSource ds ) {
         String nls_lang = EnvironmentVariableUtil.getEnvValue("NLS_LANG");
 
         if ( nls_lang != null ) {
