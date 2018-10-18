@@ -1,14 +1,16 @@
 package org.utplsql.cli.datasource;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.utplsql.api.EnvironmentVariableUtil;
 import org.utplsql.cli.ConnectionConfig;
 import org.utplsql.cli.exception.DatabaseConnectionFailed;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TestedDataSourceProvider {
 
@@ -16,7 +18,6 @@ public class TestedDataSourceProvider {
         String getConnectString(ConnectionConfig config);
         String getMaskedConnectString(ConnectionConfig config);
     }
-
 
     private final ConnectionConfig config;
     private List<ConnectStringPossibility> possibilities = new ArrayList<>();
@@ -32,12 +33,13 @@ public class TestedDataSourceProvider {
 
         HikariDataSource ds = new HikariDataSource();
 
-        testAndSetJdbcUrl(ds);
+        setInitSqlFrom_NLS_LANG(ds);
+        setThickOrThinJdbcUrl(ds);
 
         return ds;
     }
 
-    public void testAndSetJdbcUrl( HikariDataSource ds ) throws SQLException
+    private void setThickOrThinJdbcUrl(HikariDataSource ds ) throws SQLException
     {
         List<String> errors = new ArrayList<>();
         Throwable lastException = null;
@@ -53,6 +55,33 @@ public class TestedDataSourceProvider {
 
         errors.forEach(System.out::println);
         throw new DatabaseConnectionFailed(lastException);
+    }
+
+    private void setInitSqlFrom_NLS_LANG(HikariDataSource ds ) {
+        String nls_lang = EnvironmentVariableUtil.getEnvValue("NLS_LANG");
+
+        if ( nls_lang != null ) {
+            Pattern pattern = Pattern.compile("^([a-zA-Z ]+)?_?([a-zA-Z ]+)?\\.?([a-zA-Z0-9]+)?$");
+            Matcher matcher = pattern.matcher(nls_lang);
+
+            List<String> sqlCommands = new ArrayList<>(2);
+            if (matcher.matches()) {
+                if ( matcher.group(1) != null)
+                    sqlCommands.add(String.format("ALTER SESSION SET NLS_LANGUAGE='%s'", matcher.group(1)));
+                if ( matcher.group(2) != null)
+                    sqlCommands.add(String.format("ALTER SESSION SET NLS_TERRITORY='%s'", matcher.group(2)));
+
+                if ( sqlCommands.size() > 0 ) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("BEGIN\n");
+                    for (String command : sqlCommands)
+                        sb.append(String.format("EXECUTE IMMEDIATE q'[%s]';\n", command));
+                    sb.append("END;");
+
+                    ds.setConnectionInitSql(sb.toString());
+                }
+            }
+        }
     }
 
     private static class ThickConnectStringPossibility implements ConnectStringPossibility {
