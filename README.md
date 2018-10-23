@@ -25,10 +25,10 @@ You can also download all development versions from [Bintray](https://bintray.co
 
 ## Compatibility
 The latest CLI is always compatible with all database frameworks of the same major version.
-For example CLI-3.1.0 is compatible with database framework 3.0.0-3.1.0 but not with database framework 2.x.
+For example CLI-3.1.0 is compatible with database framework 3.0.0-3.1.2 but not with database framework 2.x.
 
 ## Localization and NLS settings
-utPLSQL-cli will use the environment variables (in that order) "NLS_LANG", "LC_ALL" or "LANG" to change the locale and therefore the NLS settings.
+utPLSQL-cli will use the environment variables "LC_ALL" or "LANG" to change the locale and therefore the client NLS settings.
 If neither environment variable is available, it will use the JVM default locale.
 
 Example: to change the NLS-settings to English American, you can do the following:
@@ -37,6 +37,17 @@ export LC_ALL=en_US.utf-8
 ```
 
 The charset-part of LC_ALL is ignored.
+
+In addition, utPLSQL-cli will use an existing "NLS_LANG" environment variable to create corresponding 
+`ALTER SESSION`-statements during initialization of the connection.
+
+The variable is parsed according to the [Oracle globalization documentation](https://www.oracle.com/technetwork/database/database-technologies/globalization/nls-lang-099431.html#_Toc110410543)
+
+Example: "NLS_LANG" of `AMERICAN_AMERICA.UTF8` will lead to the following statements:
+```sql
+ALTER SESSION SET NLS_LANGUAGE='AMERICAN';
+ALTER SESSION SET NLS_TERRITORY='AMERICA';
+```
 
 ## Usage
 Currently, utPLSQL-cli supports the following commands:
