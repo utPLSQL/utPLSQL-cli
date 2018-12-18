@@ -90,41 +90,6 @@
         </configuration>
       </plugin>
         <plugin>
-            <groupId>com.google.code.maven-replacer-plugin</groupId>
-            <artifactId>replacer</artifactId>
-            <version>1.5.3</version>
-            <executions>
-                <execution>
-                    <id>replace-version-number</id>
-                    <phase>generate-sources</phase>
-                    <goals>
-                        <goal>replace</goal>
-                    </goals>
-                </execution>
-            </executions>
-            <configuration>
-                <basedir>${project.basedir}/src/main/java</basedir>
-                <includes>
-                    <include>**/CliVersionInfo.java</include>
-                </includes>
-                <preserveDir>true</preserveDir>
-                <replacements>
-                    <replacement>
-                        <token>MAVEN_PROJECT_NAME = ".*"</token>
-                        <value>MAVEN_PROJECT_NAME = "${project.name}"</value>
-                    </replacement>
-                    <replacement>
-                        <token>MAVEN_PROJECT_VERSION = ".*"</token>
-                        <value>MAVEN_PROJECT_VERSION = "${project.version}"</value>
-                    </replacement>
-                    <replacement>
-                        <token>BUILD_NO = ".*"</token>
-                        <value>BUILD_NO = "${travisBuildNumber}"</value>
-                    </replacement>
-                </replacements>
-            </configuration>
-        </plugin>
-        <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
             <version>2.19.1</version>
@@ -162,6 +127,22 @@
             </dependencies>
         </plugin>
     </plugins>
+      <resources>
+          <resource>
+              <directory>src/main/resources</directory>
+              <filtering>true</filtering>
+              <includes>
+                  <include>**/utplsql-cli.version</include>
+              </includes>
+          </resource>
+          <resource>
+              <directory>src/main/resources</directory>
+              <filtering>false</filtering>
+              <excludes>
+                  <exclude>**/utplsql-cli.version</exclude>
+              </excludes>
+          </resource>
+      </resources>
   </build>
 
   <repositories>
