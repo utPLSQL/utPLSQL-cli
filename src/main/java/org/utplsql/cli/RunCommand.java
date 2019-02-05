@@ -2,10 +2,9 @@ package org.utplsql.cli;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import org.utplsql.api.FileMapperOptions;
-import org.utplsql.api.KeyValuePair;
-import org.utplsql.api.TestRunner;
-import org.utplsql.api.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.utplsql.api.*;
 import org.utplsql.api.compatibility.CompatibilityProxy;
 import org.utplsql.api.exception.DatabaseNotCompatibleException;
 import org.utplsql.api.exception.SomeTestsFailedException;
@@ -33,6 +32,8 @@ import java.util.concurrent.TimeUnit;
  */
 @Parameters(separators = "=", commandDescription = "run tests")
 public class RunCommand implements ICommand {
+
+    private static final Logger logger = LoggerFactory.getLogger(RunCommand.class);
 
     @Parameter(
             required = true,
@@ -113,6 +114,9 @@ public class RunCommand implements ICommand {
     }
 
     public int run() {
+
+        logger.info(CliVersionInfo.getInfo());
+        logger.info(JavaApiVersionInfo.getInfo());
 
         try {
 
