@@ -115,8 +115,19 @@ public class RunCommand implements ICommand {
 
     public int run() {
 
-        logger.info(CliVersionInfo.getInfo());
-        logger.info(JavaApiVersionInfo.getInfo());
+        LoggerConfiguration.configureDefault();
+
+        logger.info("##################### utPLSQL cli ####################");
+        logger.info("#");
+        logger.info("#   {} ", CliVersionInfo.getInfo());
+        logger.info("#   {} ", JavaApiVersionInfo.getInfo());
+        logger.info("#   Java-Version: {} ", System.getProperty("java.version"));
+        logger.info("#   ORACLE_HOME: {} ", EnvironmentVariableUtil.getEnvValue("ORACLE_HOME"));
+        logger.info("#  ");
+        logger.info("#   Thank you for testing! ");
+        logger.info("#");
+        logger.info("######################################################");
+        logger.info("");
 
         try {
 
@@ -160,6 +171,9 @@ public class RunCommand implements ICommand {
 
                 // First of all do a compatibility check and fail-fast
                 compatibilityProxy = checkFrameworkCompatibility(conn);
+
+                logger.info("Successfully connected to database. UtPLSQL core: " + compatibilityProxy.getDatabaseVersion());
+
                 reporterFactory = ReporterFactoryProvider.createReporterFactory(compatibilityProxy);
 
                 reporterList = getReporterManager().initReporters(conn, reporterFactory, compatibilityProxy);
