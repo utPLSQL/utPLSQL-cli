@@ -15,7 +15,7 @@ public class TestRunCommandChecker {
         assertNotNull(RunCommandChecker.getCheckFailOnErrorMessage(2, new Version("3.0.0")));
         assertNotNull(RunCommandChecker.getCheckFailOnErrorMessage(2, new Version("3.0.1")));
         assertNotNull(RunCommandChecker.getCheckFailOnErrorMessage(2, new Version("3.0.2")));
-        assertNull(RunCommandChecker.getCheckFailOnErrorMessage(2, new Version("3.0.3")));
+        assertNull(RunCommandChecker.getCheckFailOnErrorMessage(2, new Version("3.0.3.1266")));
         assertNull(RunCommandChecker.getCheckFailOnErrorMessage(2, new Version("3.0.4")));
     }
 }

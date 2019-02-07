@@ -124,7 +124,7 @@ public class RunCommand implements ICommand {
         return testPaths;
     }
 
-    public void init() {
+    void init() {
         LoggerConfiguration.configure(logSilent, logDebug);
     }
 
@@ -166,29 +166,8 @@ public class RunCommand implements ICommand {
 
             final DataSource dataSource = DataSourceProvider.getDataSource(getConnectionInfo(), getReporterManager().getNumberOfReporters() + 1);
 
-            // Do the reporters initialization, so we can use the id to run and gather results.
-            try (Connection conn = dataSource.getConnection()) {
-
-                // Check if orai18n exists if database version is 11g
-                RunCommandChecker.checkOracleI18nExists(conn);
-
-                // First of all do a compatibility check and fail-fast
-                compatibilityProxy = checkFrameworkCompatibility(conn);
-
-                logger.info("Successfully connected to database. UtPLSQL core: " + compatibilityProxy.getDatabaseVersion());
-                logger.info("Oracle-Version: {}", new DefaultDatabaseInformation().getOracleVersion(conn));
-
-                reporterFactory = ReporterFactoryProvider.createReporterFactory(compatibilityProxy);
-
-                reporterList = getReporterManager().initReporters(conn, reporterFactory, compatibilityProxy);
-
-            } catch (SQLException e) {
-                if (e.getErrorCode() == 1017 || e.getErrorCode() == 12514) {
-                    throw new DatabaseConnectionFailed(e);
-                } else {
-                    throw e;
-                }
-            }
+            initDatabase(dataSource);
+            reporterList = initReporters(dataSource);
 
             // Output a message if --failureExitCode is set but database framework is not capable of
             String msg = RunCommandChecker.getCheckFailOnErrorMessage(failureExitCode, compatibilityProxy.getDatabaseVersion());
@@ -261,6 +240,34 @@ public class RunCommand implements ICommand {
 
         logger.info(formatter.toString());
         logger.info("");
+    }
+
+    private void initDatabase(DataSource dataSource) throws SQLException {
+        try (Connection conn = dataSource.getConnection()) {
+
+            // Check if orai18n exists if database version is 11g
+            RunCommandChecker.checkOracleI18nExists(conn);
+
+            // First of all do a compatibility check and fail-fast
+            compatibilityProxy = checkFrameworkCompatibility(conn);
+
+            logger.info("Successfully connected to database. UtPLSQL core: " + compatibilityProxy.getDatabaseVersion());
+            logger.info("Oracle-Version: {}", new DefaultDatabaseInformation().getOracleVersion(conn));
+        }
+        catch (SQLException e) {
+            if (e.getErrorCode() == 1017 || e.getErrorCode() == 12514) {
+                throw new DatabaseConnectionFailed(e);
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    private List<Reporter> initReporters(DataSource dataSource) throws SQLException {
+        try (Connection conn = dataSource.getConnection()) {
+            reporterFactory = ReporterFactoryProvider.createReporterFactory(compatibilityProxy);
+            return getReporterManager().initReporters(conn, reporterFactory, compatibilityProxy);
+        }
     }
 
     /** Returns FileMapperOptions for the first item of a given param list in a baseDir
