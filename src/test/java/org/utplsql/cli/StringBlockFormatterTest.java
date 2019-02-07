@@ -14,11 +14,13 @@ public class StringBlockFormatterTest {
                 "#### Headline ####\n" +
                 "#                #\n" +
                 "#   My value 1   #\n" +
+                "#   My val 2     #\n" +
                 "#                #\n" +
                 "##################";
 
         StringBlockFormatter formatter = new StringBlockFormatter("Headline");
-        formatter.append("My value 1");
+        formatter.appendLine("My value 1");
+        formatter.appendLine("My val 2");
 
         assertEquals( expected, formatter.toString() );
     }

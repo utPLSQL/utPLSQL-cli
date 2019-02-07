@@ -23,6 +23,10 @@ public class StringBlockFormatter {
         content.append(seq);
     }
 
+    public void appendLine( CharSequence seq ) {
+        content.append(seq).append("\n");
+    }
+
     private int getMaxLength( String[] lines ) {
         int len = 0;
         for ( String line : lines ) {
