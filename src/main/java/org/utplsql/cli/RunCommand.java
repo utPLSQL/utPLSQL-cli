@@ -6,12 +6,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.utplsql.api.*;
 import org.utplsql.api.compatibility.CompatibilityProxy;
+import org.utplsql.api.db.DefaultDatabaseInformation;
 import org.utplsql.api.exception.DatabaseNotCompatibleException;
 import org.utplsql.api.exception.SomeTestsFailedException;
 import org.utplsql.api.exception.UtPLSQLNotInstalledException;
 import org.utplsql.api.reporter.Reporter;
 import org.utplsql.api.reporter.ReporterFactory;
 import org.utplsql.cli.exception.DatabaseConnectionFailed;
+import org.utplsql.cli.log.StringBlockFormatter;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -117,17 +119,7 @@ public class RunCommand implements ICommand {
 
         LoggerConfiguration.configureDefault();
 
-        logger.info("##################### utPLSQL cli ####################");
-        logger.info("#");
-        logger.info("#   {} ", CliVersionInfo.getInfo());
-        logger.info("#   {} ", JavaApiVersionInfo.getInfo());
-        logger.info("#   Java-Version: {} ", System.getProperty("java.version"));
-        logger.info("#   ORACLE_HOME: {} ", EnvironmentVariableUtil.getEnvValue("ORACLE_HOME"));
-        logger.info("#  ");
-        logger.info("#   Thank you for testing! ");
-        logger.info("#");
-        logger.info("######################################################");
-        logger.info("");
+        outputMainInformation();
 
         try {
 
@@ -173,6 +165,7 @@ public class RunCommand implements ICommand {
                 compatibilityProxy = checkFrameworkCompatibility(conn);
 
                 logger.info("Successfully connected to database. UtPLSQL core: " + compatibilityProxy.getDatabaseVersion());
+                logger.info("Oracle-Version: {}", new DefaultDatabaseInformation().getOracleVersion(conn));
 
                 reporterFactory = ReporterFactoryProvider.createReporterFactory(compatibilityProxy);
 
@@ -208,6 +201,8 @@ public class RunCommand implements ICommand {
                             .includeObjects(finalIncludeObjectsList)
                             .excludeObjects(finalExcludeObjectsList);
 
+                    logger.info("Running tests now.");
+                    logger.info("--------------------------------------");
                     testRunner.run(conn);
                 } catch (SomeTestsFailedException e) {
                     returnCode[0] = this.failureExitCode;
@@ -223,6 +218,10 @@ public class RunCommand implements ICommand {
 
             executorService.shutdown();
             executorService.awaitTermination(60, TimeUnit.MINUTES);
+
+            logger.info("--------------------------------------");
+            logger.info("All tests done.");
+
             return returnCode[0];
         }
         catch ( DatabaseNotCompatibleException | UtPLSQLNotInstalledException | DatabaseConnectionFailed e ) {
@@ -238,6 +237,20 @@ public class RunCommand implements ICommand {
         return "run";
     }
 
+
+    private void outputMainInformation() {
+
+        StringBlockFormatter formatter = new StringBlockFormatter("utPLCSL cli");
+        formatter.appendLine(CliVersionInfo.getInfo());
+        formatter.appendLine(JavaApiVersionInfo.getInfo());
+        formatter.appendLine("Java-Version: " + System.getProperty("java.version"));
+        formatter.appendLine("ORACLE_HOME: " + EnvironmentVariableUtil.getEnvValue("ORACLE_HOME"));
+        formatter.appendLine("");
+        formatter.appendLine("Thanks for testing!");
+
+        logger.info(formatter.toString());
+        logger.info("");
+    }
 
     /** Returns FileMapperOptions for the first item of a given param list in a baseDir
      *
