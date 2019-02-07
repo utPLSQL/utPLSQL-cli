@@ -36,6 +36,8 @@ public class ReportersCommand implements ICommand {
     @Override
     public int run() {
 
+        LoggerConfiguration.configure(true, false );
+
         try {
             DataSource ds = DataSourceProvider.getDataSource(getConnectionInfo(), 1);
             try (Connection con = ds.getConnection()) {
