@@ -102,6 +102,15 @@ public class RunCommand implements ICommand {
     )
     private String excludeObjects = null;
 
+    @Parameter(
+            names = {"-q", "--quiet"},
+            description = "Does not output the informational messages normally printed to console")
+    private boolean logSilent = false;
+
+    @Parameter(
+            names = {"-d", "--debug"},
+            description = "Outputs a load of debug information to console")
+    private boolean logDebug = false;
 
     private CompatibilityProxy compatibilityProxy;
     private ReporterFactory reporterFactory;
@@ -115,10 +124,12 @@ public class RunCommand implements ICommand {
         return testPaths;
     }
 
+    public void init() {
+        LoggerConfiguration.configure(logSilent, logDebug);
+    }
+
     public int run() {
-
-        LoggerConfiguration.configureDefault();
-
+        init();
         outputMainInformation();
 
         try {

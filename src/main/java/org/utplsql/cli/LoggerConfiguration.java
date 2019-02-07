@@ -10,32 +10,55 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.LoggerFactory;
 import org.utplsql.api.TestRunner;
 
-public class LoggerConfiguration {
+class LoggerConfiguration {
 
-    static void configureDefault() {
+    static void configure(boolean silent, boolean debug) {
+        if ( silent )
+            configureSilent();
+        else if ( debug )
+            configureDebug();
+        else
+            configureDefault();
+    }
+
+    private static void configureSilent() {
+        Logger root = (Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        root.setLevel(Level.OFF);
+    }
+
+    private static void configureDefault() {
         Logger root = (Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.INFO);
 
-        Logger hikariLogger = (Logger) LoggerFactory.getLogger(HikariDataSource.class);
-        hikariLogger.setLevel(Level.OFF);
-
+        ((Logger) LoggerFactory.getLogger(HikariDataSource.class)).setLevel(Level.OFF);
         ((Logger) LoggerFactory.getLogger(TestRunner.class)).setLevel(Level.ERROR);
 
+        setSingleConsoleAppenderWithLayout(root, "%msg%n");
+    }
+
+    private static void configureDebug() {
+        Logger root = (Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        root.setLevel(Level.DEBUG);
+
+        setSingleConsoleAppenderWithLayout(root, "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n");
+    }
+
+    private static void setSingleConsoleAppenderWithLayout( Logger logger, String patternLayout ) {
         LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 
         PatternLayoutEncoder ple = new PatternLayoutEncoder();
-        ple.setPattern("%msg%n");
+        ple.setPattern(patternLayout);
 
         ple.setContext(lc);
         ple.start();
 
-        ConsoleAppender<ILoggingEvent> consoleAppender = new ConsoleAppender<ILoggingEvent>();
+        ConsoleAppender<ILoggingEvent> consoleAppender = new ConsoleAppender<>();
         consoleAppender.setEncoder(ple);
         consoleAppender.setContext(lc);
         consoleAppender.start();
 
-        root.detachAndStopAllAppenders();
-        root.setAdditive(false);
-        root.addAppender(consoleAppender);
+        logger.detachAndStopAllAppenders();
+        logger.setAdditive(false);
+        logger.addAppender(consoleAppender);
     }
 }

@@ -29,6 +29,17 @@ public class RunCommandIT extends AbstractFileOutputTest {
         else
             assertEquals(0, result);
     }
+
+    @Test
+    public void run_Debug() throws Exception {
+
+        int result = TestHelper.runApp("run",
+                TestHelper.getConnectionString(),
+                "--debug");
+
+        assertEquals(1, result);
+    }
+
     @Test
     public void run_MultipleReporters() throws Exception {
 
