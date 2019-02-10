@@ -3,10 +3,8 @@ package org.utplsql.cli;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import org.utplsql.api.DBHelper;
 import org.utplsql.api.JavaApiVersionInfo;
 import org.utplsql.api.Version;
-import org.utplsql.api.db.DatabaseInformation;
 import org.utplsql.api.db.DefaultDatabaseInformation;
 import org.utplsql.api.exception.UtPLSQLNotInstalledException;
 

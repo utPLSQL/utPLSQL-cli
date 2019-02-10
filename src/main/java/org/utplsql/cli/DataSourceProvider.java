@@ -1,7 +1,6 @@
 package org.utplsql.cli;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.utplsql.api.EnvironmentVariableUtil;
 import org.utplsql.cli.datasource.TestedDataSourceProvider;
 
 import javax.sql.DataSource;
