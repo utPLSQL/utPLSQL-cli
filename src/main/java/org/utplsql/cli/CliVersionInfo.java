@@ -6,7 +6,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URISyntaxException;
 
 /** This class is getting updated automatically by the build process.
  * Please do not update its constants manually cause they will be overwritten.

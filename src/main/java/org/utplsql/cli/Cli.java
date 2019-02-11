@@ -1,7 +1,6 @@
 package org.utplsql.cli;
 
 import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 
 public class Cli {
