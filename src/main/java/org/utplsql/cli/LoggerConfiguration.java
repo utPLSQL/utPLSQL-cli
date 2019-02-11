@@ -11,7 +11,9 @@ import org.slf4j.LoggerFactory;
 import org.utplsql.api.TestRunner;
 
 class LoggerConfiguration {
-
+    private LoggerConfiguration() {
+       throw new UnsupportedOperationException();
+    }
     static void configure(boolean silent, boolean debug) {
         if ( silent )
             configureSilent();
