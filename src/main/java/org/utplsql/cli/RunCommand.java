@@ -125,7 +125,16 @@ public class RunCommand implements ICommand {
     }
 
     void init() {
-        LoggerConfiguration.configure(logSilent, logDebug);
+
+        LoggerConfiguration.ConfigLevel level = LoggerConfiguration.ConfigLevel.BASIC;
+        if ( logSilent ) {
+            level = LoggerConfiguration.ConfigLevel.NONE;
+        }
+        else if ( logDebug ) {
+            level = LoggerConfiguration.ConfigLevel.DEBUG;
+        }
+
+        LoggerConfiguration.configure(level);
     }
 
     public int run() {
@@ -251,7 +260,7 @@ public class RunCommand implements ICommand {
             // First of all do a compatibility check and fail-fast
             compatibilityProxy = checkFrameworkCompatibility(conn);
 
-            logger.info("Successfully connected to database. UtPLSQL core: " + compatibilityProxy.getDatabaseVersion());
+            logger.info("Successfully connected to database. UtPLSQL core: {}", compatibilityProxy.getDatabaseVersion());
             logger.info("Oracle-Version: {}", new DefaultDatabaseInformation().getOracleVersion(conn));
         }
         catch (SQLException e) {

@@ -18,6 +18,8 @@ public class Cli {
     }
 
     static int runWithExitCode( String[] args ) {
+
+        LoggerConfiguration.configure(LoggerConfiguration.ConfigLevel.NONE);
         LocaleInitializer.initLocale();
 
         JCommander jc = new JCommander();

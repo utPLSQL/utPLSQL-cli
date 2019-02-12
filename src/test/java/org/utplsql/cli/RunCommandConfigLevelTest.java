@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class RunCommandLogLevelTest {
+public class RunCommandConfigLevelTest {
 
     private Logger getRootLogger() {
         return (Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);

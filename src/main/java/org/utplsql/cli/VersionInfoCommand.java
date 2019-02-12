@@ -34,8 +34,6 @@ public class VersionInfoCommand implements ICommand {
 
     public int run() {
 
-        LoggerConfiguration.configure(true, false );
-
         System.out.println(CliVersionInfo.getInfo());
         System.out.println(JavaApiVersionInfo.getInfo());
 
