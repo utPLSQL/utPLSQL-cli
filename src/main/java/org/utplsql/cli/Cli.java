@@ -1,7 +1,6 @@
 package org.utplsql.cli;
 
 import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 
 public class Cli {
@@ -19,7 +18,7 @@ public class Cli {
 
     static int runWithExitCode( String[] args ) {
 
-        LoggerConfiguration.configure(LoggerConfiguration.ConfigLevel.NONE);
+        LoggerConfiguration.configureDefault();
         LocaleInitializer.initLocale();
 
         JCommander jc = new JCommander();

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration name="DEFAULT_CONFIG">
+    <Appenders >
+        <Console name="DEBUGGER" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"/>
+        </Console>
+        <Console name="CLI" target="SYSTEM_OUT">
+            <PatternLayout pattern="%msg%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Logger name="org.utplsql.cli" level="info" additivity="false">
+            <AppenderRef ref="CLI"/>
+        </Logger>
+        <Root level="error">
+            <AppenderRef ref="DEBUGGER"/>
+        </Root>
+    </Loggers>
+</Configuration>

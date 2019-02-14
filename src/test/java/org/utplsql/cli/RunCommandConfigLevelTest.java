@@ -1,16 +1,20 @@
 package org.utplsql.cli;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
-import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class RunCommandConfigLevelTest {
+class RunCommandConfigLevelTest {
 
     private Logger getRootLogger() {
-        return (Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        return LogManager.getRootLogger();
+    }
+
+    private Logger getCliLogger() {
+        return LogManager.getLogger("org.utplsql.cli");
     }
 
     @Test
@@ -18,7 +22,8 @@ public class RunCommandConfigLevelTest {
         TestHelper.createRunCommand(TestHelper.getConnectionString())
                 .init();
 
-        assertEquals(Level.INFO, getRootLogger().getLevel());
+        assertEquals(Level.ERROR, getRootLogger().getLevel());
+        assertEquals(Level.INFO, getCliLogger().getLevel());
     }
 
     @Test
@@ -26,7 +31,8 @@ public class RunCommandConfigLevelTest {
         TestHelper.createRunCommand(TestHelper.getConnectionString(), "-q")
                 .init();
 
-        assertEquals(Level.OFF, getRootLogger().getLevel());
+        assertEquals(Level.ERROR, getRootLogger().getLevel());
+        assertEquals(Level.OFF, getCliLogger().getLevel());
     }
 
     @Test
@@ -35,5 +41,6 @@ public class RunCommandConfigLevelTest {
                 .init();
 
         assertEquals(Level.DEBUG, getRootLogger().getLevel());
+        assertEquals(Level.INFO, getCliLogger().getLevel());
     }
 }

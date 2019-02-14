@@ -126,15 +126,11 @@ public class RunCommand implements ICommand {
 
     void init() {
 
-        LoggerConfiguration.ConfigLevel level = LoggerConfiguration.ConfigLevel.BASIC;
-        if ( logSilent ) {
-            level = LoggerConfiguration.ConfigLevel.NONE;
+        if (logSilent) {
+            LoggerConfiguration.configureSilent();
+        } else if (logDebug) {
+            LoggerConfiguration.configureDebug();
         }
-        else if ( logDebug ) {
-            level = LoggerConfiguration.ConfigLevel.DEBUG;
-        }
-
-        LoggerConfiguration.configure(level);
     }
 
     public int run() {
