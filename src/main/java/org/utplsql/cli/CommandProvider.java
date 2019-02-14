@@ -8,8 +8,8 @@ import java.util.stream.Stream;
 
 public class CommandProvider {
 
-    private Map<String, ICommand> commands;
-    private JCommander jCommander;
+    private final Map<String, ICommand> commands = new HashMap<>();
+    private final JCommander jCommander;
 
     public CommandProvider( JCommander jCommander ) {
         this.jCommander = jCommander;
@@ -17,8 +17,6 @@ public class CommandProvider {
     }
 
     private void init() {
-        commands = new HashMap<>();
-
         addCommand(new RunCommand());
         addCommand(new VersionInfoCommand());
         addCommand(new ReportersCommand());

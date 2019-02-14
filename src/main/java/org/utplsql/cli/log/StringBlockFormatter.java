@@ -3,7 +3,7 @@ package org.utplsql.cli.log;
 public class StringBlockFormatter {
 
     private String headline;
-    private StringBuilder content = new StringBuilder();
+    private final StringBuilder content = new StringBuilder();
 
     public StringBlockFormatter() {}
 

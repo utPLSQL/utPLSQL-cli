@@ -23,7 +23,7 @@ public class TestedDataSourceProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(TestedDataSourceProvider.class);
     private final ConnectionConfig config;
-    private List<ConnectStringPossibility> possibilities = new ArrayList<>();
+    private final List<ConnectStringPossibility> possibilities = new ArrayList<>();
 
     public TestedDataSourceProvider(ConnectionConfig config) {
         this.config = config;
