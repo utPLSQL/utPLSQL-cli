@@ -52,8 +52,8 @@ public class TestedDataSourceProvider {
 
         for (ConnectStringPossibility possibility : possibilities) {
             ds.setJdbcUrl(possibility.getConnectString(config));
-            try (Connection con = ds.getConnection()) {
-                logger.info("Use connectstring {}", possibility.getMaskedConnectString(config));
+            try (Connection ignored = ds.getConnection()) {
+                logger.info("Use connection string {}", possibility.getMaskedConnectString(config));
                 return;
             } catch (UnsatisfiedLinkError | Exception e) {
                 errors.add(possibility.getMaskedConnectString(config) + ": " + e.getMessage());

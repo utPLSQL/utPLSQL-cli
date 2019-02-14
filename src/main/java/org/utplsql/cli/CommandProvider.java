@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public class CommandProvider {
+class CommandProvider {
 
     private final Map<String, ICommand> commands = new HashMap<>();
     private final JCommander jCommander;

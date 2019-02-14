@@ -23,7 +23,7 @@ public class VersionInfoCommand implements ICommand {
             description = ConnectionInfo.COMMANDLINE_PARAM_DESCRIPTION)
     private List<ConnectionInfo> connectionInfoList = new ArrayList<>();
 
-    public ConnectionInfo getConnectionInfo() {
+    private ConnectionInfo getConnectionInfo() {
         if ( connectionInfoList != null && connectionInfoList.size() > 0 )
             return connectionInfoList.get(0);
         else
