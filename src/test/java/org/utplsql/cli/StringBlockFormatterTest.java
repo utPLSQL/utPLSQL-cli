@@ -5,7 +5,7 @@ import org.utplsql.cli.log.StringBlockFormatter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class StringBlockFormatterTest {
+class StringBlockFormatterTest {
 
     @Test
     void getBlockFormattedString() {

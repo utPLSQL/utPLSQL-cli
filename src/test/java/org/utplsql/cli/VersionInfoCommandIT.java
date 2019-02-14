@@ -5,17 +5,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.utplsql.cli.util.SystemOutCapturer;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class VersionInfoCommandIT {
+class VersionInfoCommandIT {
 
     private SystemOutCapturer capturer;
 
     @BeforeEach
-    public void setupCaptureSystemOut() {
+    void setupCaptureSystemOut() {
         capturer = new SystemOutCapturer();
     }
 
@@ -30,7 +29,7 @@ public class VersionInfoCommandIT {
         assertEquals(expected, numOfLines, String.format("Expected output to have %n lines, but got %n", expected, numOfLines));
     }
     @Test
-    public void infoCommandRunsWithoutConnection() throws Exception {
+    void infoCommandRunsWithoutConnection() {
 
         capturer.start();
 
@@ -42,7 +41,7 @@ public class VersionInfoCommandIT {
         assertNumberOfLines(2, output);
     }
     @Test
-    public void infoCommandRunsWithConnection() throws Exception {
+    void infoCommandRunsWithConnection() {
 
         capturer.start();
 
@@ -55,7 +54,7 @@ public class VersionInfoCommandIT {
     }
 
     @AfterEach
-    public void cleanupCaptureSystemOut() throws IOException {
+    void cleanupCaptureSystemOut() {
         capturer.stop();
     }
 }

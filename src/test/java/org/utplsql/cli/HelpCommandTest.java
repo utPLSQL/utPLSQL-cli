@@ -10,18 +10,18 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class HelpCommandTest {
+class HelpCommandTest {
 
 
     private SystemOutCapturer capturer;
 
     @BeforeEach
-    public void setupCaptureSystemOut() {
+    void setupCaptureSystemOut() {
         capturer = new SystemOutCapturer();
     }
 
     @Test
-    public void callHelp() {
+    void callHelp() {
 
         capturer.start();
         int result = TestHelper.runApp("-h");
@@ -32,7 +32,7 @@ public class HelpCommandTest {
     }
 
     @Test
-    public void callWithNoArgs() {
+    void callWithNoArgs() {
 
         capturer.start();
         int result = TestHelper.runApp();
@@ -43,7 +43,7 @@ public class HelpCommandTest {
     }
 
     @AfterEach
-    public void cleanupCaptureSystemOut() throws IOException {
+    void cleanupCaptureSystemOut() throws IOException {
         capturer.stop();
     }
 }

@@ -6,10 +6,10 @@ import org.utplsql.api.Version;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class TestRunCommandChecker {
+class TestRunCommandChecker {
 
     @Test
-    public void getCheckFailOnErrorMessage()
+    void getCheckFailOnErrorMessage()
     {
         // FailOnError option should work since 3.0.3+ framework
         assertNotNull(RunCommandChecker.getCheckFailOnErrorMessage(2, new Version("3.0.0")));

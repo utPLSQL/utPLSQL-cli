@@ -11,10 +11,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * System tests for run command.
  */
-public class RunCommandIT extends AbstractFileOutputTest {
+class RunCommandIT extends AbstractFileOutputTest {
 
     @Test
-    public void run_Default() throws Exception {
+    void run_Default() throws Exception {
 
         int result = TestHelper.runApp("run",
                 TestHelper.getConnectionString(),
@@ -31,7 +31,7 @@ public class RunCommandIT extends AbstractFileOutputTest {
     }
 
     @Test
-    public void run_Debug() throws Exception {
+    void run_Debug() throws Exception {
 
         int result = TestHelper.runApp("run",
                 TestHelper.getConnectionString(),
@@ -41,7 +41,7 @@ public class RunCommandIT extends AbstractFileOutputTest {
     }
 
     @Test
-    public void run_MultipleReporters() throws Exception {
+    void run_MultipleReporters() throws Exception {
 
         String outputFileName = "output_" + System.currentTimeMillis() + ".xml";
         addTempPath(Paths.get(outputFileName));
