@@ -46,6 +46,10 @@ public class TestedDataSourceProvider {
     {
         List<String> errors = new ArrayList<>();
         Throwable lastException = null;
+
+        ds.setUsername(config.getUser());
+        ds.setPassword(config.getPassword());
+
         for (ConnectStringPossibility possibility : possibilities) {
             ds.setJdbcUrl(possibility.getConnectString(config));
             try (Connection con = ds.getConnection()) {
@@ -92,7 +96,7 @@ public class TestedDataSourceProvider {
     private static class ThickConnectStringPossibility implements ConnectStringPossibility {
         @Override
         public String getConnectString(ConnectionConfig config) {
-            return "jdbc:oracle:oci8:" + config.getConnectString();
+            return "jdbc:oracle:oci8:@" + config.getConnect();
         }
 
         @Override
@@ -104,7 +108,7 @@ public class TestedDataSourceProvider {
     private static class ThinConnectStringPossibility implements ConnectStringPossibility {
         @Override
         public String getConnectString(ConnectionConfig config) {
-            return "jdbc:oracle:thin:" + config.getConnectString();
+            return "jdbc:oracle:thin:@" + config.getConnect();
         }
 
         @Override
