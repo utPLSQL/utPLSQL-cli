@@ -1,6 +1,8 @@
 package org.utplsql.cli.datasource;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.utplsql.api.EnvironmentVariableUtil;
 import org.utplsql.cli.ConnectionConfig;
 import org.utplsql.cli.exception.DatabaseConnectionFailed;
@@ -19,6 +21,7 @@ public class TestedDataSourceProvider {
         String getMaskedConnectString(ConnectionConfig config);
     }
 
+    private static final Logger logger = LoggerFactory.getLogger(TestedDataSourceProvider.class);
     private final ConnectionConfig config;
     private List<ConnectStringPossibility> possibilities = new ArrayList<>();
 
@@ -43,9 +46,14 @@ public class TestedDataSourceProvider {
     {
         List<String> errors = new ArrayList<>();
         Throwable lastException = null;
+
+        ds.setUsername(config.getUser());
+        ds.setPassword(config.getPassword());
+
         for (ConnectStringPossibility possibility : possibilities) {
             ds.setJdbcUrl(possibility.getConnectString(config));
             try (Connection con = ds.getConnection()) {
+                logger.info("Use connectstring {}", possibility.getMaskedConnectString(config));
                 return;
             } catch (UnsatisfiedLinkError | Exception e) {
                 errors.add(possibility.getMaskedConnectString(config) + ": " + e.getMessage());
@@ -78,6 +86,7 @@ public class TestedDataSourceProvider {
                         sb.append(String.format("EXECUTE IMMEDIATE q'[%s]';\n", command));
                     sb.append("END;");
 
+                    logger.debug("NLS settings: {}", sb.toString());
                     ds.setConnectionInitSql(sb.toString());
                 }
             }
@@ -87,7 +96,7 @@ public class TestedDataSourceProvider {
     private static class ThickConnectStringPossibility implements ConnectStringPossibility {
         @Override
         public String getConnectString(ConnectionConfig config) {
-            return "jdbc:oracle:oci8:" + config.getConnectString();
+            return "jdbc:oracle:oci8:@" + config.getConnect();
         }
 
         @Override
@@ -99,7 +108,7 @@ public class TestedDataSourceProvider {
     private static class ThinConnectStringPossibility implements ConnectStringPossibility {
         @Override
         public String getConnectString(ConnectionConfig config) {
-            return "jdbc:oracle:thin:" + config.getConnectString();
+            return "jdbc:oracle:thin:@" + config.getConnect();
         }
 
         @Override

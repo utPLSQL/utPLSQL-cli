@@ -123,6 +123,12 @@ The file tnsnames.ora must contain valid TNS entries.
 -exclude=pckg_list  - Comma-separated object list to exclude from the coverage report.
                       Format: [schema.]package[,[schema.]package ...].
                       See coverage reporting options in framework documentation.
+                      
+-q                  - Does not output the informational messages normally printed to console.
+                      Default: false
+                      
+-d                  - Outputs a load of debug information to console
+                      Default: false
 ```
 
 Parameters -f, -o, -s are correlated. That is parameters -o and -s are controlling outputs for reporter specified by the preceding -f parameter.

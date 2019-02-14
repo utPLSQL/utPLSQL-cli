@@ -47,6 +47,7 @@ public class ReportersCommand implements ICommand {
         }
         catch ( DatabaseNotCompatibleException | UtPLSQLNotInstalledException | DatabaseConnectionFailed | IllegalArgumentException e ) {
             System.out.println(e.getMessage());
+            return 1;
         }
         catch (Exception e) {
             e.printStackTrace();
