@@ -23,7 +23,7 @@ public class TestedDataSourceProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(TestedDataSourceProvider.class);
     private final ConnectionConfig config;
-    private List<ConnectStringPossibility> possibilities = new ArrayList<>();
+    private final List<ConnectStringPossibility> possibilities = new ArrayList<>();
 
     public TestedDataSourceProvider(ConnectionConfig config) {
         this.config = config;
@@ -52,8 +52,8 @@ public class TestedDataSourceProvider {
 
         for (ConnectStringPossibility possibility : possibilities) {
             ds.setJdbcUrl(possibility.getConnectString(config));
-            try (Connection con = ds.getConnection()) {
-                logger.info("Use connectstring {}", possibility.getMaskedConnectString(config));
+            try (Connection ignored = ds.getConnection()) {
+                logger.info("Use connection string {}", possibility.getMaskedConnectString(config));
                 return;
             } catch (UnsatisfiedLinkError | Exception e) {
                 errors.add(possibility.getMaskedConnectString(config) + ": " + e.getMessage());

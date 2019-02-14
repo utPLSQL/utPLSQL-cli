@@ -7,11 +7,12 @@ import com.beust.jcommander.JCommander;
  */
 public class HelpCommand implements ICommand {
 
-    private String errorMessage;
-    private JCommander jCommander;
+    private final String errorMessage;
+    private final JCommander jCommander;
 
     public HelpCommand(JCommander jCommander) {
         this.jCommander = jCommander;
+        this.errorMessage = null;
     }
 
     public HelpCommand( JCommander jCommander, String errorMessage ) {

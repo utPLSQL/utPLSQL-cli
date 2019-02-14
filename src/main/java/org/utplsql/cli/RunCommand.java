@@ -121,12 +121,8 @@ public class RunCommand implements ICommand {
     private ReporterFactory reporterFactory;
     private ReporterManager reporterManager;
 
-    public ConnectionInfo getConnectionInfo() {
+    private ConnectionInfo getConnectionInfo() {
         return connectionInfoList.get(0);
-    }
-
-    public List<String> getTestPaths() {
-        return testPaths;
     }
 
     void init() {
@@ -149,7 +145,6 @@ public class RunCommand implements ICommand {
         try {
 
             final List<Reporter> reporterList;
-            final List<String> testPaths = getTestPaths();
 
             final File baseDir = new File("").getAbsoluteFile();
             final FileMapperOptions[] sourceMappingOptions = {null};
@@ -160,23 +155,8 @@ public class RunCommand implements ICommand {
             sourceMappingOptions[0] = getFileMapperOptionsByParamListItem(this.sourcePathParams, baseDir);
             testMappingOptions[0] = getFileMapperOptionsByParamListItem(this.testPathParams, baseDir);
 
-            ArrayList<String> includeObjectsList;
-            ArrayList<String> excludeObjectsList;
-
-            if (includeObjects != null && !includeObjects.isEmpty()) {
-                includeObjectsList = new ArrayList<>(Arrays.asList(includeObjects.split(",")));
-            } else {
-                includeObjectsList = new ArrayList<>();
-            }
-
-            if (excludeObjects != null && !excludeObjects.isEmpty()) {
-                excludeObjectsList = new ArrayList<>(Arrays.asList(excludeObjects.split(",")));
-            } else {
-                excludeObjectsList = new ArrayList<>();
-            }
-
-            final ArrayList<String> finalIncludeObjectsList = includeObjectsList;
-            final ArrayList<String> finalExcludeObjectsList = excludeObjectsList;
+            final List<String> finalIncludeObjectsList = getObjectList(includeObjects);
+            final List<String> finalExcludeObjectsList = getObjectList(excludeObjects);
 
             final DataSource dataSource = DataSourceProvider.getDataSource(getConnectionInfo(), getReporterManager().getNumberOfReporters() + 1);
 
@@ -236,6 +216,16 @@ public class RunCommand implements ICommand {
         return 1;
     }
 
+    private ArrayList<String> getObjectList(String includeObjects) {
+        ArrayList<String> includeObjectsList;
+        if (includeObjects != null && !includeObjects.isEmpty()) {
+            includeObjectsList = new ArrayList<>(Arrays.asList(includeObjects.split(",")));
+        } else {
+            includeObjectsList = new ArrayList<>();
+        }
+        return includeObjectsList;
+    }
+
     @Override
     public String getCommand() {
         return "run";
@@ -244,7 +234,7 @@ public class RunCommand implements ICommand {
 
     private void outputMainInformation() {
 
-        StringBlockFormatter formatter = new StringBlockFormatter("utPLCSL cli");
+        StringBlockFormatter formatter = new StringBlockFormatter("utPLSQL cli");
         formatter.appendLine(CliVersionInfo.getInfo());
         formatter.appendLine(JavaApiVersionInfo.getInfo());
         formatter.appendLine("Java-Version: " + System.getProperty("java.version"));
@@ -322,7 +312,7 @@ public class RunCommand implements ICommand {
         return proxy;
     }
 
-    public FileMapperOptions getMapperOptions(List<String> mappingParams, List<String> filePaths) {
+    private FileMapperOptions getMapperOptions(List<String> mappingParams, List<String> filePaths) {
         FileMapperOptions mapperOptions = new FileMapperOptions(filePaths);
 
         final String OPT_OWNER="-owner=";
@@ -369,17 +359,6 @@ public class RunCommand implements ICommand {
         return mapperOptions;
     }
 
-    /** Returns the version of the database framework if available
-     *
-     * @return
-     */
-    public Version getDatabaseVersion() {
-        if ( compatibilityProxy != null )
-            return compatibilityProxy.getDatabaseVersion();
-
-        return null;
-    }
-
     private ReporterManager getReporterManager() {
         if ( reporterManager == null )
             reporterManager = new ReporterManager(reporterParams);
@@ -387,7 +366,7 @@ public class RunCommand implements ICommand {
         return reporterManager;
     }
 
-    public List<ReporterOptions> getReporterOptionsList() {
+    List<ReporterOptions> getReporterOptionsList() {
         return getReporterManager().getReporterOptionsList();
     }
 }

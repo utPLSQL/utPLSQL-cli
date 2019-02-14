@@ -14,16 +14,14 @@ import java.io.InputStreamReader;
  */
 public class CliVersionInfo {
 
-    private static final String MAVEN_PROJECT_NAME = "utPLSL-cli";
+    private static final String MAVEN_PROJECT_NAME = "utPLSQL-cli";
     private static String MAVEN_PROJECT_VERSION = "unknown";
 
     static {
         try {
-            try ( InputStream in = JavaApiVersionInfo.class.getClassLoader().getResourceAsStream("utplsql-cli.version")) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            try ( InputStream in = JavaApiVersionInfo.class.getClassLoader().getResourceAsStream("utplsql-cli.version");
+                  BufferedReader reader = new BufferedReader(new InputStreamReader(in)) ) {
                 MAVEN_PROJECT_VERSION = reader.readLine();
-
-                reader.close();
             }
         }
         catch ( IOException e ) {

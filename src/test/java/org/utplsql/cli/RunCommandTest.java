@@ -10,10 +10,10 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Unit test for run command.
  */
-public class RunCommandTest {
+class RunCommandTest {
 
     @Test
-    public void reporterOptions_Default() {
+    void reporterOptions_Default() {
         RunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString());
 
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
@@ -26,7 +26,7 @@ public class RunCommandTest {
     }
 
     @Test
-    public void reporterOptions_OneReporter() {
+    void reporterOptions_OneReporter() {
         RunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(), "-f=ut_documentation_reporter", "-o=output.txt");
 
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
@@ -39,7 +39,7 @@ public class RunCommandTest {
     }
 
     @Test
-    public void reporterOptions_OneReporterForceScreen() {
+    void reporterOptions_OneReporterForceScreen() {
         RunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(), "-f=ut_documentation_reporter", "-o=output.txt", "-s");
 
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
@@ -52,7 +52,7 @@ public class RunCommandTest {
     }
 
     @Test
-    public void reporterOptions_OneReporterForceScreenInverse() {
+    void reporterOptions_OneReporterForceScreenInverse() {
         RunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(), "-f=ut_documentation_reporter", "-s", "-o=output.txt");
 
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
@@ -65,7 +65,7 @@ public class RunCommandTest {
     }
 
     @Test
-    public void reporterOptions_TwoReporters() {
+    void reporterOptions_TwoReporters() {
         RunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(),
                 "-f=ut_documentation_reporter",
                 "-f=ut_coverage_html_reporter", "-o=coverage.html", "-s");

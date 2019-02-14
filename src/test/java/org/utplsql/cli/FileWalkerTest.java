@@ -11,12 +11,12 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 /**
  * Created by Vinicius on 18/06/2017.
  */
-public class FileWalkerTest {
+class FileWalkerTest {
 
     private final File BASE_DIR = new File(new File("").getAbsolutePath(), "assets/demo_project");
 
     @Test
-    public void fileWalker_Relative() {
+    void fileWalker_Relative() {
         List<String> fileList = new FileWalker().getFileList(BASE_DIR, "source");
         Collections.sort(fileList);
         assertArrayEquals(new Object[] {
@@ -28,7 +28,7 @@ public class FileWalkerTest {
     }
 
     @Test
-    public void fileWalker_Absolute() {
+    void fileWalker_Absolute() {
         List<String> fileList = new FileWalker().getFileList(BASE_DIR, "source", false);
         Collections.sort(fileList);
         assertArrayEquals(new Object[] {

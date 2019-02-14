@@ -118,5 +118,5 @@ class ReporterManager {
         return reporterOptionsList;
     }
 
-    public int getNumberOfReporters() { return reporterOptionsList.size(); };
+    public int getNumberOfReporters() { return reporterOptionsList.size(); }
 }
