@@ -112,6 +112,11 @@ public class RunCommand implements ICommand {
             description = "Outputs a load of debug information to console")
     private boolean logDebug = false;
 
+    @Parameter(
+            names = {"-t", "--timeout"},
+            description = "Sets the timeout in minutes after which the cli will abort. Default 60")
+    private int timeoutInMinutes = 60;
+
     private CompatibilityProxy compatibilityProxy;
     private ReporterFactory reporterFactory;
     private ReporterManager reporterManager;
@@ -216,7 +221,7 @@ public class RunCommand implements ICommand {
             getReporterManager().startReporterGatherers(executorService, dataSource, returnCode);
 
             executorService.shutdown();
-            executorService.awaitTermination(60, TimeUnit.MINUTES);
+            executorService.awaitTermination(timeoutInMinutes, TimeUnit.MINUTES);
 
             logger.info("--------------------------------------");
             logger.info("All tests done.");
