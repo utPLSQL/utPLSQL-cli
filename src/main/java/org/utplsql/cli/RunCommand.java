@@ -244,6 +244,7 @@ public class RunCommand implements ICommand {
         formatter.appendLine(JavaApiVersionInfo.getInfo());
         formatter.appendLine("Java-Version: " + System.getProperty("java.version"));
         formatter.appendLine("ORACLE_HOME: " + EnvironmentVariableUtil.getEnvValue("ORACLE_HOME"));
+        formatter.appendLine("NLS_LANG: " + EnvironmentVariableUtil.getEnvValue("NLS_LANG"));
         formatter.appendLine("");
         formatter.appendLine("Thanks for testing!");
 

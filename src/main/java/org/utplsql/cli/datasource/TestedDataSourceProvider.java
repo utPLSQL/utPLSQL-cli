@@ -1,6 +1,8 @@
 package org.utplsql.cli.datasource;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.utplsql.api.EnvironmentVariableUtil;
 import org.utplsql.cli.ConnectionConfig;
 import org.utplsql.cli.exception.DatabaseConnectionFailed;
@@ -19,6 +21,7 @@ public class TestedDataSourceProvider {
         String getMaskedConnectString(ConnectionConfig config);
     }
 
+    private static final Logger logger = LoggerFactory.getLogger(TestedDataSourceProvider.class);
     private final ConnectionConfig config;
     private List<ConnectStringPossibility> possibilities = new ArrayList<>();
 
@@ -46,6 +49,7 @@ public class TestedDataSourceProvider {
         for (ConnectStringPossibility possibility : possibilities) {
             ds.setJdbcUrl(possibility.getConnectString(config));
             try (Connection con = ds.getConnection()) {
+                logger.info("Use connectstring {}", possibility.getMaskedConnectString(config));
                 return;
             } catch (UnsatisfiedLinkError | Exception e) {
                 errors.add(possibility.getMaskedConnectString(config) + ": " + e.getMessage());
@@ -78,6 +82,7 @@ public class TestedDataSourceProvider {
                         sb.append(String.format("EXECUTE IMMEDIATE q'[%s]';\n", command));
                     sb.append("END;");
 
+                    logger.debug("NLS settings: {}", sb.toString());
                     ds.setConnectionInitSql(sb.toString());
                 }
             }
