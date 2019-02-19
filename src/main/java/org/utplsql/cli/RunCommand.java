@@ -13,6 +13,7 @@ import org.utplsql.api.exception.UtPLSQLNotInstalledException;
 import org.utplsql.api.reporter.Reporter;
 import org.utplsql.api.reporter.ReporterFactory;
 import org.utplsql.cli.exception.DatabaseConnectionFailed;
+import org.utplsql.cli.exception.ReporterTimeoutException;
 import org.utplsql.cli.log.StringBlockFormatter;
 
 import javax.sql.DataSource;
@@ -201,19 +202,21 @@ public class RunCommand implements ICommand {
             getReporterManager().startReporterGatherers(executorService, dataSource, returnCode);
 
             executorService.shutdown();
-            executorService.awaitTermination(timeoutInMinutes, TimeUnit.MINUTES);
+            if ( !executorService.awaitTermination(timeoutInMinutes, TimeUnit.MINUTES) ) {
+                throw new ReporterTimeoutException(timeoutInMinutes);
+            }
 
             logger.info("--------------------------------------");
             logger.info("All tests done.");
 
             return returnCode[0];
         }
-        catch ( DatabaseNotCompatibleException | UtPLSQLNotInstalledException | DatabaseConnectionFailed e ) {
+        catch ( DatabaseNotCompatibleException | UtPLSQLNotInstalledException | DatabaseConnectionFailed | ReporterTimeoutException e ) {
             System.out.println(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return 1;
+        return Cli.DEFAULT_ERROR_CODE;
     }
 
     private ArrayList<String> getObjectList(String includeObjects) {
