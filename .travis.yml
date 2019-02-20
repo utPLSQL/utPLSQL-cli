@@ -43,7 +43,9 @@ before_deploy:
 deploy:
   - provider: releases
     api_key: $GITHUB_API_TOKEN
-    file: utPLSQL-cli.zip
+    file:
+      - utPLSQL-cli.zip
+      - utPLSQL-cli.zip.md5
     skip_cleanup: true
     on:
       repository: utPLSQL/utPLSQL-cli
