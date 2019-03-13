@@ -2,12 +2,15 @@ package org.utplsql.cli;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
+import com.zaxxer.hikari.HikariDataSource;
+import com.zaxxer.hikari.pool.HikariProxyConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.utplsql.api.*;
 import org.utplsql.api.compatibility.CompatibilityProxy;
 import org.utplsql.api.db.DefaultDatabaseInformation;
 import org.utplsql.api.exception.DatabaseNotCompatibleException;
+import org.utplsql.api.exception.OracleCreateStatmenetStuckException;
 import org.utplsql.api.exception.SomeTestsFailedException;
 import org.utplsql.api.exception.UtPLSQLNotInstalledException;
 import org.utplsql.api.reporter.Reporter;
@@ -25,6 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -139,7 +143,7 @@ public class RunCommand implements ICommand {
         LoggerConfiguration.configure(level);
     }
 
-    public int run() {
+    public int doRun() {
         init();
         outputMainInformation();
 
@@ -148,18 +152,9 @@ public class RunCommand implements ICommand {
             final List<Reporter> reporterList;
 
             final File baseDir = new File("").getAbsoluteFile();
-            final FileMapperOptions[] sourceMappingOptions = {null};
-            final FileMapperOptions[] testMappingOptions = {null};
-
             final int[] returnCode = {0};
 
-            sourceMappingOptions[0] = getFileMapperOptionsByParamListItem(this.sourcePathParams, baseDir);
-            testMappingOptions[0] = getFileMapperOptionsByParamListItem(this.testPathParams, baseDir);
-
-            final List<String> finalIncludeObjectsList = getObjectList(includeObjects);
-            final List<String> finalExcludeObjectsList = getObjectList(excludeObjects);
-
-            final DataSource dataSource = DataSourceProvider.getDataSource(getConnectionInfo(), getReporterManager().getNumberOfReporters() + 1);
+            final DataSource dataSource = DataSourceProvider.getDataSource(getConnectionInfo(), getReporterManager().getNumberOfReporters() + 2);
 
             initDatabase(dataSource);
             reporterList = initReporters(dataSource);
@@ -173,33 +168,50 @@ public class RunCommand implements ICommand {
             ExecutorService executorService = Executors.newFixedThreadPool(1 + reporterList.size());
 
             // Run tests.
-            executorService.submit(() -> {
-                try (Connection conn = dataSource.getConnection()) {
-                    TestRunner testRunner = new TestRunner()
-                            .addPathList(testPaths)
-                            .addReporterList(reporterList)
-                            .sourceMappingOptions(sourceMappingOptions[0])
-                            .testMappingOptions(testMappingOptions[0])
-                            .colorConsole(this.colorConsole)
-                            .failOnErrors(true)
-                            .skipCompatibilityCheck(skipCompatibilityCheck)
-                            .includeObjects(finalIncludeObjectsList)
-                            .excludeObjects(finalExcludeObjectsList);
+            Future<Integer> future = executorService.submit(() -> {
+                Connection conn = null;
+                try  {
+                    conn = dataSource.getConnection();
+                    TestRunner testRunner = newTestRunner(reporterList);
 
                     logger.info("Running tests now.");
                     logger.info("--------------------------------------");
                     testRunner.run(conn);
                 } catch (SomeTestsFailedException e) {
                     returnCode[0] = this.failureExitCode;
-                } catch (SQLException e) {
-                    System.out.println(e.getMessage());
-                    returnCode[0] = Cli.DEFAULT_ERROR_CODE;
-                    executorService.shutdownNow();
                 }
+                catch (OracleCreateStatmenetStuckException e ) {
+                    try {
+                        conn.abort(Executors.newSingleThreadExecutor());
+                        conn = null;
+                    } catch (SQLException e1) {
+                        logger.error(e1.getMessage(), e1);
+                    }
+                    executorService.shutdownNow();
+                    return 3;
+                }
+                catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                    //returnCode[0] = Cli.DEFAULT_ERROR_CODE;
+                    executorService.shutdownNow();
+                    return Cli.DEFAULT_ERROR_CODE;
+                }
+                finally {
+                    if ( conn != null ) {
+                        try {
+                            conn.close();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                return 0;
             });
 
             // Gather each reporter results on a separate thread.
-            getReporterManager().startReporterGatherers(executorService, dataSource, returnCode);
+            getReporterManager().startReporterGatherers(executorService, dataSource);
+
+            Integer mainTestResult = future.get();
 
             executorService.shutdown();
             if ( !executorService.awaitTermination(timeoutInMinutes, TimeUnit.MINUTES) ) {
@@ -209,7 +221,9 @@ public class RunCommand implements ICommand {
             logger.info("--------------------------------------");
             logger.info("All tests done.");
 
-            return returnCode[0];
+            ((HikariDataSource)dataSource).close();
+
+            return mainTestResult;
         }
         catch ( DatabaseNotCompatibleException | UtPLSQLNotInstalledException | DatabaseConnectionFailed | ReporterTimeoutException e ) {
             System.out.println(e.getMessage());
@@ -217,6 +231,34 @@ public class RunCommand implements ICommand {
             e.printStackTrace();
         }
         return Cli.DEFAULT_ERROR_CODE;
+    }
+
+    public int run() {
+        int i = 1;
+        int exitCode = doRun();
+        // Retry
+        while ( exitCode == 3 && i<10 ) {
+            logger.warn("Retry");
+            exitCode = doRun();
+            i++;
+        }
+        return exitCode;
+    }
+
+    private TestRunner newTestRunner( List<Reporter> reporterList) {
+
+        final File baseDir = new File("").getAbsoluteFile();
+
+        return new TestRunner()
+                .addPathList(testPaths)
+                .addReporterList(reporterList)
+                .sourceMappingOptions(getFileMapperOptionsByParamListItem(this.sourcePathParams, baseDir))
+                .testMappingOptions(getFileMapperOptionsByParamListItem(this.testPathParams, baseDir))
+                .colorConsole(this.colorConsole)
+                .failOnErrors(true)
+                .skipCompatibilityCheck(skipCompatibilityCheck)
+                .includeObjects(getObjectList(includeObjects))
+                .excludeObjects(getObjectList(excludeObjects));
     }
 
     private ArrayList<String> getObjectList(String includeObjects) {
