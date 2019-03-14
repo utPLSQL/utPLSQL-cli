@@ -29,6 +29,14 @@
                   <groupId>com.oracle.jdbc</groupId>
                   <artifactId>ucp</artifactId>
               </exclusion>
+              <exclusion>
+                  <groupId>com.oracle.jdbc</groupId>
+                  <artifactId>ojdbc8</artifactId>
+              </exclusion>
+              <exclusion>
+                  <groupId>com.oracle.jdbc</groupId>
+                  <artifactId>orai18n</artifactId>
+              </exclusion>
           </exclusions>
       </dependency>
       <dependency>
@@ -52,6 +60,18 @@
           <groupId>ch.qos.logback</groupId>
           <artifactId>logback-classic</artifactId>
           <version>1.2.3</version>
+      </dependency>
+      <dependency>
+          <groupId>com.oracle.jdbc</groupId>
+          <artifactId>ojdbc8</artifactId>
+          <version>12.2.0.1</version>
+          <scope>compile</scope>
+      </dependency>
+      <dependency>
+          <groupId>com.oracle.jdbc</groupId>
+          <artifactId>orai18n</artifactId>
+          <version>12.2.0.1</version>
+          <scope>compile</scope>
       </dependency>
 
       <!-- Test -->
@@ -139,7 +159,25 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
+    <repository>
+      <id>maven.oracle.com</id>
+      <releases>
+          <enabled>true</enabled>
+      </releases>
+      <snapshots>
+          <enabled>false</enabled>
+      </snapshots>
+      <url>https://maven.oracle.com</url>
+      <layout>default</layout>
+    </repository>
   </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>maven.oracle.com</id>
+            <url>https://maven.oracle.com</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <profiles>
         <profile>

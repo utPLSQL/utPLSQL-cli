@@ -19,6 +19,8 @@ import java.util.concurrent.ExecutorService;
 class ReporterManager {
 
     private List<ReporterOptions> reporterOptionsList;
+    private List<Throwable> reporterGatherErrors;
+    private ExecutorService executorService;
 
     ReporterManager(List<String> reporterParams ) {
         initReporterOptionsList(reporterParams);
@@ -49,6 +51,25 @@ class ReporterManager {
         }
     }
 
+    private void abortGathering(Throwable e) {
+        addGatherError(e);
+        executorService.shutdownNow();
+    }
+
+    private void addGatherError( Throwable e ) {
+        if ( reporterGatherErrors == null ) {
+            reporterGatherErrors = new ArrayList<>();
+        }
+        reporterGatherErrors.add(e);
+    }
+
+    boolean haveGatherErrorsOccured() {
+        return reporterGatherErrors != null && !reporterGatherErrors.isEmpty();
+    }
+
+    List<Throwable> getGatherErrors() {
+        return reporterGatherErrors;
+    }
 
     /** Initializes the reporters so we can use the id to gather results
      *
@@ -56,7 +77,7 @@ class ReporterManager {
      * @return List of Reporters
      * @throws SQLException
      */
-    public List<Reporter> initReporters(Connection conn, ReporterFactory reporterFactory, CompatibilityProxy compatibilityProxy) throws SQLException
+    List<Reporter> initReporters(Connection conn, ReporterFactory reporterFactory, CompatibilityProxy compatibilityProxy) throws SQLException
     {
         final List<Reporter> reporterList = new ArrayList<>();
 
@@ -79,10 +100,14 @@ class ReporterManager {
      *
      * @param executorService
      * @param dataSource
-     * @param returnCode
      */
-    public void startReporterGatherers(ExecutorService executorService, final DataSource dataSource, final int[] returnCode)
+    void startReporterGatherers(ExecutorService executorService, final DataSource dataSource)
     {
+        if ( this.executorService != null && !this.executorService.isShutdown())
+            throw new IllegalStateException("There is already a running executor service!");
+
+        this.executorService = executorService;
+
         // TODO: Implement Init-check
         // Gather each reporter results on a separate thread.
         for (ReporterOptions ro : reporterOptionsList) {
@@ -103,9 +128,7 @@ class ReporterManager {
 
                     ro.getReporterObj().getOutputBuffer().printAvailable(conn, printStreams);
                 } catch (SQLException | FileNotFoundException e) {
-                    System.out.println(e.getMessage());
-                    returnCode[0] = Cli.DEFAULT_ERROR_CODE;
-                    executorService.shutdownNow();
+                    abortGathering(e);
                 } finally {
                     if (fileOutStream != null)
                         fileOutStream.close();
@@ -114,9 +137,9 @@ class ReporterManager {
         }
     }
 
-    public List<ReporterOptions> getReporterOptionsList() {
+    List<ReporterOptions> getReporterOptionsList() {
         return reporterOptionsList;
     }
 
-    public int getNumberOfReporters() { return reporterOptionsList.size(); }
+    int getNumberOfReporters() { return reporterOptionsList.size(); }
 }
