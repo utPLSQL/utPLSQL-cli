@@ -134,6 +134,9 @@ The file tnsnames.ora must contain valid TNS entries.
                       
 -d                  - Outputs a load of debug information to console
                       Default: false
+
+-t                  - Sets the timeout in minutes after which the cli will abort. 
+                      Default 60
 ```
 
 Parameters -f, -o, -s are correlated. That is parameters -o and -s are controlling outputs for reporter specified by the preceding -f parameter.
