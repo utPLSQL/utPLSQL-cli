@@ -3,7 +3,6 @@ package org.utplsql.cli;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.zaxxer.hikari.HikariDataSource;
-import com.zaxxer.hikari.pool.HikariProxyConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.utplsql.api.*;
@@ -26,13 +25,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
- * Created by vinicius.moreira on 19/04/2017.
+ * Issues a Run-Command with all the options
+ *
+ * Uses an executor to start a RunTestRunnerTask and one ReporterGatheringTask per Reporter requested.
  *
  * @author vinicious moreira
  * @author pesse
@@ -143,18 +141,17 @@ public class RunCommand implements ICommand {
         LoggerConfiguration.configure(level);
     }
 
-    public int doRun() {
+    public int doRun() throws OracleCreateStatmenetStuckException {
         init();
         outputMainInformation();
 
+        HikariDataSource dataSource = null;
+        int returnCode = 0;
         try {
 
             final List<Reporter> reporterList;
 
-            final File baseDir = new File("").getAbsoluteFile();
-            final int[] returnCode = {0};
-
-            final DataSource dataSource = DataSourceProvider.getDataSource(getConnectionInfo(), getReporterManager().getNumberOfReporters() + 2);
+            dataSource = (HikariDataSource) DataSourceProvider.getDataSource(getConnectionInfo(), getReporterManager().getNumberOfReporters() + 2);
 
             initDatabase(dataSource);
             reporterList = initReporters(dataSource);
@@ -168,81 +165,61 @@ public class RunCommand implements ICommand {
             ExecutorService executorService = Executors.newFixedThreadPool(1 + reporterList.size());
 
             // Run tests.
-            Future<Integer> future = executorService.submit(() -> {
-                Connection conn = null;
-                try  {
-                    conn = dataSource.getConnection();
-                    TestRunner testRunner = newTestRunner(reporterList);
-
-                    logger.info("Running tests now.");
-                    logger.info("--------------------------------------");
-                    testRunner.run(conn);
-                } catch (SomeTestsFailedException e) {
-                    returnCode[0] = this.failureExitCode;
-                }
-                catch (OracleCreateStatmenetStuckException e ) {
-                    try {
-                        conn.abort(Executors.newSingleThreadExecutor());
-                        conn = null;
-                    } catch (SQLException e1) {
-                        logger.error(e1.getMessage(), e1);
-                    }
-                    executorService.shutdownNow();
-                    return 3;
-                }
-                catch (SQLException e) {
-                    System.out.println(e.getMessage());
-                    //returnCode[0] = Cli.DEFAULT_ERROR_CODE;
-                    executorService.shutdownNow();
-                    return Cli.DEFAULT_ERROR_CODE;
-                }
-                finally {
-                    if ( conn != null ) {
-                        try {
-                            conn.close();
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                return 0;
-            });
+            Future<Boolean> future = executorService.submit(new RunTestRunnerTask(dataSource, newTestRunner(reporterList)));
 
             // Gather each reporter results on a separate thread.
             getReporterManager().startReporterGatherers(executorService, dataSource);
 
-            Integer mainTestResult = future.get();
-
-            executorService.shutdown();
-            if ( !executorService.awaitTermination(timeoutInMinutes, TimeUnit.MINUTES) ) {
+            try {
+                future.get(timeoutInMinutes, TimeUnit.MINUTES);
+            } catch (TimeoutException e) {
+                executorService.shutdownNow();
                 throw new ReporterTimeoutException(timeoutInMinutes);
+            } catch (ExecutionException e) {
+                if (e.getCause() instanceof SomeTestsFailedException) {
+                    returnCode = failureExitCode;
+                } else {
+                    executorService.shutdownNow();
+                    throw e.getCause();
+                }
+            } catch (InterruptedException e) {
+                executorService.shutdownNow();
+                throw e;
+            }
+            finally {
+                executorService.shutdown();
+                if (!executorService.awaitTermination(timeoutInMinutes, TimeUnit.MINUTES)) {
+                    throw new ReporterTimeoutException(timeoutInMinutes);
+                }
             }
 
             logger.info("--------------------------------------");
             logger.info("All tests done.");
-
-            ((HikariDataSource)dataSource).close();
-
-            return mainTestResult;
-        }
-        catch ( DatabaseNotCompatibleException | UtPLSQLNotInstalledException | DatabaseConnectionFailed | ReporterTimeoutException e ) {
+        } catch ( OracleCreateStatmenetStuckException e ) {
+            throw e;
+        } catch ( DatabaseNotCompatibleException | UtPLSQLNotInstalledException | DatabaseConnectionFailed | ReporterTimeoutException e ) {
             System.out.println(e.getMessage());
-        } catch (Exception e) {
+            returnCode = Cli.DEFAULT_ERROR_CODE;
+        } catch (Throwable e) {
             e.printStackTrace();
+            returnCode = Cli.DEFAULT_ERROR_CODE;
+        } finally {
+            if ( dataSource != null )
+                dataSource.close();
         }
-        return Cli.DEFAULT_ERROR_CODE;
+        return returnCode;
     }
 
     public int run() {
-        int i = 1;
-        int exitCode = doRun();
-        // Retry
-        while ( exitCode == 3 && i<10 ) {
-            logger.warn("Retry");
-            exitCode = doRun();
-            i++;
+        for ( int i = 1; i<5; i++ ) {
+            try {
+                return doRun();
+            } catch (OracleCreateStatmenetStuckException e) {
+                logger.warn("WARNING: Caught Oracle stuck during creation of Runner-Statement. Retrying ({})", i);
+            }
         }
-        return exitCode;
+
+        return Cli.DEFAULT_ERROR_CODE;
     }
 
     private TestRunner newTestRunner( List<Reporter> reporterList) {

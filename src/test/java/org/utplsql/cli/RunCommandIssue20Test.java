@@ -12,6 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for run command.
+ *
+ * @author philipp salivsberg
  */
 class RunCommandIssue20Test {
 
