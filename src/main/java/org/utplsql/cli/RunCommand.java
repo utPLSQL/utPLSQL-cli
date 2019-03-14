@@ -124,7 +124,7 @@ public class RunCommand implements ICommand {
     private ReporterFactory reporterFactory;
     private ReporterManager reporterManager;
 
-    private ConnectionInfo getConnectionInfo() {
+    ConnectionInfo getConnectionInfo() {
         return connectionInfoList.get(0);
     }
 
