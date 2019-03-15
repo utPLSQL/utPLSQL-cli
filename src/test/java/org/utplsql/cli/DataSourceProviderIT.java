@@ -20,6 +20,14 @@ class DataSourceProviderIT {
         assertNotNull(dataSource);
     }
 
+    //@Test
+    void connectAsSysdba() throws SQLException {
+        ConnectionConfig config = new ConnectionConfig("sys as sysdba/oracle@localhost:1522/ORCLPDB1");
+        DataSource dataSource = new TestedDataSourceProvider(config).getDataSource();
+
+        assertNotNull(dataSource);
+    }
+
     @Test
     void initNlsLang() throws SQLException {
         System.setProperty("NLS_LANG", "BRAZILIAN PORTUGUESE_BRAZIL.WE8ISO8859P1");

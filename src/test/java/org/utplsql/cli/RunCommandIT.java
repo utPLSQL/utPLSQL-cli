@@ -5,6 +5,7 @@ import org.utplsql.api.compatibility.OptionalFeatures;
 import org.utplsql.api.reporter.CoreReporters;
 
 import java.nio.file.Paths;
+import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -12,6 +13,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * System tests for run command.
  */
 class RunCommandIT extends AbstractFileOutputTest {
+
+    private void assertValidReturnCode(int returnCode) throws SQLException {
+        // Only expect failure-exit-code to work on several framework versions
+        if (OptionalFeatures.FAIL_ON_ERROR.isAvailableFor(TestHelper.getFrameworkVersion()))
+            assertEquals(2, returnCode);
+        else
+            assertEquals(0, returnCode);
+    }
 
     @Test
     void run_Default() throws Exception {
@@ -23,11 +32,7 @@ class RunCommandIT extends AbstractFileOutputTest {
                 "-c",
                 "--failure-exit-code=2");
 
-        // Only expect failure-exit-code to work on several framework versions
-        if (OptionalFeatures.FAIL_ON_ERROR.isAvailableFor(TestHelper.getFrameworkVersion()))
-            assertEquals(2, result);
-        else
-            assertEquals(0, result);
+        assertValidReturnCode(result);
     }
 
     @Test
@@ -35,9 +40,10 @@ class RunCommandIT extends AbstractFileOutputTest {
 
         int result = TestHelper.runApp("run",
                 TestHelper.getConnectionString(),
-                "--debug");
+                "--debug",
+                "--failure-exit-code=2");
 
-        assertEquals(1, result);
+        assertValidReturnCode(result);
     }
 
     @Test
@@ -55,11 +61,7 @@ class RunCommandIT extends AbstractFileOutputTest {
                 "-c",
                 "--failure-exit-code=2");
 
-        // Only expect failure-exit-code to work on several framework versions
-        if (OptionalFeatures.FAIL_ON_ERROR.isAvailableFor(TestHelper.getFrameworkVersion()))
-            assertEquals(2, result);
-        else
-            assertEquals(0, result);
+        assertValidReturnCode(result);
     }
 
 
