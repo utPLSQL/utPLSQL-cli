@@ -1,3 +1,8 @@
+[![latest-release](https://img.shields.io/github/release/utPLSQL/utPLSQL-cli.svg)](https://github.com/utPLSQL/utPLSQLc-li/releases)
+[![license](https://img.shields.io/github/license/utPLSQL/utPLSQL-cli.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+[![build](https://img.shields.io/travis/utPLSQL/utPLSQL-cli/develop.svg?label=develop%20branch)](https://travis-ci.org/utPLSQL/utPLSQL-cli)
+
+----------
 # utPLSQL-cli
 Java command-line client for [utPLSQL v3](https://github.com/utPLSQL/utPLSQL/).
 
@@ -129,6 +134,9 @@ The file tnsnames.ora must contain valid TNS entries.
                       
 -d                  - Outputs a load of debug information to console
                       Default: false
+
+-t                  - Sets the timeout in minutes after which the cli will abort. 
+                      Default 60
 ```
 
 Parameters -f, -o, -s are correlated. That is parameters -o and -s are controlling outputs for reporter specified by the preceding -f parameter.
