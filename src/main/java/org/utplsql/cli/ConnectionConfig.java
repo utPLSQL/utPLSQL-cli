@@ -45,4 +45,10 @@ public class ConnectionConfig {
     public String getConnectString() {
         return user + "/" + password + "@" + connect;
     }
+
+    public boolean isSysDba() {
+        return user != null &&
+                (user.toLowerCase().endsWith(" as sysdba")
+                || user.toLowerCase().endsWith(" as sysoper"));
+    }
 }

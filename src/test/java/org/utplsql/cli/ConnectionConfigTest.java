@@ -2,7 +2,7 @@ package org.utplsql.cli;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ConnectionConfigTest {
 
@@ -13,6 +13,7 @@ public class ConnectionConfigTest {
         assertEquals("test", info.getUser());
         assertEquals("pw", info.getPassword());
         assertEquals("my.local.host/service", info.getConnect());
+        assertFalse(info.isSysDba());
     }
 
     @Test
@@ -22,6 +23,16 @@ public class ConnectionConfigTest {
         assertEquals("sys as sysdba", info.getUser());
         assertEquals("pw", info.getPassword());
         assertEquals("my.local.host/service", info.getConnect());
+        assertTrue(info.isSysDba());
+    }
+    @Test
+    void parseSysOper() {
+        ConnectionConfig info = new ConnectionConfig("myOperUser as sysoper/passw0rd@my.local.host/service");
+
+        assertEquals("myOperUser as sysoper", info.getUser());
+        assertEquals("passw0rd", info.getPassword());
+        assertEquals("my.local.host/service", info.getConnect());
+        assertTrue(info.isSysDba());
     }
 
     @Test
@@ -31,6 +42,7 @@ public class ConnectionConfigTest {
         assertEquals("test", info.getUser());
         assertEquals("p@ssw0rd=", info.getPassword());
         assertEquals("my.local.host/service", info.getConnect());
+        assertFalse(info.isSysDba());
     }
 
     @Test
@@ -40,5 +52,6 @@ public class ConnectionConfigTest {
         assertEquals("User/Mine@=", info.getUser());
         assertEquals("pw", info.getPassword());
         assertEquals("my.local.host/service", info.getConnect());
+        assertFalse(info.isSysDba());
     }
 }
