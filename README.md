@@ -227,6 +227,16 @@ UT_XUNIT_REPORTER:
     Provides outcomes in a format conforming with JUnit 4 and above as defined in: https://gist.github.com/kuzuha/232902acab1344d6b578
 ```
 
+## Using utPLSQL-cli as sysdba
+
+Since 3.1.3 it is possible to run utPLSQL-cli as sysdba by running
+
+```
+utplsql run "sys as sysdba"/pw@connectstring
+```
+
+It is, however, __not recommended__ to run utPLSQL with sysdba privileges.
+
 ## Enabling Color Outputs on Windows
 
 To enable color outputs on Windows cmd you need to install an open-source utility called [ANSICON](http://adoxa.altervista.org/ansicon/).
