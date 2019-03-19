@@ -28,10 +28,7 @@ public class DataSourceProvider {
         ConnectionConfig config = new ConnectionConfig(info.getConnectionString());
         warnIfSysDba(config);
 
-        HikariDataSource pds = new TestedDataSourceProvider(config).getDataSource();
-        pds.setAutoCommit(false);
-        pds.setMaximumPoolSize(maxConnections);
-        return pds;
+        return new TestedDataSourceProvider(config, maxConnections).getDataSource();
     }
 
     private static void requireOjdbc() {
