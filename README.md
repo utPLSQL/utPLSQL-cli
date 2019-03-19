@@ -69,6 +69,11 @@ To connect using TNS, you need to have the ORACLE_HOME environment variable set.
 The file tnsnames.ora must exist in path %ORACLE_HOME%/network/admin
 The file tnsnames.ora must contain valid TNS entries. 
 
+In case you use a username containing `/` or a password containing `@` you should encapsulate it with double quotes `"`:
+```
+utplsql run "my/Username"/"myP@ssword"@connectstring
+```
+
 ### run
 `utplsql run <ConnectionURL> [<options>]`
                                                                  
