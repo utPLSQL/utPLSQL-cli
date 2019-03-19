@@ -85,4 +85,11 @@ class RunCommandTest {
         assertTrue(reporterOptions2.outputToScreen());
     }
 
+    @Test
+    void connectionString_asSysdba() {
+        RunCommand runCmd = TestHelper.createRunCommand("sys as sysdba/mypass@connectstring/service");
+
+        assertEquals("sys as sysdba/mypass@connectstring/service",
+                runCmd.getConnectionInfo().getConnectionString());
+    }
 }

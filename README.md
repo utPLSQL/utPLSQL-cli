@@ -74,6 +74,11 @@ To connect using TNS, you need to have the ORACLE_HOME environment variable set.
 The file tnsnames.ora must exist in path %ORACLE_HOME%/network/admin
 The file tnsnames.ora must contain valid TNS entries. 
 
+In case you use a username containing `/` or a password containing `@` you should encapsulate it with double quotes `"`:
+```
+utplsql run "my/Username"/"myP@ssword"@connectstring
+```
+
 ### run
 `utplsql run <ConnectionURL> [<options>]`
                                                                  
@@ -234,6 +239,16 @@ UT_XUNIT_REPORTER:
     Depracated reporter. Please use Junit.
     Provides outcomes in a format conforming with JUnit 4 and above as defined in: https://gist.github.com/kuzuha/232902acab1344d6b578
 ```
+
+## Using utPLSQL-cli as sysdba
+
+Since 3.1.3 it is possible to run utPLSQL-cli as sysdba by running
+
+```
+utplsql run "sys as sysdba"/pw@connectstring
+```
+
+It is, however, __not recommended__ to run utPLSQL with sysdba privileges.
 
 ## Enabling Color Outputs on Windows
 

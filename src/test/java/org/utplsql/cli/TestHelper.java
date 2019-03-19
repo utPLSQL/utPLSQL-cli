@@ -45,4 +45,16 @@ class TestHelper {
     static String getConnectionString() {
         return sUser + "/" + sPass + "@" + sUrl;
     }
+
+    static String getUser() {
+        return sUser;
+    }
+
+    static String getPass() {
+        return sPass;
+    }
+
+    static String getUrl() {
+        return sUrl;
+    }
 }
