@@ -23,7 +23,7 @@ class DataSourceProviderIT {
     //@Test
     void connectAsSysdba() throws SQLException {
         ConnectionConfig config = new ConnectionConfig("sys as sysdba/oracle@localhost:1522/ORCLPDB1");
-        DataSource dataSource = new TestedDataSourceProvider(config).getDataSource();
+        DataSource dataSource = new TestedDataSourceProvider(config, 2).getDataSource();
 
         assertNotNull(dataSource);
     }
@@ -66,7 +66,7 @@ class DataSourceProviderIT {
 
     private DataSource getDataSource() throws SQLException {
         ConnectionConfig config = new ConnectionConfig(TestHelper.getConnectionString());
-        return new TestedDataSourceProvider(config).getDataSource();
+        return new TestedDataSourceProvider(config, 2).getDataSource();
     }
 
     private void checkNlsSessionParameter( DataSource dataSource, String parameterName, String expectedValue ) throws SQLException {

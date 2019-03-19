@@ -24,9 +24,11 @@ public class TestedDataSourceProvider {
     private static final Logger logger = LoggerFactory.getLogger(TestedDataSourceProvider.class);
     private final ConnectionConfig config;
     private final List<ConnectStringPossibility> possibilities = new ArrayList<>();
+    private final int maxConnections;
 
-    public TestedDataSourceProvider(ConnectionConfig config) {
+    public TestedDataSourceProvider(ConnectionConfig config, int maxConnections) {
         this.config = config;
+        this.maxConnections = maxConnections;
 
         possibilities.add(new ThickConnectStringPossibility());
         possibilities.add(new ThinConnectStringPossibility());
@@ -35,6 +37,8 @@ public class TestedDataSourceProvider {
     public HikariDataSource getDataSource() throws SQLException {
 
         HikariDataSource ds = new HikariDataSource();
+        ds.setAutoCommit(false);
+        ds.setMaximumPoolSize(maxConnections);
 
         setInitSqlFrom_NLS_LANG(ds);
         setThickOrThinJdbcUrl(ds);
