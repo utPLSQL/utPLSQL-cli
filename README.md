@@ -30,7 +30,7 @@ You can also download all development versions from [Bintray](https://bintray.co
 
 ## Compatibility
 The latest CLI is always compatible with all database frameworks of the same major version.
-For example CLI-3.1.0 is compatible with database framework 3.0.0-3.1.2 but not with database framework 2.x.
+For example CLI-3.1.0 is compatible with database framework 3.0.0-3.1.* but not with database framework 2.x.
 
 ## Localization and NLS settings
 utPLSQL-cli will use the environment variables "LC_ALL" or "LANG" to change the locale and therefore the client NLS settings.
@@ -242,7 +242,7 @@ UT_XUNIT_REPORTER:
 
 ## Using utPLSQL-cli as sysdba
 
-Since 3.1.3 it is possible to run utPLSQL-cli as sysdba by running
+Since 3.1.6 it is possible to run utPLSQL-cli as sysdba by running
 
 ```
 utplsql run "sys as sysdba"/pw@connectstring
