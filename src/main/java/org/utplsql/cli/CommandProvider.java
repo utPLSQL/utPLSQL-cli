@@ -1,23 +1,26 @@
 package org.utplsql.cli;
 
+import com.beust.jcommander.JCommander;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public class CommandProvider {
+class CommandProvider {
 
-    private Map<String, ICommand> commands;
+    private final Map<String, ICommand> commands = new HashMap<>();
+    private final JCommander jCommander;
 
-    public CommandProvider() {
+    public CommandProvider( JCommander jCommander ) {
+        this.jCommander = jCommander;
         init();
     }
 
     private void init() {
-        commands = new HashMap<>();
-
         addCommand(new RunCommand());
         addCommand(new VersionInfoCommand());
         addCommand(new ReportersCommand());
+        addCommand(new HelpCommand(jCommander));
     }
 
     private void addCommand( ICommand command ) {
@@ -28,7 +31,7 @@ public class CommandProvider {
         if ( commands.containsKey(key))
             return commands.get(key.toLowerCase());
         else
-            return new HelpCommand("Unknown command: '" + key + "'");
+            return new HelpCommand(jCommander, "Unknown command: '" + key + "'");
     }
 
     public Stream<ICommand> commands() {

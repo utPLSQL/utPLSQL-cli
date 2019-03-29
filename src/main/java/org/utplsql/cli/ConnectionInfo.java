@@ -5,7 +5,7 @@ import com.beust.jcommander.IStringConverter;
 public class ConnectionInfo {
 
     public static final String COMMANDLINE_PARAM_DESCRIPTION = "<user>/<password>@//<host>[:<port>]/<service> OR <user>/<password>@<TNSName> OR <user>/<password>@<host>:<port>:<SID>";
-    private String connectionInfo;
+    private final String connectionInfo;
 
     public ConnectionInfo(String connectionInfo) {
         this.connectionInfo = connectionInfo;

@@ -1,3 +1,8 @@
+[![latest-release](https://img.shields.io/github/release/utPLSQL/utPLSQL-cli.svg)](https://github.com/utPLSQL/utPLSQLc-li/releases)
+[![license](https://img.shields.io/github/license/utPLSQL/utPLSQL-cli.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+[![build](https://img.shields.io/travis/utPLSQL/utPLSQL-cli/develop.svg?label=develop%20branch)](https://travis-ci.org/utPLSQL/utPLSQL-cli)
+
+----------
 # utPLSQL-cli
 Java command-line client for [utPLSQL v3](https://github.com/utPLSQL/utPLSQL/).
 
@@ -25,10 +30,10 @@ You can also download all development versions from [Bintray](https://bintray.co
 
 ## Compatibility
 The latest CLI is always compatible with all database frameworks of the same major version.
-For example CLI-3.1.0 is compatible with database framework 3.0.0-3.1.0 but not with database framework 2.x.
+For example CLI-3.1.0 is compatible with database framework 3.0.0-3.1.* but not with database framework 2.x.
 
 ## Localization and NLS settings
-utPLSQL-cli will use the environment variables (in that order) "NLS_LANG", "LC_ALL" or "LANG" to change the locale and therefore the NLS settings.
+utPLSQL-cli will use the environment variables "LC_ALL" or "LANG" to change the locale and therefore the client NLS settings.
 If neither environment variable is available, it will use the JVM default locale.
 
 Example: to change the NLS-settings to English American, you can do the following:
@@ -37,6 +42,17 @@ export LC_ALL=en_US.utf-8
 ```
 
 The charset-part of LC_ALL is ignored.
+
+In addition, utPLSQL-cli will use an existing "NLS_LANG" environment variable to create corresponding 
+`ALTER SESSION`-statements during initialization of the connection.
+
+The variable is parsed according to the [Oracle globalization documentation](https://www.oracle.com/technetwork/database/database-technologies/globalization/nls-lang-099431.html#_Toc110410543)
+
+Example: "NLS_LANG" of `AMERICAN_AMERICA.UTF8` will lead to the following statements:
+```sql
+ALTER SESSION SET NLS_LANGUAGE='AMERICAN';
+ALTER SESSION SET NLS_TERRITORY='AMERICA';
+```
 
 ## Usage
 Currently, utPLSQL-cli supports the following commands:
@@ -57,6 +73,11 @@ Accepted formats:
 To connect using TNS, you need to have the ORACLE_HOME environment variable set.
 The file tnsnames.ora must exist in path %ORACLE_HOME%/network/admin
 The file tnsnames.ora must contain valid TNS entries. 
+
+In case you use a username containing `/` or a password containing `@` you should encapsulate it with double quotes `"`:
+```
+utplsql run "my/Username"/"myP@ssword"@connectstring
+```
 
 ### run
 `utplsql run <ConnectionURL> [<options>]`
@@ -112,6 +133,15 @@ The file tnsnames.ora must contain valid TNS entries.
 -exclude=pckg_list  - Comma-separated object list to exclude from the coverage report.
                       Format: [schema.]package[,[schema.]package ...].
                       See coverage reporting options in framework documentation.
+                      
+-q                  - Does not output the informational messages normally printed to console.
+                      Default: false
+                      
+-d                  - Outputs a load of debug information to console
+                      Default: false
+
+-t                  - Sets the timeout in minutes after which the cli will abort. 
+                      Default 60
 ```
 
 Parameters -f, -o, -s are correlated. That is parameters -o and -s are controlling outputs for reporter specified by the preceding -f parameter.
@@ -209,6 +239,16 @@ UT_XUNIT_REPORTER:
     Depracated reporter. Please use Junit.
     Provides outcomes in a format conforming with JUnit 4 and above as defined in: https://gist.github.com/kuzuha/232902acab1344d6b578
 ```
+
+## Using utPLSQL-cli as sysdba
+
+Since 3.1.6 it is possible to run utPLSQL-cli as sysdba by running
+
+```
+utplsql run "sys as sysdba"/pw@connectstring
+```
+
+It is, however, __not recommended__ to run utPLSQL with sysdba privileges.
 
 ## Enabling Color Outputs on Windows
 

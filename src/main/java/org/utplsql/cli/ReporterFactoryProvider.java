@@ -12,7 +12,7 @@ import java.sql.SQLException;
  *
  * @author pesse
  */
-public class ReporterFactoryProvider {
+class ReporterFactoryProvider {
 
     public static ReporterFactory createReporterFactory(CompatibilityProxy proxy ) {
         ReporterFactory reporterFactory = ReporterFactory.createDefault(proxy);

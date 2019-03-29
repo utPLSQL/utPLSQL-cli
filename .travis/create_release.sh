@@ -15,6 +15,7 @@ rm -f utPLSQL-cli/lib/orai18n*.jar
 
 zip -r -q dist/utPLSQL-cli-${TRAVIS_BRANCH}-${VERSION}.zip utPLSQL-cli
 zip -r -q utPLSQL-cli.zip utPLSQL-cli
+md5sum utPLSQL-cli.zip  --tag > utPLSQL-cli.zip.md5
 
 cat > bintray.json <<EOF
 {

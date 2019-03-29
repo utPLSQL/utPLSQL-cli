@@ -2,17 +2,21 @@ package org.utplsql.cli;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import org.utplsql.api.FileMapperOptions;
-import org.utplsql.api.KeyValuePair;
-import org.utplsql.api.TestRunner;
-import org.utplsql.api.Version;
+import com.zaxxer.hikari.HikariDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.utplsql.api.*;
 import org.utplsql.api.compatibility.CompatibilityProxy;
+import org.utplsql.api.db.DefaultDatabaseInformation;
 import org.utplsql.api.exception.DatabaseNotCompatibleException;
+import org.utplsql.api.exception.OracleCreateStatmenetStuckException;
 import org.utplsql.api.exception.SomeTestsFailedException;
 import org.utplsql.api.exception.UtPLSQLNotInstalledException;
 import org.utplsql.api.reporter.Reporter;
 import org.utplsql.api.reporter.ReporterFactory;
 import org.utplsql.cli.exception.DatabaseConnectionFailed;
+import org.utplsql.cli.exception.ReporterTimeoutException;
+import org.utplsql.cli.log.StringBlockFormatter;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -21,18 +25,20 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
- * Created by vinicius.moreira on 19/04/2017.
+ * Issues a Run-Command with all the options
+ *
+ * Uses an executor to start a RunTestRunnerTask and one ReporterGatheringTask per Reporter requested.
  *
  * @author vinicious moreira
  * @author pesse
  */
 @Parameters(separators = "=", commandDescription = "run tests")
 public class RunCommand implements ICommand {
+
+    private static final Logger logger = LoggerFactory.getLogger(RunCommand.class);
 
     @Parameter(
             required = true,
@@ -99,74 +105,56 @@ public class RunCommand implements ICommand {
     )
     private String excludeObjects = null;
 
+    @Parameter(
+            names = {"-q", "--quiet"},
+            description = "Does not output the informational messages normally printed to console")
+    private boolean logSilent = false;
+
+    @Parameter(
+            names = {"-d", "--debug"},
+            description = "Outputs a load of debug information to console")
+    private boolean logDebug = false;
+
+    @Parameter(
+            names = {"-t", "--timeout"},
+            description = "Sets the timeout in minutes after which the cli will abort. Default 60")
+    private int timeoutInMinutes = 60;
 
     private CompatibilityProxy compatibilityProxy;
     private ReporterFactory reporterFactory;
     private ReporterManager reporterManager;
 
-    public ConnectionInfo getConnectionInfo() {
+    ConnectionInfo getConnectionInfo() {
         return connectionInfoList.get(0);
     }
 
-    public List<String> getTestPaths() {
-        return testPaths;
+    void init() {
+
+        LoggerConfiguration.ConfigLevel level = LoggerConfiguration.ConfigLevel.BASIC;
+        if ( logSilent ) {
+            level = LoggerConfiguration.ConfigLevel.NONE;
+        }
+        else if ( logDebug ) {
+            level = LoggerConfiguration.ConfigLevel.DEBUG;
+        }
+
+        LoggerConfiguration.configure(level);
     }
 
-    public int run() {
+    public int doRun() throws OracleCreateStatmenetStuckException {
+        init();
+        outputMainInformation();
 
+        HikariDataSource dataSource = null;
+        int returnCode = 0;
         try {
 
             final List<Reporter> reporterList;
-            final List<String> testPaths = getTestPaths();
 
-            final File baseDir = new File("").getAbsoluteFile();
-            final FileMapperOptions[] sourceMappingOptions = {null};
-            final FileMapperOptions[] testMappingOptions = {null};
+            dataSource = (HikariDataSource) DataSourceProvider.getDataSource(getConnectionInfo(), getReporterManager().getNumberOfReporters() + 2);
 
-            final int[] returnCode = {0};
-
-            sourceMappingOptions[0] = getFileMapperOptionsByParamListItem(this.sourcePathParams, baseDir);
-            testMappingOptions[0] = getFileMapperOptionsByParamListItem(this.testPathParams, baseDir);
-
-            ArrayList<String> includeObjectsList;
-            ArrayList<String> excludeObjectsList;
-
-            if (includeObjects != null && !includeObjects.isEmpty()) {
-                includeObjectsList = new ArrayList<>(Arrays.asList(includeObjects.split(",")));
-            } else {
-                includeObjectsList = new ArrayList<>();
-            }
-
-            if (excludeObjects != null && !excludeObjects.isEmpty()) {
-                excludeObjectsList = new ArrayList<>(Arrays.asList(excludeObjects.split(",")));
-            } else {
-                excludeObjectsList = new ArrayList<>();
-            }
-
-            final ArrayList<String> finalIncludeObjectsList = includeObjectsList;
-            final ArrayList<String> finalExcludeObjectsList = excludeObjectsList;
-
-            final DataSource dataSource = DataSourceProvider.getDataSource(getConnectionInfo(), getReporterManager().getNumberOfReporters() + 1);
-
-            // Do the reporters initialization, so we can use the id to run and gather results.
-            try (Connection conn = dataSource.getConnection()) {
-
-                // Check if orai18n exists if database version is 11g
-                RunCommandChecker.checkOracleI18nExists(conn);
-
-                // First of all do a compatibility check and fail-fast
-                compatibilityProxy = checkFrameworkCompatibility(conn);
-                reporterFactory = ReporterFactoryProvider.createReporterFactory(compatibilityProxy);
-
-                reporterList = getReporterManager().initReporters(conn, reporterFactory, compatibilityProxy);
-
-            } catch (SQLException e) {
-                if (e.getErrorCode() == 1017 || e.getErrorCode() == 12514) {
-                    throw new DatabaseConnectionFailed(e);
-                } else {
-                    throw e;
-                }
-            }
+            initDatabase(dataSource);
+            reporterList = initReporters(dataSource);
 
             // Output a message if --failureExitCode is set but database framework is not capable of
             String msg = RunCommandChecker.getCheckFailOnErrorMessage(failureExitCode, compatibilityProxy.getDatabaseVersion());
@@ -177,42 +165,87 @@ public class RunCommand implements ICommand {
             ExecutorService executorService = Executors.newFixedThreadPool(1 + reporterList.size());
 
             // Run tests.
-            executorService.submit(() -> {
-                try (Connection conn = dataSource.getConnection()) {
-                    TestRunner testRunner = new TestRunner()
-                            .addPathList(testPaths)
-                            .addReporterList(reporterList)
-                            .sourceMappingOptions(sourceMappingOptions[0])
-                            .testMappingOptions(testMappingOptions[0])
-                            .colorConsole(this.colorConsole)
-                            .failOnErrors(true)
-                            .skipCompatibilityCheck(skipCompatibilityCheck)
-                            .includeObjects(finalIncludeObjectsList)
-                            .excludeObjects(finalExcludeObjectsList);
-
-                    testRunner.run(conn);
-                } catch (SomeTestsFailedException e) {
-                    returnCode[0] = this.failureExitCode;
-                } catch (SQLException e) {
-                    System.out.println(e.getMessage());
-                    returnCode[0] = Cli.DEFAULT_ERROR_CODE;
-                    executorService.shutdownNow();
-                }
-            });
+            Future<Boolean> future = executorService.submit(new RunTestRunnerTask(dataSource, newTestRunner(reporterList)));
 
             // Gather each reporter results on a separate thread.
-            getReporterManager().startReporterGatherers(executorService, dataSource, returnCode);
+            getReporterManager().startReporterGatherers(executorService, dataSource);
 
-            executorService.shutdown();
-            executorService.awaitTermination(60, TimeUnit.MINUTES);
-            return returnCode[0];
-        }
-        catch ( DatabaseNotCompatibleException | UtPLSQLNotInstalledException | DatabaseConnectionFailed e ) {
+            try {
+                future.get(timeoutInMinutes, TimeUnit.MINUTES);
+            } catch (TimeoutException e) {
+                executorService.shutdownNow();
+                throw new ReporterTimeoutException(timeoutInMinutes);
+            } catch (ExecutionException e) {
+                if (e.getCause() instanceof SomeTestsFailedException) {
+                    returnCode = failureExitCode;
+                } else {
+                    executorService.shutdownNow();
+                    throw e.getCause();
+                }
+            } catch (InterruptedException e) {
+                executorService.shutdownNow();
+                throw e;
+            }
+            finally {
+                executorService.shutdown();
+                if (!executorService.awaitTermination(timeoutInMinutes, TimeUnit.MINUTES)) {
+                    throw new ReporterTimeoutException(timeoutInMinutes);
+                }
+            }
+
+            logger.info("--------------------------------------");
+            logger.info("All tests done.");
+        } catch ( OracleCreateStatmenetStuckException e ) {
+            throw e;
+        } catch ( DatabaseNotCompatibleException | UtPLSQLNotInstalledException | DatabaseConnectionFailed | ReporterTimeoutException e ) {
             System.out.println(e.getMessage());
-        } catch (Exception e) {
+            returnCode = Cli.DEFAULT_ERROR_CODE;
+        } catch (Throwable e) {
             e.printStackTrace();
+            returnCode = Cli.DEFAULT_ERROR_CODE;
+        } finally {
+            if ( dataSource != null )
+                dataSource.close();
         }
-        return 1;
+        return returnCode;
+    }
+
+    public int run() {
+        for ( int i = 1; i<5; i++ ) {
+            try {
+                return doRun();
+            } catch (OracleCreateStatmenetStuckException e) {
+                logger.warn("WARNING: Caught Oracle stuck during creation of Runner-Statement. Retrying ({})", i);
+            }
+        }
+
+        return Cli.DEFAULT_ERROR_CODE;
+    }
+
+    private TestRunner newTestRunner( List<Reporter> reporterList) {
+
+        final File baseDir = new File("").getAbsoluteFile();
+
+        return new TestRunner()
+                .addPathList(testPaths)
+                .addReporterList(reporterList)
+                .sourceMappingOptions(getFileMapperOptionsByParamListItem(this.sourcePathParams, baseDir))
+                .testMappingOptions(getFileMapperOptionsByParamListItem(this.testPathParams, baseDir))
+                .colorConsole(this.colorConsole)
+                .failOnErrors(true)
+                .skipCompatibilityCheck(skipCompatibilityCheck)
+                .includeObjects(getObjectList(includeObjects))
+                .excludeObjects(getObjectList(excludeObjects));
+    }
+
+    private ArrayList<String> getObjectList(String includeObjects) {
+        ArrayList<String> includeObjectsList;
+        if (includeObjects != null && !includeObjects.isEmpty()) {
+            includeObjectsList = new ArrayList<>(Arrays.asList(includeObjects.split(",")));
+        } else {
+            includeObjectsList = new ArrayList<>();
+        }
+        return includeObjectsList;
     }
 
     @Override
@@ -220,6 +253,49 @@ public class RunCommand implements ICommand {
         return "run";
     }
 
+
+    private void outputMainInformation() {
+
+        StringBlockFormatter formatter = new StringBlockFormatter("utPLSQL cli");
+        formatter.appendLine(CliVersionInfo.getInfo());
+        formatter.appendLine(JavaApiVersionInfo.getInfo());
+        formatter.appendLine("Java-Version: " + System.getProperty("java.version"));
+        formatter.appendLine("ORACLE_HOME: " + EnvironmentVariableUtil.getEnvValue("ORACLE_HOME"));
+        formatter.appendLine("NLS_LANG: " + EnvironmentVariableUtil.getEnvValue("NLS_LANG"));
+        formatter.appendLine("");
+        formatter.appendLine("Thanks for testing!");
+
+        logger.info(formatter.toString());
+        logger.info("");
+    }
+
+    private void initDatabase(DataSource dataSource) throws SQLException {
+        try (Connection conn = dataSource.getConnection()) {
+
+            // Check if orai18n exists if database version is 11g
+            RunCommandChecker.checkOracleI18nExists(conn);
+
+            // First of all do a compatibility check and fail-fast
+            compatibilityProxy = checkFrameworkCompatibility(conn);
+
+            logger.info("Successfully connected to database. UtPLSQL core: {}", compatibilityProxy.getDatabaseVersion());
+            logger.info("Oracle-Version: {}", new DefaultDatabaseInformation().getOracleVersion(conn));
+        }
+        catch (SQLException e) {
+            if (e.getErrorCode() == 1017 || e.getErrorCode() == 12514) {
+                throw new DatabaseConnectionFailed(e);
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    private List<Reporter> initReporters(DataSource dataSource) throws SQLException {
+        try (Connection conn = dataSource.getConnection()) {
+            reporterFactory = ReporterFactoryProvider.createReporterFactory(compatibilityProxy);
+            return getReporterManager().initReporters(conn, reporterFactory, compatibilityProxy);
+        }
+    }
 
     /** Returns FileMapperOptions for the first item of a given param list in a baseDir
      *
@@ -258,7 +334,7 @@ public class RunCommand implements ICommand {
         return proxy;
     }
 
-    public FileMapperOptions getMapperOptions(List<String> mappingParams, List<String> filePaths) {
+    private FileMapperOptions getMapperOptions(List<String> mappingParams, List<String> filePaths) {
         FileMapperOptions mapperOptions = new FileMapperOptions(filePaths);
 
         final String OPT_OWNER="-owner=";
@@ -305,17 +381,6 @@ public class RunCommand implements ICommand {
         return mapperOptions;
     }
 
-    /** Returns the version of the database framework if available
-     *
-     * @return
-     */
-    public Version getDatabaseVersion() {
-        if ( compatibilityProxy != null )
-            return compatibilityProxy.getDatabaseVersion();
-
-        return null;
-    }
-
     private ReporterManager getReporterManager() {
         if ( reporterManager == null )
             reporterManager = new ReporterManager(reporterParams);
@@ -323,7 +388,7 @@ public class RunCommand implements ICommand {
         return reporterManager;
     }
 
-    public List<ReporterOptions> getReporterOptionsList() {
+    List<ReporterOptions> getReporterOptionsList() {
         return getReporterManager().getReporterOptionsList();
     }
 }

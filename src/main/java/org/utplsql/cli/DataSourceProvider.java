@@ -1,7 +1,6 @@
 package org.utplsql.cli;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.utplsql.api.EnvironmentVariableUtil;
 import org.utplsql.cli.datasource.TestedDataSourceProvider;
 
 import javax.sql.DataSource;
@@ -27,11 +26,9 @@ public class DataSourceProvider {
         requireOjdbc();
 
         ConnectionConfig config = new ConnectionConfig(info.getConnectionString());
+        warnIfSysDba(config);
 
-        HikariDataSource pds = new TestedDataSourceProvider(config).getDataSource();
-        pds.setAutoCommit(false);
-        pds.setMaximumPoolSize(maxConnections);
-        return pds;
+        return new TestedDataSourceProvider(config, maxConnections).getDataSource();
     }
 
     private static void requireOjdbc() {
@@ -42,6 +39,12 @@ public class DataSourceProvider {
             System.out.println("Download from http://www.oracle.com/technetwork/database/features/jdbc/jdbc-ucp-122-3110062.html");
 
             throw new RuntimeException("Can't run utPLSQL-cli without Oracle JDBC driver");
+        }
+    }
+
+    private static void warnIfSysDba(ConnectionConfig config) {
+        if ( config.isSysDba() ) {
+            System.out.println("WARNING: You are connecting to the database as SYSDBA or SYSOPER, which is NOT RECOMMENDED and can put your database at risk!");
         }
     }
 }

@@ -1,5 +1,7 @@
 package org.utplsql.cli;
 
+import org.utplsql.api.EnvironmentVariableUtil;
+
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -7,10 +9,9 @@ import java.util.regex.Pattern;
 /** This class makes sure the java locale is set according to the environment variables LC_ALL and LANG
  * We experienced that, in some cases, the locale was not set as expected, therefore this class implements some clear
  * rules:
- *   1. If environment variable NLS_LANG is set, we try to parse its content and set locale according to its value if valid
- *   2. If environment variable LC_ALL is set, we try to parse its content and set locale according to its value if valid
- *   3. If environment variable LANG is set, we try to parse its content and set locale according to its value if valid
- *   4. Otherwise we use default locale
+ *   1. If environment variable LC_ALL is set, we try to parse its content and set locale according to its value if valid
+ *   2. If environment variable LANG is set, we try to parse its content and set locale according to its value if valid
+ *   3. Otherwise we use default locale
  *
  *   @author pesse
  */
@@ -23,12 +24,9 @@ class LocaleInitializer {
      */
     static void initLocale() {
 
-        boolean localeChanged = setDefaultLocale(System.getenv("NLS_LANG"));
-
+        boolean localeChanged = setDefaultLocale(EnvironmentVariableUtil.getEnvValue("LC_ALL"));
         if ( !localeChanged )
-            localeChanged = setDefaultLocale(System.getenv("LC_ALL"));
-        if ( !localeChanged )
-            setDefaultLocale(System.getenv("LANG"));
+            setDefaultLocale(EnvironmentVariableUtil.getEnvValue("LANG"));
     }
 
     /** Set the default locale from a given string like LC_ALL or LANG environment variable

@@ -1,11 +1,7 @@
 package org.utplsql.cli;
 
 import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
-import org.utplsql.api.exception.DatabaseNotCompatibleException;
-import org.utplsql.api.exception.UtPLSQLNotInstalledException;
-import org.utplsql.cli.exception.DatabaseConnectionFailed;
 
 public class Cli {
 
@@ -21,41 +17,38 @@ public class Cli {
     }
 
     static int runWithExitCode( String[] args ) {
+
+        LoggerConfiguration.configure(LoggerConfiguration.ConfigLevel.NONE);
         LocaleInitializer.initLocale();
 
         JCommander jc = new JCommander();
         jc.setProgramName("utplsql");
 
-        CommandProvider cmdProvider = new CommandProvider();
+        CommandProvider cmdProvider = new CommandProvider(jc);
 
         cmdProvider.commands().forEach(cmd -> jc.addCommand(cmd.getCommand(), cmd));
 
         int exitCode = DEFAULT_ERROR_CODE;
 
-        try {
-            jc.parse(args);
+        if ( args.length >= 1 && args[0].equals("-h") ) // Help?
+        {
+            exitCode = 0;
+            jc.usage();
+        }
+        else {
+            try {
+                jc.parse(args);
 
-            exitCode = cmdProvider.getCommand(jc.getParsedCommand()).run();
+                exitCode = cmdProvider.getCommand(jc.getParsedCommand()).run();
 
-        } catch (ParameterException e) {
-            if (jc.getParsedCommand() != null) {
-                System.err.println(e.getMessage());
-                jc.usage(jc.getParsedCommand());
-            } else {
-                jc.usage();
+            } catch (ParameterException e) {
+                exitCode = new HelpCommand(jc, e.getMessage()).run();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        }  catch (Exception e) {
-            e.printStackTrace();
         }
 
         return exitCode;
-    }
-
-    private static class HelpCommand {
-
-        @Parameter(names = {HELP_CMD, "--help"}, help = true)
-        public boolean callHelp;
-
     }
 
 }
