@@ -29,6 +29,8 @@ env:
     - UTPLSQL_VERSION="v3.0.4"
     - UTPLSQL_VERSION="v3.1.1"
     - UTPLSQL_VERSION="v3.1.2"
+    - UTPLSQL_VERSION="v3.1.3"
+    - UTPLSQL_VERSION="v3.1.6"
     - UTPLSQL_VERSION="develop"
       UTPLSQL_FILE="utPLSQL"
 
