@@ -27,18 +27,4 @@ class RunCommandChecker {
             System.out.println("Download from http://www.oracle.com/technetwork/database/enterprise-edition/jdbc-112010-090769.html");
         }
     }
-
-    /** Returns a warning message if failureExitCode is specified but database version is too low
-     *
-     * @param failureExitCode
-     * @param databaseVersion
-     */
-    static String getCheckFailOnErrorMessage(int failureExitCode, Version databaseVersion) {
-        if ( failureExitCode != 1 && !OptionalFeatures.FAIL_ON_ERROR.isAvailableFor(databaseVersion)) {
-            return "Your database framework version (" + databaseVersion.getNormalizedString() + ") is not able to " +
-                    "redirect failureCodes. Please upgrade to a newer version if you want to use that feature.";
-        }
-
-        return null;
-    }
 }
