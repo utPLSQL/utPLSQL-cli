@@ -65,4 +65,14 @@ class RunCommandIT extends AbstractFileOutputTest {
     }
 
 
+    @Test
+    void run_withDbmsOutputEnabled() throws Exception {
+
+        int result = TestHelper.runApp("run",
+                TestHelper.getConnectionString(),
+                "-dbout",
+                "--failure-exit-code=2");
+
+        assertValidReturnCode(result);
+    }
 }

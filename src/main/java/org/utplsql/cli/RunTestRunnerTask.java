@@ -2,6 +2,7 @@ package org.utplsql.cli;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.utplsql.api.DBHelper;
 import org.utplsql.api.TestRunner;
 import org.utplsql.api.exception.OracleCreateStatmenetStuckException;
 import org.utplsql.api.exception.SomeTestsFailedException;
@@ -24,10 +25,12 @@ public class RunTestRunnerTask implements Callable<Boolean> {
     private static final Logger logger = LoggerFactory.getLogger(RunTestRunnerTask.class);
     private DataSource dataSource;
     private TestRunner testRunner;
+    private boolean enableDmbsOutput;
 
-    RunTestRunnerTask(DataSource dataSource, TestRunner testRunner) {
+    RunTestRunnerTask(DataSource dataSource, TestRunner testRunner, boolean enableDmbsOutput) {
         this.dataSource = dataSource;
         this.testRunner = testRunner;
+        this.enableDmbsOutput = enableDmbsOutput;
     }
 
     @Override
@@ -35,6 +38,7 @@ public class RunTestRunnerTask implements Callable<Boolean> {
         Connection conn = null;
         try  {
             conn = dataSource.getConnection();
+            if ( enableDmbsOutput ) DBHelper.enableDBMSOutput(conn);
             logger.info("Running tests now.");
             logger.info("--------------------------------------");
             testRunner.run(conn);
@@ -54,6 +58,7 @@ public class RunTestRunnerTask implements Callable<Boolean> {
         } finally {
             if ( conn != null ) {
                 try {
+                    if ( enableDmbsOutput ) DBHelper.disableDBMSOutput(conn);
                     conn.close();
                 } catch (SQLException e) {
                     logger.error(e.getMessage(), e);

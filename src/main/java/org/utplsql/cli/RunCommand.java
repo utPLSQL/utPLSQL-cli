@@ -120,6 +120,12 @@ public class RunCommand implements ICommand {
             description = "Sets the timeout in minutes after which the cli will abort. Default 60")
     private int timeoutInMinutes = 60;
 
+    @Parameter(
+            names = {"-dbout", "--dbms_output"},
+            description = "Enables DBMS_OUTPUT for the TestRunner (default: DISABLED)"
+    )
+    private boolean enableDbmsOutput = false;
+
     private CompatibilityProxy compatibilityProxy;
     private ReporterFactory reporterFactory;
     private ReporterManager reporterManager;
@@ -157,7 +163,7 @@ public class RunCommand implements ICommand {
             reporterList = initReporters(dataSource);
 
             // Output a message if --failureExitCode is set but database framework is not capable of
-            String msg = RunCommandChecker.getCheckFailOnErrorMessage(failureExitCode, compatibilityProxy.getDatabaseVersion());
+            String msg = RunCommandChecker.getCheckFailOnErrorMessage(failureExitCode, compatibilityProxy.getUtPlsqlVersion());
             if (msg != null) {
                 System.out.println(msg);
             }
@@ -165,7 +171,7 @@ public class RunCommand implements ICommand {
             ExecutorService executorService = Executors.newFixedThreadPool(1 + reporterList.size());
 
             // Run tests.
-            Future<Boolean> future = executorService.submit(new RunTestRunnerTask(dataSource, newTestRunner(reporterList)));
+            Future<Boolean> future = executorService.submit(new RunTestRunnerTask(dataSource, newTestRunner(reporterList), enableDbmsOutput));
 
             // Gather each reporter results on a separate thread.
             getReporterManager().startReporterGatherers(executorService, dataSource);
@@ -278,7 +284,7 @@ public class RunCommand implements ICommand {
             // First of all do a compatibility check and fail-fast
             compatibilityProxy = checkFrameworkCompatibility(conn);
 
-            logger.info("Successfully connected to database. UtPLSQL core: {}", compatibilityProxy.getDatabaseVersion());
+            logger.info("Successfully connected to database. UtPLSQL core: {}", compatibilityProxy.getVersionDescription());
             logger.info("Oracle-Version: {}", new DefaultDatabaseInformation().getOracleVersion(conn));
         }
         catch (SQLException e) {
