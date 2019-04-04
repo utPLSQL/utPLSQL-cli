@@ -228,7 +228,7 @@ public class RunCommand implements ICommand {
         return Cli.DEFAULT_ERROR_CODE;
     }
 
-    private TestRunner newTestRunner( List<Reporter> reporterList) {
+    TestRunner newTestRunner( List<Reporter> reporterList) {
 
         final File baseDir = new File("").getAbsoluteFile();
 

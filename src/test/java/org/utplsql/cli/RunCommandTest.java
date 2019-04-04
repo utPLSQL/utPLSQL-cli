@@ -1,10 +1,14 @@
 package org.utplsql.cli;
 
 import org.junit.jupiter.api.Test;
+import org.utplsql.api.TestRunnerOptions;
 import org.utplsql.api.reporter.CoreReporters;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -91,5 +95,14 @@ class RunCommandTest {
 
         assertEquals("sys as sysdba/mypass@connectstring/service",
                 runCmd.getConnectionInfo().getConnectionString());
+    }
+
+    @Test
+    void randomOrder_withoutSeed() {
+        RunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(),
+                "-random");
+
+        TestRunnerOptions options = runCmd.newTestRunner(new ArrayList<>()).getOptions();
+        assertThat(options.randomTestOrder, equalTo(true));
     }
 }
