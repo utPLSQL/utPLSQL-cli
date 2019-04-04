@@ -126,6 +126,12 @@ public class RunCommand implements ICommand {
     )
     private boolean enableDbmsOutput = false;
 
+    @Parameter(
+            names = {"-random", "--random_test_order"},
+            description = "Enables random order of test executions (default: DISABLED)"
+    )
+    private boolean randomTestOrder = false;
+
     private CompatibilityProxy compatibilityProxy;
     private ReporterFactory reporterFactory;
     private ReporterManager reporterManager;
@@ -241,7 +247,8 @@ public class RunCommand implements ICommand {
                 .failOnErrors(true)
                 .skipCompatibilityCheck(skipCompatibilityCheck)
                 .includeObjects(getObjectList(includeObjects))
-                .excludeObjects(getObjectList(excludeObjects));
+                .excludeObjects(getObjectList(excludeObjects))
+                .randomTestOrder(randomTestOrder);
     }
 
     private ArrayList<String> getObjectList(String includeObjects) {

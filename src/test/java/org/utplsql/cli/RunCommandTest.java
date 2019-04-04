@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -104,5 +105,6 @@ class RunCommandTest {
 
         TestRunnerOptions options = runCmd.newTestRunner(new ArrayList<>()).getOptions();
         assertThat(options.randomTestOrder, equalTo(true));
+        assertThat(options.randomTestOrderSeed, nullValue());
     }
 }
