@@ -219,12 +219,18 @@ UT_COVERALLS_REPORTER:
     Designed for [Coveralls](https://coveralls.io/).
     JSON format conforms with specification: https://docs.coveralls.io/api-introduction
 
+UT_DEBUG_REPORTER:
+    No description available
+
 UT_DOCUMENTATION_REPORTER:
     A textual pretty-print of unit test results (usually use for console output)
     Provides additional properties lvl and failed
 
 UT_JUNIT_REPORTER:
     Provides outcomes in a format conforming with JUnit 4 and above as defined in: https://gist.github.com/kuzuha/232902acab1344d6b578
+
+UT_REALTIME_REPORTER:
+    Provides test results in a XML format, for clients such as SQL Developer interested in showing progressing details.
 
 UT_SONAR_TEST_REPORTER:
     Generates a JSON report providing detailed information on test execution.
