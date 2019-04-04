@@ -132,6 +132,12 @@ public class RunCommand implements ICommand {
     )
     private boolean randomTestOrder = false;
 
+    @Parameter(
+            names = {"-seed", "--random_test_order_seed"},
+            description = "Sets the seed to use for random test execution order. If set, it sets -random to true"
+    )
+    private Integer randomTestOrderSeed;
+
     private CompatibilityProxy compatibilityProxy;
     private ReporterFactory reporterFactory;
     private ReporterManager reporterManager;
@@ -248,7 +254,8 @@ public class RunCommand implements ICommand {
                 .skipCompatibilityCheck(skipCompatibilityCheck)
                 .includeObjects(getObjectList(includeObjects))
                 .excludeObjects(getObjectList(excludeObjects))
-                .randomTestOrder(randomTestOrder);
+                .randomTestOrder(randomTestOrder)
+                .randomTestOrderSeed(randomTestOrderSeed);
     }
 
     private ArrayList<String> getObjectList(String includeObjects) {

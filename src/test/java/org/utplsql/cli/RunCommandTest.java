@@ -107,4 +107,14 @@ class RunCommandTest {
         assertThat(options.randomTestOrder, equalTo(true));
         assertThat(options.randomTestOrderSeed, nullValue());
     }
+
+    @Test
+    void randomOrder_withSeed() {
+        RunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(),
+                "-seed=42");
+
+        TestRunnerOptions options = runCmd.newTestRunner(new ArrayList<>()).getOptions();
+        assertThat(options.randomTestOrder, equalTo(true));
+        assertThat(options.randomTestOrderSeed, equalTo(42));
+    }
 }
