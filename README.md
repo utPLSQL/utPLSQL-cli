@@ -86,7 +86,7 @@ utplsql run "my/Username"/"myP@ssword"@connectstring
 #### Options
 ```                       
 -p=suite_path(s)    - A suite path or a comma separated list of suite paths for unit test to be executed.     
-                      The path(s) can be in one of the following formats:
+(--path)              The path(s) can be in one of the following formats:
                           schema[.package[.procedure]]
                           schema:suite[.suite[.suite][...]][.procedure]
                       Both formats can be mixed in the list.
@@ -94,7 +94,7 @@ utplsql run "my/Username"/"myP@ssword"@connectstring
                       If -p is omitted, the current schema is used.
                       
 -f=format           - A reporter to be used for reporting.
-                      If no -f option is provided, the default ut_documentation_reporter is used.
+(--format)            If no -f option is provided, the default ut_documentation_reporter is used.
                       See reporters command for possible values
   -o=output         - Defines file name to save the output from the specified reporter.
                       If defined, the output is not displayed on screen by default. This can be changed with the -s parameter.
@@ -119,12 +119,14 @@ utplsql run "my/Username"/"myP@ssword"@connectstring
   -name_subexpression=subexpression_number
     
 -c                  - If specified, enables printing of test results in colors as defined by ANSICONSOLE standards. 
-                      Works only on reporeters that support colors (ut_documentation_reporter).
+(--color)             Works only on reporeters that support colors (ut_documentation_reporter).
                       
---failure-exit-code - Override the exit code on failure, defaults to 1. You can set it to 0 to always exit with a success status.
+-fcode=code         - Override the exit code on failure, defaults to 1. You can set it to 0 to always exit with a success status.
+(--failure-exit-code)
 
 -scc                - If specified, skips the compatibility-check with the version of the database framework.
-                      If you skip compatibility-check, CLI will expect the most actual framework version
+(--skip-              If you skip compatibility-check, CLI will expect the most actual framework version
+ compatibility-check) 
                       
 -include=pckg_list  - Comma-separated object list to include in the coverage report.
                       Format: [schema.]package[,[schema.]package ...].
@@ -135,13 +137,16 @@ utplsql run "my/Username"/"myP@ssword"@connectstring
                       See coverage reporting options in framework documentation.
                       
 -q                  - Does not output the informational messages normally printed to console.
-                      Default: false
+(--quiet)             Default: false
                       
 -d                  - Outputs a load of debug information to console
-                      Default: false
+(--debug)             Default: false
 
--t                  - Sets the timeout in minutes after which the cli will abort. 
-                      Default 60
+-t=timeInMinutes   - Sets the timeout in minutes after which the cli will abort. 
+(--timeout)          Default 60
+                      
+-dbout              - Enables DBMS_OUTPUT in the TestRunner-Session
+(--dbms_output)       Default: false
 ```
 
 Parameters -f, -o, -s are correlated. That is parameters -o and -s are controlling outputs for reporter specified by the preceding -f parameter.
