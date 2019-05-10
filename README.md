@@ -1,4 +1,4 @@
-[![latest-release](https://img.shields.io/github/release/utPLSQL/utPLSQL-cli.svg)](https://github.com/utPLSQL/utPLSQLc-li/releases)
+[![latest-release](https://img.shields.io/github/release/utPLSQL/utPLSQL-cli.svg)](https://github.com/utPLSQL/utPLSQL-cli/releases)
 [![license](https://img.shields.io/github/license/utPLSQL/utPLSQL-cli.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![build](https://img.shields.io/travis/utPLSQL/utPLSQL-cli/develop.svg?label=develop%20branch)](https://travis-ci.org/utPLSQL/utPLSQL-cli)
 
