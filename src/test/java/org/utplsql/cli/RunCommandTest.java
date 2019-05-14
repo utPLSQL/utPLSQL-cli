@@ -99,6 +99,15 @@ class RunCommandTest {
     }
 
     @Test
+    void randomOrder_default() {
+        RunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString());
+
+        TestRunnerOptions options = runCmd.newTestRunner(new ArrayList<>()).getOptions();
+        assertThat(options.randomTestOrder, equalTo(false));
+        assertThat(options.randomTestOrderSeed, nullValue());
+    }
+
+    @Test
     void randomOrder_withoutSeed() {
         RunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(),
                 "-random");
