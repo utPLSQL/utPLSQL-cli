@@ -147,6 +147,12 @@ utplsql run "my/Username"/"myP@ssword"@connectstring
                       
 -dbout              - Enables DBMS_OUTPUT in the TestRunner-Session
 (--dbms_output)       Default: false
+
+-random             - Enables random order of test executions
+(--random-test-order) Default: false
+
+-seed               - Sets the seed to use for random test execution order. If set, it sets -random to true
+(--random-test-order-seed)
 ```
 
 Parameters -f, -o, -s are correlated. That is parameters -o and -s are controlling outputs for reporter specified by the preceding -f parameter.

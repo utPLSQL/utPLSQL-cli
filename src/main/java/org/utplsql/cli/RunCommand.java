@@ -128,13 +128,13 @@ public class RunCommand implements ICommand {
     private boolean enableDbmsOutput = false;
 
     @Parameter(
-            names = {"-random", "--random_test_order"},
+            names = {"-random", "--random-test-order"},
             description = "Enables random order of test executions (default: DISABLED)"
     )
     private boolean randomTestOrder = false;
 
     @Parameter(
-            names = {"-seed", "--random_test_order_seed"},
+            names = {"-seed", "--random-test-order-seed"},
             description = "Sets the seed to use for random test execution order. If set, it sets -random to true"
     )
     private Integer randomTestOrderSeed;
