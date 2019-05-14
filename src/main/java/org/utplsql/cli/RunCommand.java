@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.utplsql.api.*;
 import org.utplsql.api.compatibility.CompatibilityProxy;
+import org.utplsql.api.compatibility.OptionalFeatures;
 import org.utplsql.api.db.DefaultDatabaseInformation;
 import org.utplsql.api.exception.DatabaseNotCompatibleException;
 import org.utplsql.api.exception.OracleCreateStatmenetStuckException;
@@ -126,6 +127,18 @@ public class RunCommand implements ICommand {
     )
     private boolean enableDbmsOutput = false;
 
+    @Parameter(
+            names = {"-random", "--random-test-order"},
+            description = "Enables random order of test executions (default: DISABLED)"
+    )
+    private boolean randomTestOrder = false;
+
+    @Parameter(
+            names = {"-seed", "--random-test-order-seed"},
+            description = "Sets the seed to use for random test execution order. If set, it sets -random to true"
+    )
+    private Integer randomTestOrderSeed;
+
     private CompatibilityProxy compatibilityProxy;
     private ReporterFactory reporterFactory;
     private ReporterManager reporterManager;
@@ -162,11 +175,7 @@ public class RunCommand implements ICommand {
             initDatabase(dataSource);
             reporterList = initReporters(dataSource);
 
-            // Output a message if --failureExitCode is set but database framework is not capable of
-            String msg = RunCommandChecker.getCheckFailOnErrorMessage(failureExitCode, compatibilityProxy.getUtPlsqlVersion());
-            if (msg != null) {
-                System.out.println(msg);
-            }
+            checkForCompatibility(compatibilityProxy.getUtPlsqlVersion());
 
             ExecutorService executorService = Executors.newFixedThreadPool(1 + reporterList.size());
 
@@ -228,7 +237,28 @@ public class RunCommand implements ICommand {
         return Cli.DEFAULT_ERROR_CODE;
     }
 
-    private TestRunner newTestRunner( List<Reporter> reporterList) {
+    private void checkForCompatibility( Version utPlSqlVersion ) {
+        if (!OptionalFeatures.FAIL_ON_ERROR.isAvailableFor(utPlSqlVersion) && failureExitCode != 1 ) {
+            System.out.println("You specified option `--failure-exit-code` but your database framework version (" +
+                    utPlSqlVersion.getNormalizedString() + ") is not able to " +
+                    "redirect failureCodes. Please upgrade to a newer version if you want to use that feature.");
+        }
+
+        if ( !OptionalFeatures.RANDOM_EXECUTION_ORDER.isAvailableFor(utPlSqlVersion) && randomTestOrder ) {
+            System.out.println("You specified option `-random` but your database framework version (" +
+                    utPlSqlVersion.getNormalizedString() + ") is not able to " +
+                    "redirect failureCodes. Please upgrade to a newer version if you want to use that feature.");
+        }
+
+        if ( !OptionalFeatures.RANDOM_EXECUTION_ORDER.isAvailableFor(utPlSqlVersion) && randomTestOrderSeed != null ) {
+            System.out.println("You specified option `-seed` but your database framework version (" +
+                    utPlSqlVersion.getNormalizedString() + ") is not able to " +
+                    "redirect failureCodes. Please upgrade to a newer version if you want to use that feature.");
+        }
+
+    }
+
+    TestRunner newTestRunner( List<Reporter> reporterList) {
 
         final File baseDir = new File("").getAbsoluteFile();
 
@@ -241,7 +271,9 @@ public class RunCommand implements ICommand {
                 .failOnErrors(true)
                 .skipCompatibilityCheck(skipCompatibilityCheck)
                 .includeObjects(getObjectList(includeObjects))
-                .excludeObjects(getObjectList(excludeObjects));
+                .excludeObjects(getObjectList(excludeObjects))
+                .randomTestOrder(randomTestOrder)
+                .randomTestOrderSeed(randomTestOrderSeed);
     }
 
     private ArrayList<String> getObjectList(String includeObjects) {
