@@ -3,6 +3,8 @@ set -ev
 
 VERSION=`date +%Y%m%d%H%M`
 MVN_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+# Strip -SNAPSHOT if exists
+MVN_VERSION=${MVN_VERSION/-SNAPSHOT/}
 
 #overcome maven assemble issue: https://github.com/mojohaus/appassembler/issues/61
 sed -i '/CYGWIN\*) cygwin=true/c\  CYGWIN*|MINGW*) cygwin=true ;;' target/appassembler/bin/utplsql
