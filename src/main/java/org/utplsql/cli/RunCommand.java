@@ -343,9 +343,20 @@ public class RunCommand implements ICommand {
      */
     private FileMapperOptions getFileMapperOptionsByParamListItem(List<String> pathParams, File baseDir )
     {
+        logger.debug("Getting FileMapperOptions - Params: ");
+        pathParams.forEach(logger::debug);
+
         if (!pathParams.isEmpty()) {
             String sourcePath = pathParams.get(0);
+
+            logger.debug("BaseDir: {}", baseDir);
+            logger.debug("SourcePath: {}", sourcePath);
+
             List<String> files = new FileWalker().getFileList(baseDir, sourcePath);
+
+            logger.debug("Getting FileMapperOptions - Files: ");
+            files.forEach(logger::debug);
+
            return getMapperOptions(pathParams, files);
         }
 
