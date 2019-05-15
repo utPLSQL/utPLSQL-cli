@@ -27,7 +27,7 @@ cat > bintray.json <<EOF
     "vcs_url": "https://github.com/utPLSQL/utPLSQL-cli.git",
     "licenses": [ "MIT" ]
   },
-  "version": { "name": "${TRAVIS_BRANCH}" },
+  "version": { "name": "${VERSION}" },
   "files": [ { "includePattern": "dist/(.*)", "uploadPattern": "\$1" } ],
   "publish": true
 }
