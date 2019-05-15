@@ -2,6 +2,7 @@
 set -ev
 
 VERSION=`date +%Y%m%d%H%M`
+MVN_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 
 #overcome maven assemble issue: https://github.com/mojohaus/appassembler/issues/61
 sed -i '/CYGWIN\*) cygwin=true/c\  CYGWIN*|MINGW*) cygwin=true ;;' target/appassembler/bin/utplsql
@@ -27,7 +28,7 @@ cat > bintray.json <<EOF
     "vcs_url": "https://github.com/utPLSQL/utPLSQL-cli.git",
     "licenses": [ "MIT" ]
   },
-  "version": { "name": "${VERSION}" },
+  "version": { "name": "${MVN_VERSION}" },
   "files": [ { "includePattern": "dist/(.*)", "uploadPattern": "\$1" } ],
   "publish": true
 }
