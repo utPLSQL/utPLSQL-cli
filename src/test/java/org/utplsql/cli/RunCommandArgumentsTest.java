@@ -5,6 +5,9 @@ import org.utplsql.api.TestRunner;
 
 import java.util.ArrayList;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+
 public class RunCommandArgumentsTest {
 
     @Test
@@ -38,5 +41,16 @@ public class RunCommandArgumentsTest {
         );
 
         TestRunner testRunner = runCmd.newTestRunner(new ArrayList<>());
+    }
+
+    @Test
+    void multiplePaths() {
+        RunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(),
+                "-p=app.test_betwnstr,app.test_award_bonus"
+        );
+
+        TestRunner testRunner = runCmd.newTestRunner(new ArrayList<>());
+        assertThat( testRunner.getOptions().pathList, contains("app.test_betwnstr", "app.test_award_bonus") );
+
     }
 }

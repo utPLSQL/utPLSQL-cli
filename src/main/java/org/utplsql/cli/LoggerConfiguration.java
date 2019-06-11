@@ -9,7 +9,7 @@ import ch.qos.logback.core.ConsoleAppender;
 import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.LoggerFactory;
 
-class LoggerConfiguration {
+public class LoggerConfiguration {
 
     public enum ConfigLevel {
         BASIC, NONE, DEBUG
