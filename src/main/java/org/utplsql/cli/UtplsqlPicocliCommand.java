@@ -5,7 +5,10 @@ import picocli.CommandLine;
 @CommandLine.Command(
         name = "utplsql",
         description = "utPLSQL cli",
-        subcommands = { RunPicocliCommand.class })
+        subcommands = {
+                RunPicocliCommand.class,
+                VersionInfoCommand.class
+        })
 public class UtplsqlPicocliCommand {
 
 }
