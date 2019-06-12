@@ -147,7 +147,7 @@ public class RunPicocliCommand implements Callable<RunCommandConfig> {
             if ( mapping.typeMapping != null && !mapping.typeMapping.isEmpty()) {
                 for ( String keyVal : mapping.typeMapping.split("/")) {
                     String[] values = keyVal.split("=");
-                    typeMap.put(values[0], values[1]);
+                    typeMap.put(values[1], values[0]);
                 }
             }
 
@@ -157,8 +157,8 @@ public class RunPicocliCommand implements Callable<RunCommandConfig> {
                     mapping.regexExpression,
                     typeMap,
                     mapping.ownerSubExpression,
-                    mapping.typeSubExpression,
-                    mapping.nameSubExpression
+                    mapping.nameSubExpression,
+                    mapping.typeSubExpression
             );
         }
     }

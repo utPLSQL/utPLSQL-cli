@@ -1,6 +1,7 @@
 package org.utplsql.cli;
 
 import org.junit.jupiter.api.Test;
+import org.utplsql.cli.config.FileMapperConfig;
 import org.utplsql.cli.config.ReporterConfig;
 import org.utplsql.cli.config.RunCommandConfig;
 import picocli.CommandLine;
@@ -8,7 +9,7 @@ import picocli.CommandLine;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PicocliRunCommandTest {
@@ -16,6 +17,7 @@ public class PicocliRunCommandTest {
     private RunCommandConfig parseForConfig( String... args ) throws Exception {
         Object obj = new UtplsqlPicocliCommand();
         CommandLine cline = new CommandLine(obj);
+        cline.setTrimQuotes(true);
         List<CommandLine> parsed = cline.parse(args);
 
         RunPicocliCommand runCmd = parsed.get(1).getCommand();
@@ -166,5 +168,50 @@ public class PicocliRunCommandTest {
         assertEquals("ut_coverage_html", reporterConfig.getName());
         assertEquals("output2.html", reporterConfig.getOutput());
         assertTrue(reporterConfig.isScreen());
+    }
+
+    @Test
+    void sourceFileMapping() throws Exception {
+        RunCommandConfig config = parseForConfig("run",
+                TestHelper.getConnectionString(),
+                "-source_path=src/test/resources/plsql/source",
+                    "-owner=app",
+                    "-regex_expression=\"[a-Z+]\"",
+                    "-type_mapping=\"sql=PACKAGE BODY/pks=PACKAGE\"",
+                    "-owner_subexpression=0",
+                    "-type_subexpression=1",
+                    "-name_subexpression=3");
+
+        FileMapperConfig sourceMapperConfig = config.getSourceMapping();
+        assertEquals( "src/test/resources/plsql/source", sourceMapperConfig.getPath());
+        assertEquals( "app", sourceMapperConfig.getOwner());
+        assertEquals( "[a-Z+]", sourceMapperConfig.getRegexExpression());
+        assertThat( sourceMapperConfig.getTypeMapping(), hasEntry("PACKAGE BODY", "sql"));
+        assertThat( sourceMapperConfig.getTypeMapping(), hasEntry("PACKAGE", "pks"));
+        assertEquals( 0, sourceMapperConfig.getOwnerSubexpression());
+        assertEquals( 1, sourceMapperConfig.getTypeSubexpression());
+        assertEquals( 3, sourceMapperConfig.getNameSubexpression());
+    }
+    @Test
+    void testFileMapping() throws Exception {
+        RunCommandConfig config = parseForConfig("run",
+                TestHelper.getConnectionString(),
+                "-test_path=src/test/resources/plsql/test",
+                    "-owner=test_app",
+                    "-regex_expression=\"test_regex\"",
+                    "-type_mapping=\"tsql=PACKAGE BODY/tsql=FUNCTION\"",
+                    "-owner_subexpression=4",
+                    "-type_subexpression=5",
+                    "-name_subexpression=6");
+
+        FileMapperConfig testMapperConfig = config.getTestMapping();
+        assertEquals( "src/test/resources/plsql/test", testMapperConfig.getPath());
+        assertEquals( "test_app", testMapperConfig.getOwner());
+        assertEquals( "test_regex", testMapperConfig.getRegexExpression());
+        assertThat( testMapperConfig.getTypeMapping(), hasEntry("PACKAGE BODY", "tsql"));
+        assertThat( testMapperConfig.getTypeMapping(), hasEntry("FUNCTION", "tsql"));
+        assertEquals( 4, testMapperConfig.getOwnerSubexpression());
+        assertEquals( 5, testMapperConfig.getTypeSubexpression());
+        assertEquals( 6, testMapperConfig.getNameSubexpression());
     }
 }
