@@ -70,7 +70,7 @@ class RunCommandIT extends AbstractFileOutputTest {
 
         int result = TestHelper.runApp("run",
                 TestHelper.getConnectionString(),
-                "-dbout",
+                "-D",
                 "--failure-exit-code=2");
 
         assertValidReturnCode(result);

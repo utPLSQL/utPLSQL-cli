@@ -2,6 +2,9 @@ package org.utplsql.cli;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+import picocli.CommandLine;
+
+import java.util.List;
 
 public class Cli {
 
@@ -46,6 +49,35 @@ public class Cli {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+
+        return exitCode;
+    }
+    static int runPicocliWithExitCode( String[] args ) {
+
+        LoggerConfiguration.configure(LoggerConfiguration.ConfigLevel.NONE);
+        LocaleInitializer.initLocale();
+
+        CommandLine commandLine = new CommandLine(UtplsqlPicocliCommand.class);
+        commandLine.setTrimQuotes(true);
+
+        int exitCode = DEFAULT_ERROR_CODE;
+
+        try {
+
+            List<CommandLine> parsedLines = commandLine.parse(args);
+
+            for ( CommandLine parsedLine : parsedLines ) {
+                Object command = parsedLine.getCommand();
+                if ( command instanceof ICommand ) {
+                    exitCode = ((ICommand)command).run();
+                    break;
+                }
+            }
+        } catch (ParameterException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return exitCode;

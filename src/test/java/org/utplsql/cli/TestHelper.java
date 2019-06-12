@@ -54,7 +54,7 @@ class TestHelper {
     }
 
     static int runApp(String... args) {
-        return Cli.runWithExitCode(args);
+        return Cli.runPicocliWithExitCode(args);
     }
 
     static Version getFrameworkVersion() throws SQLException {
