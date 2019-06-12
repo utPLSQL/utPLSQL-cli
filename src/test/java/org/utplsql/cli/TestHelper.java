@@ -25,7 +25,7 @@ class TestHelper {
         sPass = EnvironmentVariableUtil.getEnvValue("DB_PASS", "app");
     }
 
-    static RunCommand createRunCommand(String... args) {
+    static IRunCommand createRunCommand(String... args) {
         RunCommand runCmd = new RunCommand();
 
         JCommander.newBuilder()

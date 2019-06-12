@@ -37,7 +37,7 @@ import java.util.concurrent.*;
  * @author pesse
  */
 @Parameters(separators = "=", commandDescription = "run tests")
-public class RunCommand implements ICommand {
+public class RunCommand implements ICommand, IRunCommand {
 
     private static final Logger logger = LoggerFactory.getLogger(RunCommand.class);
 
@@ -258,7 +258,8 @@ public class RunCommand implements ICommand {
 
     }
 
-    TestRunner newTestRunner( List<Reporter> reporterList) {
+    @Override
+    public TestRunner newTestRunner( List<Reporter> reporterList) {
 
         final File baseDir = new File("").getAbsoluteFile();
 
@@ -437,7 +438,8 @@ public class RunCommand implements ICommand {
         return reporterManager;
     }
 
-    List<ReporterOptions> getReporterOptionsList() {
+    @Override
+    public List<ReporterOptions> getReporterOptionsList() {
         return getReporterManager().getReporterOptionsList();
     }
 }
