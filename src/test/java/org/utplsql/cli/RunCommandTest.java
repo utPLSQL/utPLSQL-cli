@@ -19,7 +19,7 @@ class RunCommandTest {
 
     @Test
     void reporterOptions_Default() {
-        RunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString());
+        IRunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString());
 
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
 
@@ -32,7 +32,7 @@ class RunCommandTest {
 
     @Test
     void reporterOptions_OneReporter() {
-        RunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(), "-f=ut_documentation_reporter", "-o=output.txt");
+        IRunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(), "-f=ut_documentation_reporter", "-o=output.txt");
 
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
 
@@ -45,7 +45,7 @@ class RunCommandTest {
 
     @Test
     void reporterOptions_OneReporterForceScreen() {
-        RunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(), "-f=ut_documentation_reporter", "-o=output.txt", "-s");
+        IRunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(), "-f=ut_documentation_reporter", "-o=output.txt", "-s");
 
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
 
@@ -58,7 +58,7 @@ class RunCommandTest {
 
     @Test
     void reporterOptions_OneReporterForceScreenInverse() {
-        RunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(), "-f=ut_documentation_reporter", "-s", "-o=output.txt");
+        IRunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(), "-f=ut_documentation_reporter", "-s", "-o=output.txt");
 
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
 
@@ -71,7 +71,7 @@ class RunCommandTest {
 
     @Test
     void reporterOptions_TwoReporters() {
-        RunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(),
+        IRunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(),
                 "-f=ut_documentation_reporter",
                 "-f=ut_coverage_html_reporter", "-o=coverage.html", "-s");
 
@@ -91,16 +91,8 @@ class RunCommandTest {
     }
 
     @Test
-    void connectionString_asSysdba() {
-        RunCommand runCmd = TestHelper.createRunCommand("sys as sysdba/mypass@connectstring/service");
-
-        assertEquals("sys as sysdba/mypass@connectstring/service",
-                runCmd.getConnectionInfo().getConnectionString());
-    }
-
-    @Test
     void randomOrder_default() {
-        RunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString());
+        IRunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString());
 
         TestRunnerOptions options = runCmd.newTestRunner(new ArrayList<>()).getOptions();
         assertThat(options.randomTestOrder, equalTo(false));
@@ -109,7 +101,7 @@ class RunCommandTest {
 
     @Test
     void randomOrder_withoutSeed() {
-        RunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(),
+        IRunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(),
                 "-random");
 
         TestRunnerOptions options = runCmd.newTestRunner(new ArrayList<>()).getOptions();
@@ -119,7 +111,7 @@ class RunCommandTest {
 
     @Test
     void randomOrder_withSeed() {
-        RunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(),
+        IRunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(),
                 "-seed=42");
 
         TestRunnerOptions options = runCmd.newTestRunner(new ArrayList<>()).getOptions();

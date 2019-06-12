@@ -25,15 +25,29 @@ class TestHelper {
         sPass = EnvironmentVariableUtil.getEnvValue("DB_PASS", "app");
     }
 
+    static RunPicocliCommand createPicocliRunCommand(String... args ) {
+        Object obj = new UtplsqlPicocliCommand();
+        CommandLine cline = new CommandLine(obj);
+        cline.setTrimQuotes(true);
+        List<CommandLine> parsed = cline.parse(args);
+
+        return parsed.get(1).getCommand();
+    }
+
     static IRunCommand createRunCommand(String... args) {
-        RunCommand runCmd = new RunCommand();
+        ArrayList<String> newArgs = new ArrayList<>(args.length+1);
+        newArgs.add("run");
+        newArgs.addAll(Arrays.asList(args));
+        return createPicocliRunCommand(newArgs.toArray(new String[0]));
+
+        /*RunCommand runCmd = new RunCommand();
 
         JCommander.newBuilder()
                 .addObject(runCmd)
                 .args(args)
                 .build();
 
-        return runCmd;
+        return runCmd;*/
     }
 
     static RunCommandConfig parseRunConfig(String... args ) throws Exception {

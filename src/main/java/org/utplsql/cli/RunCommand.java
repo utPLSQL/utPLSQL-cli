@@ -147,7 +147,7 @@ public class RunCommand implements ICommand, IRunCommand {
         return connectionInfoList.get(0);
     }
 
-    void init() {
+    public void initLogger() {
 
         LoggerConfiguration.ConfigLevel level = LoggerConfiguration.ConfigLevel.BASIC;
         if ( logSilent ) {
@@ -161,7 +161,7 @@ public class RunCommand implements ICommand, IRunCommand {
     }
 
     public int doRun() throws OracleCreateStatmenetStuckException {
-        init();
+        initLogger();
         outputMainInformation();
 
         HikariDataSource dataSource = null;

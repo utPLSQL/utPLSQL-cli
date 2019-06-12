@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface IRunCommand extends ICommand {
 
+    void initLogger();
+
     TestRunner newTestRunner(List<Reporter> reporterList);
 
     List<ReporterOptions> getReporterOptionsList();

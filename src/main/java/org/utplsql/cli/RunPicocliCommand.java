@@ -1,5 +1,7 @@
 package org.utplsql.cli;
 
+import org.utplsql.api.TestRunner;
+import org.utplsql.api.reporter.Reporter;
 import org.utplsql.cli.config.FileMapperConfig;
 import org.utplsql.cli.config.ReporterConfig;
 import org.utplsql.cli.config.RunCommandConfig;
@@ -11,7 +13,7 @@ import picocli.CommandLine.Parameters;
 import java.util.*;
 
 @Command( name = "run", description = "run tests")
-public class RunPicocliCommand implements ICommand {
+public class RunPicocliCommand implements IRunCommand {
 
     @Parameters(description = ConnectionInfo.COMMANDLINE_PARAM_DESCRIPTION)
     private String connectionString;
@@ -165,6 +167,8 @@ public class RunPicocliCommand implements ICommand {
         }
     }
 
+    private RunAction runAction;
+
     private String[] splitOrEmpty(String value) {
         if ( value == null || value.isEmpty() ) {
             return new String[0];
@@ -228,14 +232,35 @@ public class RunPicocliCommand implements ICommand {
                 randomTestOrderSeed);
     }
 
+    private RunAction getRunAction() {
+        if ( runAction == null )
+            runAction = new RunAction(getRunCommandConfig());
+
+        return runAction;
+    }
+
     @Override
     public int run() {
-        RunAction action = new RunAction(getRunCommandConfig());
-        return action.run();
+        return getRunAction().run();
     }
 
     @Override
     public String getCommand() {
         return null;
+    }
+
+    @Override
+    public TestRunner newTestRunner(List<Reporter> reporterList) {
+        return getRunAction().newTestRunner(reporterList);
+    }
+
+    @Override
+    public List<ReporterOptions> getReporterOptionsList() {
+        return getRunAction().getReporterOptionsList();
+    }
+
+    @Override
+    public void initLogger() {
+        getRunAction().init();
     }
 }

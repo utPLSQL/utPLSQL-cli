@@ -12,7 +12,7 @@ public class RunCommandArgumentsTest {
 
     @Test
     public void allArgumentsAreRecognized() {
-        RunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(),
+        IRunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(),
                 "-p=app",
                 "-f=ut_sonar_test_reporter",
                     "-o=sonar_result.xml",
@@ -45,7 +45,7 @@ public class RunCommandArgumentsTest {
 
     @Test
     void multiplePaths() {
-        RunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(),
+        IRunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(),
                 "-p=app.test_betwnstr,app.test_award_bonus"
         );
 

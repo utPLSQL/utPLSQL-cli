@@ -9,7 +9,7 @@ public class PathMapperTest {
 
     @Test
     void checkPathMapperOutput() {
-        RunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(),
+        IRunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(),
                 "-f=ut_sonar_test_reporter",
                 "-o=sonar_result.xml",
                 "-s",
