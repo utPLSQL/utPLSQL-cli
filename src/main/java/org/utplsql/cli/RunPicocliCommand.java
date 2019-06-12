@@ -3,13 +3,15 @@ package org.utplsql.cli;
 import org.utplsql.cli.config.FileMapperConfig;
 import org.utplsql.cli.config.ReporterConfig;
 import org.utplsql.cli.config.RunCommandConfig;
-import picocli.CommandLine.*;
+import picocli.CommandLine.ArgGroup;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
 
 import java.util.*;
-import java.util.concurrent.Callable;
 
 @Command( name = "run", description = "run tests")
-public class RunPicocliCommand implements Callable<RunCommandConfig> {
+public class RunPicocliCommand implements ICommand {
 
     @Parameters(description = ConnectionInfo.COMMANDLINE_PARAM_DESCRIPTION)
     private String connectionString;
@@ -172,9 +174,7 @@ public class RunPicocliCommand implements Callable<RunCommandConfig> {
         }
     }
 
-    @Override
-    public RunCommandConfig call() throws Exception {
-
+    public RunCommandConfig getRunCommandConfig() {
         // Prepare path elements
         ArrayList<String> suitePaths = new ArrayList<>();
         for ( String pathElem : paths ) {
@@ -226,5 +226,16 @@ public class RunPicocliCommand implements Callable<RunCommandConfig> {
                 enableDbmsOutput,
                 randomTestOrder,
                 randomTestOrderSeed);
+    }
+
+    @Override
+    public int run() {
+        RunAction action = new RunAction(getRunCommandConfig());
+        return action.run();
+    }
+
+    @Override
+    public String getCommand() {
+        return null;
     }
 }

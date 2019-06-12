@@ -43,7 +43,7 @@ class TestHelper {
         List<CommandLine> parsed = cline.parse(args);
 
         RunPicocliCommand runCmd = parsed.get(1).getCommand();
-        return runCmd.call();
+        return runCmd.getRunCommandConfig();
     }
 
     static RunAction createRunAction(String... args) throws Exception {
