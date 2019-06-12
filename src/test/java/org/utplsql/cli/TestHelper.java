@@ -4,10 +4,15 @@ import com.beust.jcommander.JCommander;
 import org.utplsql.api.DBHelper;
 import org.utplsql.api.EnvironmentVariableUtil;
 import org.utplsql.api.Version;
+import org.utplsql.cli.config.RunCommandConfig;
+import picocli.CommandLine;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 class TestHelper {
     private static String sUrl;
@@ -29,6 +34,23 @@ class TestHelper {
                 .build();
 
         return runCmd;
+    }
+
+    static RunCommandConfig parseRunConfig(String... args ) throws Exception {
+        Object obj = new UtplsqlPicocliCommand();
+        CommandLine cline = new CommandLine(obj);
+        cline.setTrimQuotes(true);
+        List<CommandLine> parsed = cline.parse(args);
+
+        RunPicocliCommand runCmd = parsed.get(1).getCommand();
+        return runCmd.call();
+    }
+
+    static RunAction createRunAction(String... args) throws Exception {
+        ArrayList<String> newArgs = new ArrayList<>(args.length+1);
+        newArgs.add("run");
+        newArgs.addAll(Arrays.asList(args));
+        return new RunAction(parseRunConfig(newArgs.toArray(new String[0])));
     }
 
     static int runApp(String... args) {

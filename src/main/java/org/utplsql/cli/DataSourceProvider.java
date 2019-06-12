@@ -22,10 +22,14 @@ public class DataSourceProvider {
     }
 
     public static DataSource getDataSource(ConnectionInfo info, int maxConnections ) throws SQLException {
+        return getDataSource(info.getConnectionString(), maxConnections);
+    }
+
+    public static DataSource getDataSource(String connectString, int maxConnections ) throws SQLException {
 
         requireOjdbc();
 
-        ConnectionConfig config = new ConnectionConfig(info.getConnectionString());
+        ConnectionConfig config = new ConnectionConfig(connectString);
         warnIfSysDba(config);
 
         return new TestedDataSourceProvider(config, maxConnections).getDataSource();
