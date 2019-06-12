@@ -16,6 +16,7 @@ import org.utplsql.api.exception.UtPLSQLNotInstalledException;
 import org.utplsql.api.reporter.Reporter;
 import org.utplsql.api.reporter.ReporterFactory;
 import org.utplsql.cli.config.FileMapperConfig;
+import org.utplsql.cli.config.ReporterConfig;
 import org.utplsql.cli.config.RunCommandConfig;
 import org.utplsql.cli.exception.DatabaseConnectionFailed;
 import org.utplsql.cli.exception.ReporterTimeoutException;
@@ -52,6 +53,10 @@ public class RunAction {
 
     void init() {
         LoggerConfiguration.configure(config.getLogConfigLevel());
+    }
+
+    public RunCommandConfig getConfig() {
+        return config;
     }
 
     public int doRun() throws OracleCreateStatmenetStuckException {
@@ -270,9 +275,20 @@ public class RunAction {
     }
 
     private ReporterManager getReporterManager() {
-        ArrayList<String> reporterParams = new ArrayList<>();
-        if ( reporterManager == null )
-            reporterManager = new ReporterManager(reporterParams);
+        if ( reporterManager == null ) {
+
+            ReporterConfig[] reporterConfigs = config.getReporters();
+            if ( reporterConfigs != null ) {
+                ReporterOptions[] options = new ReporterOptions[reporterConfigs.length];
+                for (int i = 0; i<reporterConfigs.length; i++ ) {
+                    options[i] = new ReporterOptions(
+                            reporterConfigs[i].getName(),
+                            reporterConfigs[i].getOutput(),
+                            reporterConfigs[i].isScreen());
+                }
+                reporterManager = new ReporterManager(options);
+            }
+        }
 
         return reporterManager;
     }

@@ -13,6 +13,7 @@ import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
@@ -23,10 +24,16 @@ class ReporterManager {
     private ExecutorService executorService;
 
     ReporterManager(List<String> reporterParams ) {
-        initReporterOptionsList(reporterParams);
+        parseReporterOptionsList(reporterParams);
+        initReporterOptionsList();
     }
 
-    private void initReporterOptionsList( List<String> reporterParams ) {
+    ReporterManager( ReporterOptions[] reporterOptions ) {
+        this.reporterOptionsList = Arrays.asList(reporterOptions);
+        initReporterOptionsList();
+    }
+
+    private void parseReporterOptionsList( List<String> reporterParams ) {
         reporterOptionsList = new ArrayList<>();
         ReporterOptions reporterOptions = null;
 
@@ -44,11 +51,19 @@ class ReporterManager {
                 reporterOptions.forceOutputToScreen(true);
             }
         }
+    }
+
+    private void initReporterOptionsList( ) {
 
         // If no reporter parameters were passed, use default reporter.
         if (reporterOptionsList.isEmpty()) {
-            reporterOptionsList.add(new ReporterOptions(CoreReporters.UT_DOCUMENTATION_REPORTER.name()));
+            reporterOptionsList = new ArrayList<>();
+            reporterOptionsList.add(getDefaultReporterOption());
         }
+    }
+
+    private ReporterOptions getDefaultReporterOption() {
+        return new ReporterOptions(CoreReporters.UT_DOCUMENTATION_REPORTER.name());
     }
 
     private void abortGathering(Throwable e) {
