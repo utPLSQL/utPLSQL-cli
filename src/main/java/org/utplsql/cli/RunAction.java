@@ -14,7 +14,6 @@ import org.utplsql.api.exception.UtPLSQLNotInstalledException;
 import org.utplsql.api.reporter.Reporter;
 import org.utplsql.api.reporter.ReporterFactory;
 import org.utplsql.cli.config.FileMapperConfig;
-import org.utplsql.cli.config.ReporterConfig;
 import org.utplsql.cli.config.RunCommandConfig;
 import org.utplsql.cli.exception.DatabaseConnectionFailed;
 import org.utplsql.cli.exception.ReporterTimeoutException;
@@ -273,25 +272,7 @@ public class RunAction {
 
     private ReporterManager getReporterManager() {
         if ( reporterManager == null ) {
-
-            ReporterConfig[] reporterConfigs = config.getReporters();
-            if ( reporterConfigs != null ) {
-                ReporterOptions[] options = new ReporterOptions[reporterConfigs.length];
-                boolean printToScreen = false;
-                for (int i = 0; i<reporterConfigs.length; i++ ) {
-                    options[i] = new ReporterOptions(
-                            reporterConfigs[i].getName(),
-                            reporterConfigs[i].getOutput());
-
-                    options[i].forceOutputToScreen(reporterConfigs[i].isForceToScreen());
-
-                    // Check printToScreen validity
-                    if ( options[i].outputToScreen() && printToScreen )
-                        throw new IllegalArgumentException("You cannot configure more than one reporter to output to screen");
-                    printToScreen = options[i].outputToScreen();
-                }
-                reporterManager = new ReporterManager(options);
-            }
+            reporterManager = new ReporterManager(config.getReporters());
         }
 
         return reporterManager;

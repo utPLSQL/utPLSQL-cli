@@ -4,6 +4,7 @@ import org.utplsql.api.compatibility.CompatibilityProxy;
 import org.utplsql.api.reporter.CoreReporters;
 import org.utplsql.api.reporter.Reporter;
 import org.utplsql.api.reporter.ReporterFactory;
+import org.utplsql.cli.config.ReporterConfig;
 import org.utplsql.cli.reporters.ReporterOptionsAware;
 
 import javax.sql.DataSource;
@@ -13,7 +14,6 @@ import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
@@ -23,17 +23,30 @@ class ReporterManager {
     private List<Throwable> reporterGatherErrors;
     private ExecutorService executorService;
 
-    ReporterManager( ReporterOptions[] reporterOptions ) {
-        this.reporterOptionsList = Arrays.asList(reporterOptions);
-        initReporterOptionsList();
+    ReporterManager(ReporterConfig[] reporterConfigs ) {
+        reporterOptionsList = new ArrayList<>();
+        if ( reporterConfigs != null && reporterConfigs.length > 0 ) {
+            loadOptionsFromConfigs( reporterConfigs );
+        }
+        else {
+            reporterOptionsList.add(getDefaultReporterOption());
+        }
     }
 
-    private void initReporterOptionsList( ) {
+    private void loadOptionsFromConfigs( ReporterConfig[] reporterConfigs ) {
+        boolean printToScreen = false;
+        for (ReporterConfig reporterConfig : reporterConfigs) {
+            ReporterOptions option = new ReporterOptions(
+                    reporterConfig.getName(),
+                    reporterConfig.getOutput());
 
-        // If no reporter parameters were passed, use default reporter.
-        if (reporterOptionsList.isEmpty()) {
-            reporterOptionsList = new ArrayList<>();
-            reporterOptionsList.add(getDefaultReporterOption());
+            option.forceOutputToScreen(reporterConfig.isForceToScreen());
+            reporterOptionsList.add(option);
+
+            // Check printToScreen validity
+            if (option.outputToScreen() && printToScreen)
+                throw new IllegalArgumentException("You cannot configure more than one reporter to output to screen");
+            printToScreen = option.outputToScreen();
         }
     }
 
