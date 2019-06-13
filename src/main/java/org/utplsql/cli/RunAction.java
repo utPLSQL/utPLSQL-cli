@@ -1,7 +1,5 @@
 package org.utplsql.cli;
 
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.Parameters;
 import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +21,6 @@ import org.utplsql.cli.exception.ReporterTimeoutException;
 import org.utplsql.cli.log.StringBlockFormatter;
 
 import javax.sql.DataSource;
-import javax.xml.crypto.dsig.keyinfo.KeyValue;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -280,11 +277,18 @@ public class RunAction {
             ReporterConfig[] reporterConfigs = config.getReporters();
             if ( reporterConfigs != null ) {
                 ReporterOptions[] options = new ReporterOptions[reporterConfigs.length];
+                boolean printToScreen = false;
                 for (int i = 0; i<reporterConfigs.length; i++ ) {
                     options[i] = new ReporterOptions(
                             reporterConfigs[i].getName(),
-                            reporterConfigs[i].getOutput(),
-                            reporterConfigs[i].isScreen());
+                            reporterConfigs[i].getOutput());
+
+                    options[i].forceOutputToScreen(reporterConfigs[i].isForceToScreen());
+
+                    // Check printToScreen validity
+                    if ( options[i].outputToScreen() && printToScreen )
+                        throw new IllegalArgumentException("You cannot configure more than one reporter to output to screen");
+                    printToScreen = options[i].outputToScreen();
                 }
                 reporterManager = new ReporterManager(options);
             }

@@ -1,13 +1,9 @@
 package org.utplsql.cli;
 
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.utplsql.cli.config.FileMapperConfig;
 import org.utplsql.cli.config.ReporterConfig;
 import org.utplsql.cli.config.RunCommandConfig;
-import picocli.CommandLine;
-
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -139,7 +135,7 @@ public class PicocliRunCommandTest {
         ReporterConfig reporterConfig = config.getReporters()[0];
         assertEquals("ut_documentation_reporter", reporterConfig.getName());
         assertNull(reporterConfig.getOutput());
-        assertFalse(reporterConfig.isScreen());
+        assertFalse(reporterConfig.isForceToScreen());
     }
 
     @Test
@@ -157,12 +153,12 @@ public class PicocliRunCommandTest {
         ReporterConfig reporterConfig = config.getReporters()[0];
         assertEquals("ut_documentation_reporter", reporterConfig.getName());
         assertEquals("output1.txt", reporterConfig.getOutput());
-        assertFalse(reporterConfig.isScreen());
+        assertFalse(reporterConfig.isForceToScreen());
 
         reporterConfig = config.getReporters()[1];
         assertEquals("ut_coverage_html", reporterConfig.getName());
         assertEquals("output2.html", reporterConfig.getOutput());
-        assertTrue(reporterConfig.isScreen());
+        assertTrue(reporterConfig.isForceToScreen());
     }
 
     @Test

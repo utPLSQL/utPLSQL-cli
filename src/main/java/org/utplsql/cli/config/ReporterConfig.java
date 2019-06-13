@@ -6,13 +6,13 @@ public class ReporterConfig {
 
     private final String name;
     private final String output;
-    private boolean screen = false;
+    private boolean forceToScreen = false;
 
-    @ConstructorProperties({"name", "output", "screen"})
-    public ReporterConfig( String name, String output, Boolean screen ) {
+    @ConstructorProperties({"name", "output", "forceToScreen"})
+    public ReporterConfig( String name, String output, Boolean forceToScreen) {
         this.name = name;
         this.output = output;
-        if ( screen != null ) this.screen = screen;
+        if ( forceToScreen != null ) this.forceToScreen = forceToScreen;
     }
 
     public String getName() {
@@ -23,7 +23,7 @@ public class ReporterConfig {
         return output;
     }
 
-    public boolean isScreen() {
-        return screen;
+    public boolean isForceToScreen() {
+        return forceToScreen;
     }
 }
