@@ -23,34 +23,9 @@ class ReporterManager {
     private List<Throwable> reporterGatherErrors;
     private ExecutorService executorService;
 
-    ReporterManager(List<String> reporterParams ) {
-        parseReporterOptionsList(reporterParams);
-        initReporterOptionsList();
-    }
-
     ReporterManager( ReporterOptions[] reporterOptions ) {
         this.reporterOptionsList = Arrays.asList(reporterOptions);
         initReporterOptionsList();
-    }
-
-    private void parseReporterOptionsList( List<String> reporterParams ) {
-        reporterOptionsList = new ArrayList<>();
-        ReporterOptions reporterOptions = null;
-
-        for (String p : reporterParams) {
-            if (reporterOptions == null || !p.startsWith("-")) {
-                reporterOptions = new ReporterOptions(p);
-                reporterOptionsList.add(reporterOptions);
-            }
-            else
-            if (p.startsWith("-o=")) {
-                reporterOptions.setOutputFileName(p.substring(3));
-            }
-            else
-            if (p.equals("-s")) {
-                reporterOptions.forceOutputToScreen(true);
-            }
-        }
     }
 
     private void initReporterOptionsList( ) {
