@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Consumer;
 
 class ReporterManager {
 
@@ -111,33 +112,9 @@ class ReporterManager {
 
         this.executorService = executorService;
 
-        // TODO: Implement Init-check
-        // Gather each reporter results on a separate thread.
-        for (ReporterOptions ro : reporterOptionsList) {
-            executorService.submit(() -> {
-                List<PrintStream> printStreams = new ArrayList<>();
-                PrintStream fileOutStream = null;
-
-                try (Connection conn = dataSource.getConnection()) {
-                    if (ro.outputToScreen()) {
-                        printStreams.add(System.out);
-                        ro.getReporterObj().getOutputBuffer().setFetchSize(1);
-                    }
-
-                    if (ro.outputToFile()) {
-                        fileOutStream = new PrintStream(new FileOutputStream(ro.getOutputFileName()));
-                        printStreams.add(fileOutStream);
-                    }
-
-                    ro.getReporterObj().getOutputBuffer().printAvailable(conn, printStreams);
-                } catch (SQLException | FileNotFoundException e) {
-                    abortGathering(e);
-                } finally {
-                    if (fileOutStream != null)
-                        fileOutStream.close();
-                }
-            });
-        }
+        reporterOptionsList.forEach((reporterOption) -> executorService.submit(
+                new GatherReporterOutputTask(dataSource, reporterOption, this::abortGathering)
+        ));
     }
 
     List<ReporterOptions> getReporterOptionsList() {
@@ -145,4 +122,48 @@ class ReporterManager {
     }
 
     int getNumberOfReporters() { return reporterOptionsList.size(); }
+
+    /** Gathers Reporter Output based on ReporterOptions and prints it to a file, System.out or both
+     */
+    private static class GatherReporterOutputTask implements Runnable {
+
+        private DataSource dataSource;
+        private ReporterOptions option;
+        private Consumer<Throwable> abortFunction;
+
+        GatherReporterOutputTask( DataSource dataSource, ReporterOptions reporterOption, Consumer<Throwable> abortFunction ) {
+
+            if ( reporterOption.getReporterObj() == null )
+                throw new IllegalArgumentException("Reporter " + reporterOption.getReporterName() + " is not initialized");
+
+            this.dataSource = dataSource;
+            this.option = reporterOption;
+            this.abortFunction = abortFunction;
+        }
+
+        @Override
+        public void run() {
+            List<PrintStream> printStreams = new ArrayList<>();
+            PrintStream fileOutStream = null;
+
+            try (Connection conn = dataSource.getConnection()) {
+                if (option.outputToScreen()) {
+                    printStreams.add(System.out);
+                    option.getReporterObj().getOutputBuffer().setFetchSize(1);
+                }
+
+                if (option.outputToFile()) {
+                    fileOutStream = new PrintStream(new FileOutputStream(option.getOutputFileName()));
+                    printStreams.add(fileOutStream);
+                }
+
+                option.getReporterObj().getOutputBuffer().printAvailable(conn, printStreams);
+            } catch (SQLException | FileNotFoundException e) {
+                abortFunction.accept(e);
+            } finally {
+                if (fileOutStream != null)
+                    fileOutStream.close();
+            }
+        }
+    }
 }
