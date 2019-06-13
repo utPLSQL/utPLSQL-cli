@@ -7,7 +7,8 @@ import picocli.CommandLine;
         description = "utPLSQL cli",
         subcommands = {
                 RunPicocliCommand.class,
-                VersionInfoCommand.class
+                VersionInfoCommand.class,
+                ReportersCommand.class
         })
 public class UtplsqlPicocliCommand {
 
