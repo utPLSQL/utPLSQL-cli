@@ -12,4 +12,7 @@ import picocli.CommandLine;
         })
 public class UtplsqlPicocliCommand {
 
+        @CommandLine.Option(names = "-h", usageHelp = true, description = "display this help and exit")
+        boolean help;
+
 }

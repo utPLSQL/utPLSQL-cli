@@ -32,6 +32,17 @@ class HelpCommandTest {
     }
 
     @Test
+    void callRunHelp() {
+
+        capturer.start();
+        int result = TestHelper.runApp("run", "-h");
+        String output = capturer.stop();
+
+        assertEquals(0, result);
+        assertTrue(output.contains("Usage:"));
+    }
+
+    @Test
     void callWithNoArgs() {
 
         capturer.start();

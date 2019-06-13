@@ -169,6 +169,9 @@ public class RunPicocliCommand implements IRunCommand {
         }
     }
 
+    @Option(names = "-h", usageHelp = true, description = "display this help and exit")
+    boolean help;
+
     private RunAction runAction;
 
     private String[] splitOrEmpty(String value) {
