@@ -16,13 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PicocliRunCommandTest {
 
     private RunCommandConfig parseForConfig( String... args ) throws Exception {
-        Object obj = new UtplsqlPicocliCommand();
-        CommandLine cline = new CommandLine(obj);
-        cline.setTrimQuotes(true);
-        List<CommandLine> parsed = cline.parse(args);
-
-        RunPicocliCommand runCmd = parsed.get(1).getCommand();
-        return runCmd.getRunCommandConfig();
+        return TestHelper.parseRunConfig(args);
     }
 
     @Test

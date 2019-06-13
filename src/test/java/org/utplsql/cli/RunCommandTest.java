@@ -81,7 +81,7 @@ class RunCommandTest {
         assertEquals(CoreReporters.UT_DOCUMENTATION_REPORTER.name(), reporterOptions1.getReporterName());
         assertNull(reporterOptions1.getOutputFileName());
         assertFalse(reporterOptions1.outputToFile());
-        assertTrue(reporterOptions1.outputToScreen());
+        assertFalse(reporterOptions1.outputToScreen());
 
         ReporterOptions reporterOptions2 = reporterOptionsList.get(1);
         assertEquals(CoreReporters.UT_COVERAGE_HTML_REPORTER.name(), reporterOptions2.getReporterName());
@@ -91,7 +91,7 @@ class RunCommandTest {
     }
 
     @Test
-    void randomOrder_default() {
+    void randomOrder_default() throws Exception {
         IRunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString());
 
         TestRunnerOptions options = runCmd.newTestRunner(new ArrayList<>()).getOptions();
@@ -102,7 +102,7 @@ class RunCommandTest {
     @Test
     void randomOrder_withoutSeed() {
         IRunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(),
-                "-random");
+                "-r");
 
         TestRunnerOptions options = runCmd.newTestRunner(new ArrayList<>()).getOptions();
         assertThat(options.randomTestOrder, equalTo(true));
