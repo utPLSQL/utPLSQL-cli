@@ -62,7 +62,7 @@ class TestHelper {
     }
 
     static Version getFrameworkVersion() throws SQLException {
-        DataSource ds = DataSourceProvider.getDataSource(new ConnectionInfo(TestHelper.getConnectionString()), 1);
+        DataSource ds = DataSourceProvider.getDataSource(TestHelper.getConnectionString(), 1);
         try (Connection con = ds.getConnection() ) {
             return DBHelper.getDatabaseFrameworkVersion(con);
         }

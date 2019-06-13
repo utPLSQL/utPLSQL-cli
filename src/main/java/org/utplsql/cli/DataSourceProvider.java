@@ -1,6 +1,5 @@
 package org.utplsql.cli;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.utplsql.cli.datasource.TestedDataSourceProvider;
 
 import javax.sql.DataSource;
@@ -19,10 +18,6 @@ public class DataSourceProvider {
             System.setProperty("oracle.net.tns_admin",
                     String.join(File.separator, oracleHome, "NETWORK", "ADMIN"));
         }
-    }
-
-    public static DataSource getDataSource(ConnectionInfo info, int maxConnections ) throws SQLException {
-        return getDataSource(info.getConnectionString(), maxConnections);
     }
 
     public static DataSource getDataSource(String connectString, int maxConnections ) throws SQLException {
