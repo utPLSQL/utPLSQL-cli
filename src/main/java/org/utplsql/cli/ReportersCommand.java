@@ -6,12 +6,15 @@ import org.utplsql.api.reporter.ReporterFactory;
 import org.utplsql.api.reporter.inspect.ReporterInfo;
 import org.utplsql.api.reporter.inspect.ReporterInspector;
 import org.utplsql.cli.exception.DatabaseConnectionFailed;
-import picocli.CommandLine.*;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Parameters;
 
 import javax.sql.DataSource;
 import java.io.PrintStream;
 import java.sql.Connection;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 @Command( name = "reporters", description = "prints a list of reporters available in the specified database")
 public class ReportersCommand implements ICommand {
@@ -41,11 +44,6 @@ public class ReportersCommand implements ICommand {
         }
 
         return 0;
-    }
-
-    @Override
-    public String getCommand() {
-        return "reporters";
     }
 
     private void writeReporters(List<ReporterInfo> reporterInfos, PrintStream out) {

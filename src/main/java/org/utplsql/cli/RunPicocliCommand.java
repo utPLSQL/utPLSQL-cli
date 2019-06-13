@@ -250,11 +250,6 @@ public class RunPicocliCommand implements IRunCommand {
     }
 
     @Override
-    public String getCommand() {
-        return null;
-    }
-
-    @Override
     public TestRunner newTestRunner(List<Reporter> reporterList) {
         return getRunAction().newTestRunner(reporterList);
     }

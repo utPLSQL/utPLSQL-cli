@@ -48,9 +48,4 @@ public class VersionInfoCommand implements ICommand {
             }
         }
     }
-
-    @Override
-    public String getCommand() {
-        return "info";
-    }
 }

@@ -1,11 +1,15 @@
 package org.utplsql.cli;
 
-/** Interface to decouple JCommander commands
+/** This is the very basic interface that should be implemented by all utPLSQL cli commands
  *
  * @author pesse
  */
 public interface ICommand {
-    int run();
 
-    String getCommand();
+    /** We expect the command to handle all eventually occuring exceptions
+     * and return an exit code
+     *
+     * @return exit code integer
+     */
+    int run();
 }
