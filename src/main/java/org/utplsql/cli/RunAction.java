@@ -189,10 +189,8 @@ public class RunAction {
     private void initDatabase(DataSource dataSource) throws SQLException {
         try (Connection conn = dataSource.getConnection()) {
 
-            // Check if orai18n exists if database version is 11g
-            RunCommandChecker.checkOracleI18nExists(conn);
+            checkOracleI18nExists(conn);
 
-            // First of all do a compatibility check and fail-fast
             compatibilityProxy = checkFrameworkCompatibility(conn);
 
             logger.info("Successfully connected to database. UtPLSQL core: {}", compatibilityProxy.getVersionDescription());
@@ -204,6 +202,18 @@ public class RunAction {
             } else {
                 throw e;
             }
+        }
+    }
+
+    /** Checks that orai18n library exists and show a warning if not
+     */
+    private void checkOracleI18nExists(Connection con) throws SQLException {
+
+        if ( !OracleLibraryChecker.checkOrai18nExists() ) {
+            System.out.println("WARNING: Could not find Oracle i18n driver in classpath. Depending on the database charset " +
+                    "utPLSQL-cli, especially code coverage, might not run properly. It is recommended you download " +
+                    "the i18n driver from the Oracle website and copy it to the 'lib' folder of your utPLSQL-cli installation.");
+            System.out.println("Download from http://www.oracle.com/technetwork/database/enterprise-edition/jdbc-112010-090769.html");
         }
     }
 
