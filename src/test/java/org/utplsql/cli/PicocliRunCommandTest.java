@@ -1,5 +1,6 @@
 package org.utplsql.cli;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.utplsql.cli.config.FileMapperConfig;
 import org.utplsql.cli.config.ReporterConfig;
@@ -192,6 +193,7 @@ public class PicocliRunCommandTest {
         assertEquals( 1, sourceMapperConfig.getTypeSubexpression());
         assertEquals( 3, sourceMapperConfig.getNameSubexpression());
     }
+
     @Test
     void testFileMapping() throws Exception {
         RunCommandConfig config = parseForConfig("run",
@@ -213,5 +215,21 @@ public class PicocliRunCommandTest {
         assertEquals( 4, testMapperConfig.getOwnerSubexpression());
         assertEquals( 5, testMapperConfig.getTypeSubexpression());
         assertEquals( 6, testMapperConfig.getNameSubexpression());
+    }
+
+    @Test
+    void testFileMappingWithoutDetails() throws Exception {
+        RunCommandConfig config = parseForConfig("run",
+                TestHelper.getConnectionString(),
+                "-test_path=src/test/resources/plsql/test");
+
+        FileMapperConfig testMapperConfig = config.getTestMapping();
+        assertEquals( "src/test/resources/plsql/test", testMapperConfig.getPath());
+        assertNull( testMapperConfig.getOwner());
+        assertNull( testMapperConfig.getRegexExpression());
+        assertThat( testMapperConfig.getTypeMapping(), anEmptyMap());
+        assertNull( testMapperConfig.getOwnerSubexpression());
+        assertNull( testMapperConfig.getTypeSubexpression());
+        assertNull( testMapperConfig.getNameSubexpression());
     }
 }

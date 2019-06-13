@@ -108,6 +108,12 @@ public class RunPicocliCommand implements IRunCommand {
 
     static class FileMappingComposite {
 
+        @ArgGroup(exclusive = true, multiplicity = "1")
+        TestOrSourcePath testOrSourcePath;
+
+        @ArgGroup(exclusive = false, multiplicity = "0..1")
+        FileMapping mapping;
+
         static class TestOrSourcePath {
             @Option(names="-source_path", required = true)
             String sourcePath;
@@ -138,14 +144,10 @@ public class RunPicocliCommand implements IRunCommand {
             Integer nameSubExpression;
         }
 
-        @ArgGroup(exclusive = true, multiplicity = "1")
-        TestOrSourcePath testOrSourcePath;
-
-        @ArgGroup(exclusive = false, multiplicity = "1")
-        FileMapping mapping;
-
-
         FileMapperConfig toFileMapperConfig() {
+            if ( mapping == null )
+                mapping = new FileMapping();
+
             Map<String, String> typeMap = new HashMap<>();
 
             if ( mapping.typeMapping != null && !mapping.typeMapping.isEmpty()) {
