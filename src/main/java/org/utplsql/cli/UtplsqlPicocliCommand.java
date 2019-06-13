@@ -8,7 +8,8 @@ import picocli.CommandLine;
         subcommands = {
                 RunPicocliCommand.class,
                 VersionInfoCommand.class,
-                ReportersCommand.class
+                ReportersCommand.class,
+                CommandLine.HelpCommand.class
         })
 public class UtplsqlPicocliCommand {
 
