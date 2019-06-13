@@ -1,6 +1,5 @@
 package org.utplsql.cli;
 
-import com.beust.jcommander.JCommander;
 import org.utplsql.api.DBHelper;
 import org.utplsql.api.EnvironmentVariableUtil;
 import org.utplsql.api.Version;
@@ -39,15 +38,6 @@ class TestHelper {
         newArgs.add("run");
         newArgs.addAll(Arrays.asList(args));
         return createPicocliRunCommand(newArgs.toArray(new String[0]));
-
-        /*RunCommand runCmd = new RunCommand();
-
-        JCommander.newBuilder()
-                .addObject(runCmd)
-                .args(args)
-                .build();
-
-        return runCmd;*/
     }
 
     static RunCommandConfig parseRunConfig(String... args ) throws Exception {
