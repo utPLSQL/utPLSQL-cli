@@ -20,8 +20,8 @@ import java.util.function.Consumer;
 
 class ReporterManager {
 
-    private List<ReporterOptions> reporterOptionsList;
-    private List<Throwable> reporterGatherErrors;
+    private final List<ReporterOptions> reporterOptionsList;
+    private List<Exception> reporterGatherErrors;
     private ExecutorService executorService;
 
     ReporterManager(ReporterConfig[] reporterConfigs ) {
@@ -55,12 +55,12 @@ class ReporterManager {
         return new ReporterOptions(CoreReporters.UT_DOCUMENTATION_REPORTER.name());
     }
 
-    private void abortGathering(Throwable e) {
+    private void abortGathering(Exception e) {
         addGatherError(e);
         executorService.shutdownNow();
     }
 
-    private void addGatherError( Throwable e ) {
+    private void addGatherError( Exception e ) {
         if ( reporterGatherErrors == null ) {
             reporterGatherErrors = new ArrayList<>();
         }
@@ -71,7 +71,7 @@ class ReporterManager {
         return reporterGatherErrors != null && !reporterGatherErrors.isEmpty();
     }
 
-    List<Throwable> getGatherErrors() {
+    List<Exception> getGatherErrors() {
         return reporterGatherErrors;
     }
 
@@ -127,11 +127,11 @@ class ReporterManager {
      */
     private static class GatherReporterOutputTask implements Runnable {
 
-        private DataSource dataSource;
-        private ReporterOptions option;
-        private Consumer<Throwable> abortFunction;
+        private final DataSource dataSource;
+        private final ReporterOptions option;
+        private final Consumer<Exception> abortFunction;
 
-        GatherReporterOutputTask( DataSource dataSource, ReporterOptions reporterOption, Consumer<Throwable> abortFunction ) {
+        GatherReporterOutputTask( DataSource dataSource, ReporterOptions reporterOption, Consumer<Exception> abortFunction ) {
 
             if ( reporterOption.getReporterObj() == null )
                 throw new IllegalArgumentException("Reporter " + reporterOption.getReporterName() + " is not initialized");
