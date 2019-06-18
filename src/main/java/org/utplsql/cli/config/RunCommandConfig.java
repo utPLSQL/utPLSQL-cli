@@ -77,13 +77,23 @@ public class RunCommandConfig extends ConnectionConfig {
         return testMapping;
     }
 
-    public ConfigLevel getLogConfigLevel() { return logConfigLevel; }
+    public ConfigLevel getLogConfigLevel() {
+        return logConfigLevel;
+    }
 
-    public Integer getTimeoutInMinutes() { return timeoutInMinutes; }
+    public Integer getTimeoutInMinutes() {
+        return timeoutInMinutes;
+    }
 
-    public boolean isDbmsOutput() { return dbmsOutput; }
+    public boolean isDbmsOutput() {
+        return dbmsOutput;
+    }
 
-    public boolean isRandomTestOrder() { return randomTestOrder; }
+    public boolean isRandomTestOrder() {
+        return randomTestOrder;
+    }
 
-    public Integer getRandomTestOrderSeed() { return randomTestOrderSeed; }
+    public Integer getRandomTestOrderSeed() {
+        return randomTestOrderSeed;
+    }
 }

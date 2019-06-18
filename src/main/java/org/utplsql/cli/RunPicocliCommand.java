@@ -12,7 +12,7 @@ import picocli.CommandLine.Parameters;
 
 import java.util.*;
 
-@Command( name = "run", description = "run tests")
+@Command(name = "run", description = "run tests")
 public class RunPicocliCommand implements IRunCommand {
 
     @Parameters(description = UtplsqlPicocliCommand.COMMANDLINE_PARAM_DESCRIPTION)
@@ -94,11 +94,11 @@ public class RunPicocliCommand implements IRunCommand {
     private List<Format> reporters = new ArrayList<>();
 
     static class Format {
-        @Option(names={"-f", "--format"}, required = true, description = "Enables specified format reporting")
+        @Option(names = {"-f", "--format"}, required = true, description = "Enables specified format reporting")
         String format;
-        @Option(names={"-o"}, description = "Outputs format to file")
+        @Option(names = {"-o"}, description = "Outputs format to file")
         String outputFile;
-        @Option(names={"-s"}, description = "Outputs to screen even when an output file is specified")
+        @Option(names = {"-s"}, description = "Outputs to screen even when an output file is specified")
         boolean outputToScreen = false;
     }
 
@@ -115,13 +115,13 @@ public class RunPicocliCommand implements IRunCommand {
         FileMapping mapping;
 
         static class TestOrSourcePath {
-            @Option(names="-source_path", required = true)
+            @Option(names = "-source_path", required = true)
             String sourcePath;
-            @Option(names="-test_path", required = true)
+            @Option(names = "-test_path", required = true)
             String testPath;
 
             String getPath() {
-                return ( isSourcePath() ) ? sourcePath : testPath;
+                return (isSourcePath()) ? sourcePath : testPath;
             }
 
             boolean isSourcePath() {
@@ -130,28 +130,29 @@ public class RunPicocliCommand implements IRunCommand {
         }
 
         static class FileMapping {
-            @Option(names="-owner")
+            @Option(names = "-owner")
             String owner;
-            @Option(names="-regex_expression")
+            @Option(names = "-regex_expression")
             String regexExpression;
-            @Option(names="-type_mapping")
+            @Option(names = "-type_mapping")
             String typeMapping;
-            @Option(names="-owner_subexpression")
+            @Option(names = "-owner_subexpression")
             Integer ownerSubExpression;
-            @Option(names="-type_subexpression")
+            @Option(names = "-type_subexpression")
             Integer typeSubExpression;
-            @Option(names="-name_subexpression")
+            @Option(names = "-name_subexpression")
             Integer nameSubExpression;
         }
 
         FileMapperConfig toFileMapperConfig() {
-            if ( mapping == null )
+            if (mapping == null) {
                 mapping = new FileMapping();
+            }
 
             Map<String, String> typeMap = new HashMap<>();
 
-            if ( mapping.typeMapping != null && !mapping.typeMapping.isEmpty()) {
-                for ( String keyVal : mapping.typeMapping.split("/")) {
+            if (mapping.typeMapping != null && !mapping.typeMapping.isEmpty()) {
+                for (String keyVal : mapping.typeMapping.split("/")) {
                     String[] values = keyVal.split("=");
                     typeMap.put(values[1], values[0]);
                 }
@@ -175,10 +176,9 @@ public class RunPicocliCommand implements IRunCommand {
     private RunAction runAction;
 
     private String[] splitOrEmpty(String value) {
-        if ( value == null || value.isEmpty() ) {
+        if (value == null || value.isEmpty()) {
             return new String[0];
-        }
-        else {
+        } else {
             return value.split(",");
         }
     }
@@ -186,34 +186,32 @@ public class RunPicocliCommand implements IRunCommand {
     public RunCommandConfig getRunCommandConfig() {
         // Prepare path elements
         ArrayList<String> suitePaths = new ArrayList<>();
-        for ( String pathElem : paths ) {
+        for (String pathElem : paths) {
             suitePaths.addAll(Arrays.asList(pathElem.split(",")));
         }
 
         // Prepare LogLevelConfig
         LoggerConfiguration.ConfigLevel loggerConfigLevel = LoggerConfiguration.ConfigLevel.BASIC;
-        if ( logSilent ) {
+        if (logSilent) {
             loggerConfigLevel = LoggerConfiguration.ConfigLevel.NONE;
-        }
-        else if ( logDebug ) {
+        } else if (logDebug) {
             loggerConfigLevel = LoggerConfiguration.ConfigLevel.DEBUG;
         }
 
         // Prepare Reporter configs
         List<ReporterConfig> reporterConfigs = new ArrayList<>();
-        for ( Format format : reporters ) {
+        for (Format format : reporters) {
             reporterConfigs.add(new ReporterConfig(format.format, format.outputFile, format.outputToScreen));
         }
 
         // Prepare TypeMappings
         FileMapperConfig sourceFileMapping = null;
         FileMapperConfig testFileMapping = null;
-        if ( fileMappings != null ) {
-            for ( FileMappingComposite fmc : fileMappings ) {
-                if ( fmc.testOrSourcePath.isSourcePath() ) {
+        if (fileMappings != null) {
+            for (FileMappingComposite fmc : fileMappings) {
+                if (fmc.testOrSourcePath.isSourcePath()) {
                     sourceFileMapping = fmc.toFileMapperConfig();
-                }
-                else {
+                } else {
                     testFileMapping = fmc.toFileMapperConfig();
                 }
             }
@@ -238,8 +236,9 @@ public class RunPicocliCommand implements IRunCommand {
     }
 
     private RunAction getRunAction() {
-        if ( runAction == null )
+        if (runAction == null) {
             runAction = new RunAction(getRunCommandConfig());
+        }
 
         return runAction;
     }

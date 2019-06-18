@@ -43,7 +43,7 @@ public class RunAction {
     private ReporterFactory reporterFactory;
     private ReporterManager reporterManager;
 
-    public RunAction( RunCommandConfig config ) {
+    public RunAction(RunCommandConfig config) {
         this.config = config;
     }
 
@@ -95,8 +95,7 @@ public class RunAction {
             } catch (InterruptedException e) {
                 executorService.shutdownNow();
                 throw e;
-            }
-            finally {
+            } finally {
                 executorService.shutdown();
                 if (!executorService.awaitTermination(config.getTimeoutInMinutes(), TimeUnit.MINUTES)) {
                     throw new ReporterTimeoutException(config.getTimeoutInMinutes());
@@ -105,23 +104,24 @@ public class RunAction {
 
             logger.info("--------------------------------------");
             logger.info("All tests done.");
-        } catch ( OracleCreateStatmenetStuckException e ) {
+        } catch (OracleCreateStatmenetStuckException e) {
             throw e;
-        } catch ( DatabaseNotCompatibleException | UtPLSQLNotInstalledException | DatabaseConnectionFailed | ReporterTimeoutException e ) {
+        } catch (DatabaseNotCompatibleException | UtPLSQLNotInstalledException | DatabaseConnectionFailed | ReporterTimeoutException e) {
             System.out.println(e.getMessage());
             returnCode = Cli.DEFAULT_ERROR_CODE;
         } catch (Throwable e) {
             e.printStackTrace();
             returnCode = Cli.DEFAULT_ERROR_CODE;
         } finally {
-            if ( dataSource != null )
+            if (dataSource != null) {
                 dataSource.close();
+            }
         }
         return returnCode;
     }
 
     public int run() {
-        for ( int i = 1; i<5; i++ ) {
+        for (int i = 1; i < 5; i++) {
             try {
                 return doRun();
             } catch (OracleCreateStatmenetStuckException e) {
@@ -132,20 +132,20 @@ public class RunAction {
         return Cli.DEFAULT_ERROR_CODE;
     }
 
-    private void checkForCompatibility( Version utPlSqlVersion ) {
-        if (!OptionalFeatures.FAIL_ON_ERROR.isAvailableFor(utPlSqlVersion) && config.getFailureExitCode() != null ) {
+    private void checkForCompatibility(Version utPlSqlVersion) {
+        if (!OptionalFeatures.FAIL_ON_ERROR.isAvailableFor(utPlSqlVersion) && config.getFailureExitCode() != null) {
             System.out.println("You specified option `--failure-exit-code` but your database framework version (" +
                     utPlSqlVersion.getNormalizedString() + ") is not able to " +
                     "redirect failureCodes. Please upgrade to a newer version if you want to use that feature.");
         }
 
-        if ( !OptionalFeatures.RANDOM_EXECUTION_ORDER.isAvailableFor(utPlSqlVersion) && config.isRandomTestOrder() ) {
+        if (!OptionalFeatures.RANDOM_EXECUTION_ORDER.isAvailableFor(utPlSqlVersion) && config.isRandomTestOrder()) {
             System.out.println("You specified option `-random` but your database framework version (" +
                     utPlSqlVersion.getNormalizedString() + ") is not able to " +
                     "redirect failureCodes. Please upgrade to a newer version if you want to use that feature.");
         }
 
-        if ( !OptionalFeatures.RANDOM_EXECUTION_ORDER.isAvailableFor(utPlSqlVersion) && config.getRandomTestOrderSeed() != null ) {
+        if (!OptionalFeatures.RANDOM_EXECUTION_ORDER.isAvailableFor(utPlSqlVersion) && config.getRandomTestOrderSeed() != null) {
             System.out.println("You specified option `-seed` but your database framework version (" +
                     utPlSqlVersion.getNormalizedString() + ") is not able to " +
                     "redirect failureCodes. Please upgrade to a newer version if you want to use that feature.");
@@ -153,7 +153,7 @@ public class RunAction {
 
     }
 
-    TestRunner newTestRunner( List<Reporter> reporterList) {
+    TestRunner newTestRunner(List<Reporter> reporterList) {
 
         final File baseDir = new File("").getAbsoluteFile();
 
@@ -195,8 +195,7 @@ public class RunAction {
 
             logger.info("Successfully connected to database. UtPLSQL core: {}", compatibilityProxy.getVersionDescription());
             logger.info("Oracle-Version: {}", new DefaultDatabaseInformation().getOracleVersion(conn));
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             if (e.getErrorCode() == 1017 || e.getErrorCode() == 12514) {
                 throw new DatabaseConnectionFailed(e);
             } else {
@@ -205,11 +204,12 @@ public class RunAction {
         }
     }
 
-    /** Checks that orai18n library exists and show a warning if not
+    /**
+     * Checks that orai18n library exists and show a warning if not
      */
     private void checkOracleI18nExists(Connection con) throws SQLException {
 
-        if ( !OracleLibraryChecker.checkOrai18nExists() ) {
+        if (!OracleLibraryChecker.checkOrai18nExists()) {
             System.out.println("WARNING: Could not find Oracle i18n driver in classpath. Depending on the database charset " +
                     "utPLSQL-cli, especially code coverage, might not run properly. It is recommended you download " +
                     "the i18n driver from the Oracle website and copy it to the 'lib' folder of your utPLSQL-cli installation.");
@@ -224,14 +224,14 @@ public class RunAction {
         }
     }
 
-    /** Returns FileMapperOptions for the first item of a given param list in a baseDir
+    /**
+     * Returns FileMapperOptions for the first item of a given param list in a baseDir
      *
      * @param fileMapperConfig
      * @param baseDir
      * @return FileMapperOptions or null
      */
-    private FileMapperOptions getFileMapperOptionsByParamListItem(FileMapperConfig fileMapperConfig, File baseDir )
-    {
+    private FileMapperOptions getFileMapperOptionsByParamListItem(FileMapperConfig fileMapperConfig, File baseDir) {
         if (fileMapperConfig != null) {
             String sourcePath = fileMapperConfig.getPath();
 
@@ -260,7 +260,8 @@ public class RunAction {
         return null;
     }
 
-    /** Checks whether cli is compatible with the database framework
+    /**
+     * Checks whether cli is compatible with the database framework
      *
      * @param conn Active Connection
      * @throws SQLException
@@ -269,10 +270,9 @@ public class RunAction {
 
         CompatibilityProxy proxy = new CompatibilityProxy(conn, config.isSkipCompatibilityCheck());
 
-        if ( !config.isSkipCompatibilityCheck() ) {
+        if (!config.isSkipCompatibilityCheck()) {
             proxy.failOnNotCompatible();
-        }
-        else {
+        } else {
             System.out.println("Skipping Compatibility check with framework version, expecting the latest version " +
                     "to be installed in database");
         }
@@ -281,7 +281,7 @@ public class RunAction {
     }
 
     private ReporterManager getReporterManager() {
-        if ( reporterManager == null ) {
+        if (reporterManager == null) {
             reporterManager = new ReporterManager(config.getReporters());
         }
 

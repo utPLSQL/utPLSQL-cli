@@ -9,10 +9,10 @@ public class ReporterConfig {
     private boolean forceToScreen = false;
 
     @ConstructorProperties({"name", "output", "forceToScreen"})
-    public ReporterConfig( String name, String output, Boolean forceToScreen) {
+    public ReporterConfig(String name, String output, Boolean forceToScreen) {
         this.name = name;
         this.output = output;
-        if ( forceToScreen != null ) this.forceToScreen = forceToScreen;
+        if (forceToScreen != null) this.forceToScreen = forceToScreen;
     }
 
     public String getName() {

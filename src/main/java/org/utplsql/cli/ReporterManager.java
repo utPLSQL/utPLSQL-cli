@@ -24,17 +24,16 @@ class ReporterManager {
     private List<Exception> reporterGatherErrors;
     private ExecutorService executorService;
 
-    ReporterManager(ReporterConfig[] reporterConfigs ) {
+    ReporterManager(ReporterConfig[] reporterConfigs) {
         reporterOptionsList = new ArrayList<>();
-        if ( reporterConfigs != null && reporterConfigs.length > 0 ) {
-            loadOptionsFromConfigs( reporterConfigs );
-        }
-        else {
+        if (reporterConfigs != null && reporterConfigs.length > 0) {
+            loadOptionsFromConfigs(reporterConfigs);
+        } else {
             reporterOptionsList.add(getDefaultReporterOption());
         }
     }
 
-    private void loadOptionsFromConfigs( ReporterConfig[] reporterConfigs ) {
+    private void loadOptionsFromConfigs(ReporterConfig[] reporterConfigs) {
         boolean printToScreen = false;
         for (ReporterConfig reporterConfig : reporterConfigs) {
             ReporterOptions option = new ReporterOptions(
@@ -45,8 +44,9 @@ class ReporterManager {
             reporterOptionsList.add(option);
 
             // Check printToScreen validity
-            if (option.outputToScreen() && printToScreen)
+            if (option.outputToScreen() && printToScreen) {
                 throw new IllegalArgumentException("You cannot configure more than one reporter to output to screen");
+            }
             printToScreen = option.outputToScreen();
         }
     }
@@ -60,8 +60,8 @@ class ReporterManager {
         executorService.shutdownNow();
     }
 
-    private void addGatherError( Exception e ) {
-        if ( reporterGatherErrors == null ) {
+    private void addGatherError(Exception e) {
+        if (reporterGatherErrors == null) {
             reporterGatherErrors = new ArrayList<>();
         }
         reporterGatherErrors.add(e);
@@ -75,21 +75,22 @@ class ReporterManager {
         return reporterGatherErrors;
     }
 
-    /** Initializes the reporters so we can use the id to gather results
+    /**
+     * Initializes the reporters so we can use the id to gather results
      *
      * @param conn Active Connection
      * @return List of Reporters
      * @throws SQLException
      */
-    List<Reporter> initReporters(Connection conn, ReporterFactory reporterFactory, CompatibilityProxy compatibilityProxy) throws SQLException
-    {
+    List<Reporter> initReporters(Connection conn, ReporterFactory reporterFactory, CompatibilityProxy compatibilityProxy) throws SQLException {
         final List<Reporter> reporterList = new ArrayList<>();
 
         for (ReporterOptions ro : reporterOptionsList) {
             Reporter reporter = reporterFactory.createReporter(ro.getReporterName());
 
-            if ( reporter instanceof ReporterOptionsAware)
+            if (reporter instanceof ReporterOptionsAware) {
                 ((ReporterOptionsAware) reporter).setReporterOptions(ro);
+            }
 
             reporter.init(conn, compatibilityProxy, reporterFactory);
 
@@ -100,15 +101,16 @@ class ReporterManager {
         return reporterList;
     }
 
-    /** Starts a separate thread for each Reporter to gather its results
+    /**
+     * Starts a separate thread for each Reporter to gather its results
      *
      * @param executorService
      * @param dataSource
      */
-    void startReporterGatherers(ExecutorService executorService, final DataSource dataSource)
-    {
-        if ( this.executorService != null && !this.executorService.isShutdown())
+    void startReporterGatherers(ExecutorService executorService, final DataSource dataSource) {
+        if (this.executorService != null && !this.executorService.isShutdown()) {
             throw new IllegalStateException("There is already a running executor service!");
+        }
 
         this.executorService = executorService;
 
@@ -121,9 +123,12 @@ class ReporterManager {
         return reporterOptionsList;
     }
 
-    int getNumberOfReporters() { return reporterOptionsList.size(); }
+    int getNumberOfReporters() {
+        return reporterOptionsList.size();
+    }
 
-    /** Gathers Reporter Output based on ReporterOptions and prints it to a file, System.out or both
+    /**
+     * Gathers Reporter Output based on ReporterOptions and prints it to a file, System.out or both
      */
     private static class GatherReporterOutputTask implements Runnable {
 
@@ -131,10 +136,11 @@ class ReporterManager {
         private final ReporterOptions option;
         private final Consumer<Exception> abortFunction;
 
-        GatherReporterOutputTask( DataSource dataSource, ReporterOptions reporterOption, Consumer<Exception> abortFunction ) {
+        GatherReporterOutputTask(DataSource dataSource, ReporterOptions reporterOption, Consumer<Exception> abortFunction) {
 
-            if ( reporterOption.getReporterObj() == null )
+            if (reporterOption.getReporterObj() == null) {
                 throw new IllegalArgumentException("Reporter " + reporterOption.getReporterName() + " is not initialized");
+            }
 
             this.dataSource = dataSource;
             this.option = reporterOption;
@@ -161,8 +167,9 @@ class ReporterManager {
             } catch (SQLException | FileNotFoundException e) {
                 abortFunction.accept(e);
             } finally {
-                if (fileOutStream != null)
+                if (fileOutStream != null) {
                     fileOutStream.close();
+                }
             }
         }
     }

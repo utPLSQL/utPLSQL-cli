@@ -16,11 +16,11 @@ public class LoggerConfiguration {
     }
 
     private LoggerConfiguration() {
-       throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     static void configure(ConfigLevel level) {
-        switch ( level ) {
+        switch (level) {
             case BASIC:
                 configureInfo();
                 break;
@@ -48,8 +48,8 @@ public class LoggerConfiguration {
         setSingleConsoleAppenderWithLayout("%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n");
     }
 
-    private static void setRootLoggerLevel( Level level ) {
-        Logger root = (Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    private static void setRootLoggerLevel(Level level) {
+        Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(level);
     }
 
@@ -57,8 +57,8 @@ public class LoggerConfiguration {
         ((Logger) LoggerFactory.getLogger(HikariDataSource.class)).setLevel(Level.OFF);
     }
 
-    private static void setSingleConsoleAppenderWithLayout( String patternLayout ) {
-        Logger logger = (Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    private static void setSingleConsoleAppenderWithLayout(String patternLayout) {
+        Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 
         PatternLayoutEncoder ple = new PatternLayoutEncoder();

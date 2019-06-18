@@ -6,7 +6,8 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.sql.SQLException;
 
-/** Helper class to give you a ready-to-use datasource
+/**
+ * Helper class to give you a ready-to-use datasource
  *
  * @author pesse
  */
@@ -20,7 +21,7 @@ public class DataSourceProvider {
         }
     }
 
-    public static DataSource getDataSource(String connectString, int maxConnections ) throws SQLException {
+    public static DataSource getDataSource(String connectString, int maxConnections) throws SQLException {
 
         requireOjdbc();
 
@@ -31,8 +32,7 @@ public class DataSourceProvider {
     }
 
     private static void requireOjdbc() {
-        if ( !OracleLibraryChecker.checkOjdbcExists() )
-        {
+        if (!OracleLibraryChecker.checkOjdbcExists()) {
             System.out.println("Could not find Oracle JDBC driver in classpath. Please download the jar from Oracle website" +
                     " and copy it to the 'lib' folder of your utPLSQL-cli installation.");
             System.out.println("Download from http://www.oracle.com/technetwork/database/features/jdbc/jdbc-ucp-122-3110062.html");
@@ -42,7 +42,7 @@ public class DataSourceProvider {
     }
 
     private static void warnIfSysDba(ConnectionConfig config) {
-        if ( config.isSysDba() ) {
+        if (config.isSysDba()) {
             System.out.println("WARNING: You are connecting to the database as SYSDBA or SYSOPER, which is NOT RECOMMENDED and can put your database at risk!");
         }
     }

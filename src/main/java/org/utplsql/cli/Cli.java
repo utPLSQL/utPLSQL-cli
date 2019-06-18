@@ -15,7 +15,7 @@ public class Cli {
         System.exit(exitCode);
     }
 
-    static int runPicocliWithExitCode( String[] args ) {
+    static int runPicocliWithExitCode(String[] args) {
 
         LoggerConfiguration.configure(LoggerConfiguration.ConfigLevel.NONE);
         LocaleInitializer.initLocale();
@@ -30,25 +30,24 @@ public class Cli {
             List<CommandLine> parsedLines = commandLine.parse(args);
 
             boolean commandWasRun = false;
-            for ( CommandLine parsedLine : parsedLines ) {
+            for (CommandLine parsedLine : parsedLines) {
                 if (parsedLine.isUsageHelpRequested()) {
                     parsedLine.usage(System.out);
                     return 0;
-                }
-                else if (parsedLine.isVersionHelpRequested()) {
+                } else if (parsedLine.isVersionHelpRequested()) {
                     parsedLine.printVersionHelp(System.out);
                     return 0;
                 }
 
                 Object command = parsedLine.getCommand();
-                if ( command instanceof ICommand ) {
-                    exitCode = ((ICommand)command).run();
+                if (command instanceof ICommand) {
+                    exitCode = ((ICommand) command).run();
                     commandWasRun = true;
                     break;
                 }
             }
 
-            if ( !commandWasRun ) {
+            if (!commandWasRun) {
                 commandLine.usage(System.out);
             }
         } catch (CommandLine.ParameterException e) {

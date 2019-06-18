@@ -16,8 +16,9 @@ public class FileWalker {
     public List<String> getFileList(File baseDir, String inspectPath, boolean relative) {
         File inspectDir = new File(baseDir, inspectPath);
 
-        if (!inspectDir.isDirectory())
+        if (!inspectDir.isDirectory()) {
             throw new IllegalArgumentException(inspectPath + " is not a directory.");
+        }
 
         List<String> fileList = new ArrayList<>();
         listDirFiles(baseDir, inspectDir, fileList, relative);
@@ -28,15 +29,17 @@ public class FileWalker {
     private void listDirFiles(File baseDir, File directory, List<String> fileList, boolean relative) {
         File[] directoryFiles = directory.listFiles();
 
-        if (directoryFiles == null)
+        if (directoryFiles == null) {
             return;
+        }
 
         for (File file : directoryFiles) {
             if (file.isFile()) {
                 String absolutePath = file.getAbsolutePath();
 
-                if (relative)
+                if (relative) {
                     absolutePath = absolutePath.substring(baseDir.getAbsolutePath().length() + 1);
+                }
 
                 fileList.add(absolutePath);
             } else {

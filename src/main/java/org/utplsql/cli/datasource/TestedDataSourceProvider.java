@@ -18,6 +18,7 @@ public class TestedDataSourceProvider {
 
     interface ConnectStringPossibility {
         String getConnectString(ConnectionConfig config);
+
         String getMaskedConnectString(ConnectionConfig config);
     }
 
@@ -46,8 +47,7 @@ public class TestedDataSourceProvider {
         return ds;
     }
 
-    private void setThickOrThinJdbcUrl(HikariDataSource ds ) throws SQLException
-    {
+    private void setThickOrThinJdbcUrl(HikariDataSource ds) throws SQLException {
         List<String> errors = new ArrayList<>();
         Throwable lastException = null;
 
@@ -69,25 +69,28 @@ public class TestedDataSourceProvider {
         throw new DatabaseConnectionFailed(lastException);
     }
 
-    private void setInitSqlFrom_NLS_LANG(HikariDataSource ds ) {
+    private void setInitSqlFrom_NLS_LANG(HikariDataSource ds) {
         String nls_lang = EnvironmentVariableUtil.getEnvValue("NLS_LANG");
 
-        if ( nls_lang != null ) {
+        if (nls_lang != null) {
             Pattern pattern = Pattern.compile("^([a-zA-Z ]+)?_?([a-zA-Z ]+)?\\.?([a-zA-Z0-9]+)?$");
             Matcher matcher = pattern.matcher(nls_lang);
 
             List<String> sqlCommands = new ArrayList<>(2);
             if (matcher.matches()) {
-                if ( matcher.group(1) != null)
+                if (matcher.group(1) != null) {
                     sqlCommands.add(String.format("ALTER SESSION SET NLS_LANGUAGE='%s'", matcher.group(1)));
-                if ( matcher.group(2) != null)
+                }
+                if (matcher.group(2) != null) {
                     sqlCommands.add(String.format("ALTER SESSION SET NLS_TERRITORY='%s'", matcher.group(2)));
+                }
 
-                if ( sqlCommands.size() > 0 ) {
+                if (sqlCommands.size() > 0) {
                     StringBuilder sb = new StringBuilder();
                     sb.append("BEGIN\n");
-                    for (String command : sqlCommands)
+                    for (String command : sqlCommands) {
                         sb.append(String.format("EXECUTE IMMEDIATE q'[%s]';\n", command));
+                    }
                     sb.append("END;");
 
                     logger.debug("NLS settings: {}", sb.toString());

@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-@Command( name = "reporters", description = "prints a list of reporters available in the specified database")
+@Command(name = "reporters", description = "prints a list of reporters available in the specified database")
 public class ReportersCommand implements ICommand {
 
     @Parameters(description = UtplsqlPicocliCommand.COMMANDLINE_PARAM_DESCRIPTION, arity = "1")
@@ -33,12 +33,10 @@ public class ReportersCommand implements ICommand {
 
                 writeReporters(ReporterInspector.create(reporterFactory, con).getReporterInfos(), System.out);
             }
-        }
-        catch ( DatabaseNotCompatibleException | UtPLSQLNotInstalledException | DatabaseConnectionFailed | IllegalArgumentException e ) {
+        } catch (DatabaseNotCompatibleException | UtPLSQLNotInstalledException | DatabaseConnectionFailed | IllegalArgumentException e) {
             System.out.println(e.getMessage());
             return 1;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return 1;
         }
@@ -60,14 +58,14 @@ public class ReportersCommand implements ICommand {
         out.println();
     }
 
-    private void writeReporterName( ReporterInfo info, int paddingRight, PrintStream out ) {
-        out.println(info.getName()+":");
+    private void writeReporterName(ReporterInfo info, int paddingRight, PrintStream out) {
+        out.println(info.getName() + ":");
 
     }
 
-    private void writeReporterDescription( ReporterInfo info, int paddingLeft, PrintStream out ) {
+    private void writeReporterDescription(ReporterInfo info, int paddingLeft, PrintStream out) {
         String[] lines = info.getDescription().split("\n");
-        String paddingLeftStr = String.format("%1$"+paddingLeft+"s", "");
-        Arrays.stream(lines).forEach(line -> out.println(paddingLeftStr+line.trim()));
+        String paddingLeftStr = String.format("%1$" + paddingLeft + "s", "");
+        Arrays.stream(lines).forEach(line -> out.println(paddingLeftStr + line.trim()));
     }
 }

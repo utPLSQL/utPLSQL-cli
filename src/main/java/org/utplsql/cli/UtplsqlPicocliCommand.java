@@ -13,9 +13,9 @@ import picocli.CommandLine;
         })
 public class UtplsqlPicocliCommand {
 
-        public static final String COMMANDLINE_PARAM_DESCRIPTION = "<user>/<password>@//<host>[:<port>]/<service> OR <user>/<password>@<TNSName> OR <user>/<password>@<host>:<port>:<SID>";
+    public static final String COMMANDLINE_PARAM_DESCRIPTION = "<user>/<password>@//<host>[:<port>]/<service> OR <user>/<password>@<TNSName> OR <user>/<password>@<host>:<port>:<SID>";
 
-        @CommandLine.Option(names = "-h", usageHelp = true, description = "display this help and exit")
-        boolean help;
+    @CommandLine.Option(names = "-h", usageHelp = true, description = "display this help and exit")
+    boolean help;
 
 }
