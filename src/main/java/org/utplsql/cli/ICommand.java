@@ -6,7 +6,7 @@ package org.utplsql.cli;
  */
 public interface ICommand {
 
-    /** We expect the command to handle all eventually occuring exceptions
+    /** We expect the command to handle all eventually occurring exceptions
      * and return an exit code
      *
      * @return exit code integer
