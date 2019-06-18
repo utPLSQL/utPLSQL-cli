@@ -55,10 +55,20 @@ ALTER SESSION SET NLS_TERRITORY='AMERICA';
 ```
 
 ## Usage
-Currently, utPLSQL-cli supports the following commands:
+Currently, utPLSQL-cli supports the following sub-commands:
 - run
 - info
 - reporters
+- help
+
+To get more info about a command, use 
+```
+utplsql <sub-command> -h
+```
+Example:
+```
+utplsql run -h
+```
 
 #### \<ConnectionURL>
 

@@ -21,6 +21,36 @@ class CliHelpTest {
     }
 
     @Test
+    void show_help_for_run_command() {
+        capturer = new SystemCapturer.SystemOutCapturer();
+        capturer.start();
+        TestHelper.runApp("run", "-h");
+        String output = capturer.stop();
+
+        assertTrue(output.contains("Usage:"));
+    }
+
+    @Test
+    void show_help_for_reporters_command() {
+        capturer = new SystemCapturer.SystemOutCapturer();
+        capturer.start();
+        TestHelper.runApp("reporters", "-h");
+        String output = capturer.stop();
+
+        assertTrue(output.contains("Usage:"));
+    }
+
+    @Test
+    void show_help_for_info_command() {
+        capturer = new SystemCapturer.SystemOutCapturer();
+        capturer.start();
+        TestHelper.runApp("reporters", "-h");
+        String output = capturer.stop();
+
+        assertTrue(output.contains("Usage:"));
+    }
+
+    @Test
     void write_help_to_error_out_on_unknown_command() {
         capturer = new SystemCapturer.SystemErrCapturer();
         capturer.start();

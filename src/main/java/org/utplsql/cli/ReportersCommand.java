@@ -7,6 +7,7 @@ import org.utplsql.api.reporter.inspect.ReporterInfo;
 import org.utplsql.api.reporter.inspect.ReporterInspector;
 import org.utplsql.cli.exception.DatabaseConnectionFailed;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 import javax.sql.DataSource;
@@ -21,6 +22,9 @@ public class ReportersCommand implements ICommand {
 
     @Parameters(description = UtplsqlPicocliCommand.COMMANDLINE_PARAM_DESCRIPTION, arity = "1")
     private String connectionString;
+
+    @Option(names = "-h", usageHelp = true, description = "display this help and exit")
+    boolean help;
 
     @Override
     public int run() {

@@ -6,6 +6,7 @@ import org.utplsql.api.Version;
 import org.utplsql.api.db.DefaultDatabaseInformation;
 import org.utplsql.api.exception.UtPLSQLNotInstalledException;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 import javax.sql.DataSource;
@@ -17,6 +18,9 @@ public class VersionInfoCommand implements ICommand {
 
     @Parameters(description = UtplsqlPicocliCommand.COMMANDLINE_PARAM_DESCRIPTION, arity = "0..1")
     private String connectionString;
+
+    @Option(names = "-h", usageHelp = true, description = "display this help and exit")
+    boolean help;
 
     public int run() {
 
