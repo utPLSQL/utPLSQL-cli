@@ -15,7 +15,7 @@ import java.util.*;
 @Command( name = "run", description = "run tests")
 public class RunPicocliCommand implements IRunCommand {
 
-    @Parameters(description = ConnectionInfo.COMMANDLINE_PARAM_DESCRIPTION)
+    @Parameters(description = UtplsqlPicocliCommand.COMMANDLINE_PARAM_DESCRIPTION)
     private String connectionString;
 
     @Option(names = {"-p", "--path"},

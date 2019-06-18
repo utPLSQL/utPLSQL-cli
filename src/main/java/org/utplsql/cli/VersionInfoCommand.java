@@ -15,7 +15,7 @@ import java.sql.SQLException;
 @Command( name = "info", description = "prints version information of cli, java-api and - if connection is given - database utPLSQL framework")
 public class VersionInfoCommand implements ICommand {
 
-    @Parameters(description = ConnectionInfo.COMMANDLINE_PARAM_DESCRIPTION, arity = "0..1")
+    @Parameters(description = UtplsqlPicocliCommand.COMMANDLINE_PARAM_DESCRIPTION, arity = "0..1")
     private String connectionString;
 
     public int run() {

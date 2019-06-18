@@ -19,7 +19,7 @@ import java.util.List;
 @Command( name = "reporters", description = "prints a list of reporters available in the specified database")
 public class ReportersCommand implements ICommand {
 
-    @Parameters(description = ConnectionInfo.COMMANDLINE_PARAM_DESCRIPTION, arity = "1")
+    @Parameters(description = UtplsqlPicocliCommand.COMMANDLINE_PARAM_DESCRIPTION, arity = "1")
     private String connectionString;
 
     @Override
