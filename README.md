@@ -55,10 +55,20 @@ ALTER SESSION SET NLS_TERRITORY='AMERICA';
 ```
 
 ## Usage
-Currently, utPLSQL-cli supports the following commands:
+Currently, utPLSQL-cli supports the following sub-commands:
 - run
 - info
 - reporters
+- help
+
+To get more info about a command, use 
+```
+utplsql <sub-command> -h
+```
+Example:
+```
+utplsql run -h
+```
 
 #### \<ConnectionURL>
 
@@ -145,13 +155,13 @@ utplsql run "my/Username"/"myP@ssword"@connectstring
 -t=timeInMinutes   - Sets the timeout in minutes after which the cli will abort. 
 (--timeout)          Default 60
                       
--dbout              - Enables DBMS_OUTPUT in the TestRunner-Session
-(--dbms_output)       Default: false
+-D                 - Enables DBMS_OUTPUT in the TestRunner-Session
+(--dbms_output)      Default: false
 
--random             - Enables random order of test executions
+-r                 - Enables random order of test executions
 (--random-test-order) Default: false
 
--seed               - Sets the seed to use for random test execution order. If set, it sets -random to true
+-seed              - Sets the seed to use for random test execution order. If set, it sets -random to true
 (--random-test-order-seed)
 ```
 

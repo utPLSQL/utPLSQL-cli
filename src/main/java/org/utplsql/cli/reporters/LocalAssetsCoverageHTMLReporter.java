@@ -11,7 +11,8 @@ import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-/** Simple replacement of the CoverageHTMLReporter which writes the necessary assets to a folder
+/**
+ * Simple replacement of the CoverageHTMLReporter which writes the necessary assets to a folder
  * named after the Output File's name.
  *
  * @author pesse
@@ -28,7 +29,7 @@ public class LocalAssetsCoverageHTMLReporter extends CoverageHTMLReporter implem
     public Reporter init(Connection con, CompatibilityProxy compatibilityProxy, ReporterFactory reporterFactory) throws SQLException {
         super.init(con, compatibilityProxy, reporterFactory);
 
-        if ( hasOutputToFile() ) {
+        if (hasOutputToFile()) {
             writeReportAssetsTo(getPhysicalAssetPath());
         }
 
@@ -37,19 +38,20 @@ public class LocalAssetsCoverageHTMLReporter extends CoverageHTMLReporter implem
 
     private String getNameOfOutputFile() {
         Path outputPath = Paths.get(options.getOutputFileName());
-        return outputPath.getName(outputPath.getNameCount()-1).toString();
+        return outputPath.getName(outputPath.getNameCount() - 1).toString();
     }
 
     private Path getPhysicalAssetPath() {
         Path outputPath = Paths.get(options.getOutputFileName());
-        if ( outputPath.getNameCount() > 1 )
+        if (outputPath.getNameCount() > 1) {
             return outputPath.getParent().resolve(getAssetsPath());
-        else
+        } else {
             return Paths.get(getAssetsPath());
+        }
     }
 
     private void setAssetsPathFromOptions() {
-        if ( hasOutputToFile() ) {
+        if (hasOutputToFile()) {
             setAssetsPath(getNameOfOutputFile() + "_assets/");
         }
     }

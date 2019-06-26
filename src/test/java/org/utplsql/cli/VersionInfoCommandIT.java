@@ -3,7 +3,7 @@ package org.utplsql.cli;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.utplsql.cli.util.SystemOutCapturer;
+import org.utplsql.cli.util.SystemCapturer;
 
 import java.util.Arrays;
 
@@ -11,11 +11,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class VersionInfoCommandIT {
 
-    private SystemOutCapturer capturer;
+    private SystemCapturer capturer;
 
     @BeforeEach
     void setupCaptureSystemOut() {
-        capturer = new SystemOutCapturer();
+        capturer = new SystemCapturer.SystemOutCapturer();
     }
 
     private int getNonEmptyLines(String content) {

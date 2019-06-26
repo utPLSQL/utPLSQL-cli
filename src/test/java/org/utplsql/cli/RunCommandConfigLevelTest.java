@@ -16,7 +16,7 @@ class RunCommandConfigLevelTest {
     @Test
     void defaultIsInfo() {
         TestHelper.createRunCommand(TestHelper.getConnectionString())
-                .init();
+                .initLogger();
 
         assertEquals(Level.INFO, getRootLogger().getLevel());
     }
@@ -24,7 +24,7 @@ class RunCommandConfigLevelTest {
     @Test
     void silentModeSetsLoggerToOff() {
         TestHelper.createRunCommand(TestHelper.getConnectionString(), "-q")
-                .init();
+                .initLogger();
 
         assertEquals(Level.OFF, getRootLogger().getLevel());
     }
@@ -32,7 +32,7 @@ class RunCommandConfigLevelTest {
     @Test
     void debugModeSetsLoggerToDebug() {
         TestHelper.createRunCommand(TestHelper.getConnectionString(), "-d")
-                .init();
+                .initLogger();
 
         assertEquals(Level.DEBUG, getRootLogger().getLevel());
     }

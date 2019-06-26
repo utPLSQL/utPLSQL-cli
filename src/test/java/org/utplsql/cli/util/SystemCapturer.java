@@ -9,10 +9,15 @@ import java.util.List;
 
 /** All credit to Manasjyoti Sharma: https://stackoverflow.com/a/30665299
  */
-public class SystemOutCapturer {
+public abstract class SystemCapturer {
+
     private ByteArrayOutputStream baos;
     private PrintStream previous;
     private boolean capturing;
+
+    protected abstract PrintStream getOriginalStream();
+
+    protected abstract void setSystemStream( PrintStream stream );
 
     public void start() {
         if (capturing) {
@@ -20,14 +25,14 @@ public class SystemOutCapturer {
         }
 
         capturing = true;
-        previous = System.out;
+        previous = getOriginalStream();
         baos = new ByteArrayOutputStream();
 
         OutputStream outputStreamCombiner =
                 new OutputStreamCombiner(Arrays.asList(previous, baos));
         PrintStream custom = new PrintStream(outputStreamCombiner);
 
-        System.setOut(custom);
+        setSystemStream(custom);
     }
 
     public String stop() {
@@ -35,7 +40,7 @@ public class SystemOutCapturer {
             return "";
         }
 
-        System.setOut(previous);
+        setSystemStream(previous);
 
         String capturedValue = baos.toString();
 
@@ -69,6 +74,32 @@ public class SystemOutCapturer {
             for (OutputStream os : outputStreams) {
                 os.close();
             }
+        }
+    }
+
+    public static class SystemOutCapturer extends SystemCapturer {
+
+        @Override
+        protected PrintStream getOriginalStream() {
+            return System.out;
+        }
+
+        @Override
+        protected void setSystemStream(PrintStream stream) {
+            System.setOut(stream);
+        }
+    }
+
+    public static class SystemErrCapturer extends SystemCapturer {
+
+        @Override
+        protected PrintStream getOriginalStream() {
+            return System.err;
+        }
+
+        @Override
+        protected void setSystemStream(PrintStream stream) {
+            System.setErr(stream);
         }
     }
 }

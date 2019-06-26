@@ -21,7 +21,7 @@ class RunCommandIssue20Test {
 
     @Test
     void runLoop() {
-        RunCommand runCmd = TestHelper.createRunCommand(
+        IRunCommand runCmd = TestHelper.createRunCommand(
                 TestHelper.getConnectionString(),
                 "-p=TEST_BETWNSTR.normal_case",
                 "-f=ut_documentation_reporter");

@@ -13,8 +13,9 @@ import java.sql.SQLException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 
-/** Runs the utPLSQL Test-Runner
- *
+/**
+ * Runs the utPLSQL Test-Runner
+ * <p>
  * Takes care of its connection.
  * In case of an OracleCreateStatementStuckException it will abort the connection, otherwise close it.
  *
@@ -36,15 +37,15 @@ public class RunTestRunnerTask implements Callable<Boolean> {
     @Override
     public Boolean call() throws Exception {
         Connection conn = null;
-        try  {
+        try {
             conn = dataSource.getConnection();
-            if ( enableDmbsOutput ) DBHelper.enableDBMSOutput(conn);
+            if (enableDmbsOutput) DBHelper.enableDBMSOutput(conn);
             logger.info("Running tests now.");
             logger.info("--------------------------------------");
             testRunner.run(conn);
         } catch (SomeTestsFailedException e) {
             throw e;
-        } catch (OracleCreateStatmenetStuckException e ) {
+        } catch (OracleCreateStatmenetStuckException e) {
             try {
                 conn.abort(Executors.newSingleThreadExecutor());
                 conn = null;
@@ -56,9 +57,9 @@ public class RunTestRunnerTask implements Callable<Boolean> {
             System.out.println(e.getMessage());
             throw e;
         } finally {
-            if ( conn != null ) {
+            if (conn != null) {
                 try {
-                    if ( enableDmbsOutput ) DBHelper.disableDBMSOutput(conn);
+                    if (enableDmbsOutput) DBHelper.disableDBMSOutput(conn);
                     conn.close();
                 } catch (SQLException e) {
                     logger.error(e.getMessage(), e);
