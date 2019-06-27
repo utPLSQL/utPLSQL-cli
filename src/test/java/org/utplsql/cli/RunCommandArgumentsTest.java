@@ -17,6 +17,7 @@ public class RunCommandArgumentsTest {
                 "-f=ut_sonar_test_reporter",
                     "-o=sonar_result.xml",
                     "-s",
+                "--tags=tag1,tag2",
                 "-d",
                 "-c",
                 "--failure-exit-code=10",

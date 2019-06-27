@@ -23,6 +23,11 @@ public class RunPicocliCommand implements IRunCommand {
                     "-p=[schema|schema:[suite ...][.test]|schema[.suite ...][.test]")
     private List<String> paths = new ArrayList<>();
 
+    @Option(names = {"--tags"},
+            description = "comma-separated list of tags to run",
+            split = ",")
+    private List<String> tags = new ArrayList<>();
+
 
     @Option(
             names = {"-c", "--color"},
@@ -232,7 +237,8 @@ public class RunPicocliCommand implements IRunCommand {
                 timeoutInMinutes,
                 enableDbmsOutput,
                 randomTestOrder,
-                randomTestOrderSeed);
+                randomTestOrderSeed,
+                tags.toArray(new String[0]));
     }
 
     private RunAction getRunAction() {
