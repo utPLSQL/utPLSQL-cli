@@ -54,4 +54,14 @@ public class RunCommandArgumentsTest {
         assertThat( testRunner.getOptions().pathList, contains("app.test_betwnstr", "app.test_award_bonus") );
 
     }
+
+    @Test
+    void provideTags() {
+        IRunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(),
+                "--tags=tag1,tag.2"
+        );
+
+        TestRunner testRunner = runCmd.newTestRunner(new ArrayList<>());
+        assertThat( testRunner.getOptions().tags, contains("tag1", "tag.2") );
+    }
 }
