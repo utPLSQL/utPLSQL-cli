@@ -1,6 +1,5 @@
 package org.utplsql.cli;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.utplsql.api.*;
@@ -59,13 +58,13 @@ public class RunAction {
         init();
         outputMainInformation();
 
-        HikariDataSource dataSource = null;
+        DataSource dataSource = null;
         int returnCode = 0;
         try {
 
             final List<Reporter> reporterList;
 
-            dataSource = (HikariDataSource) DataSourceProvider.getDataSource(config.getConnectString(), getReporterManager().getNumberOfReporters() + 2);
+            dataSource = DataSourceProvider.getDataSource(config.getConnectString(), getReporterManager().getNumberOfReporters() + 2);
 
             initDatabase(dataSource);
             reporterList = initReporters(dataSource);
@@ -112,10 +111,6 @@ public class RunAction {
         } catch (Throwable e) {
             e.printStackTrace();
             returnCode = Cli.DEFAULT_ERROR_CODE;
-        } finally {
-            if (dataSource != null) {
-                dataSource.close();
-            }
         }
         return returnCode;
     }

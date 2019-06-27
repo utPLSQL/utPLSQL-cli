@@ -6,7 +6,6 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
-import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.LoggerFactory;
 
 public class LoggerConfiguration {
@@ -39,7 +38,6 @@ public class LoggerConfiguration {
 
     private static void configureInfo() {
         setRootLoggerLevel(Level.INFO);
-        muteHikariLogger();
         setSingleConsoleAppenderWithLayout("%msg%n");
     }
 
@@ -51,10 +49,6 @@ public class LoggerConfiguration {
     private static void setRootLoggerLevel(Level level) {
         Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(level);
-    }
-
-    private static void muteHikariLogger() {
-        ((Logger) LoggerFactory.getLogger(HikariDataSource.class)).setLevel(Level.OFF);
     }
 
     private static void setSingleConsoleAppenderWithLayout(String patternLayout) {
