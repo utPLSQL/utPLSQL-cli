@@ -1,12 +1,13 @@
 package org.utplsql.cli.datasource;
 
-import com.zaxxer.hikari.HikariDataSource;
+import oracle.jdbc.pool.OracleDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.utplsql.api.EnvironmentVariableUtil;
 import org.utplsql.cli.ConnectionConfig;
 import org.utplsql.cli.exception.DatabaseConnectionFailed;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -35,11 +36,9 @@ public class TestedDataSourceProvider {
         possibilities.add(new ThinConnectStringPossibility());
     }
 
-    public HikariDataSource getDataSource() throws SQLException {
+    public DataSource getDataSource() throws SQLException {
 
-        HikariDataSource ds = new HikariDataSource();
-        ds.setAutoCommit(false);
-        ds.setMaximumPoolSize(maxConnections);
+        InitializableOracleDataSource ds = new InitializableOracleDataSource();
 
         setInitSqlFrom_NLS_LANG(ds);
         setThickOrThinJdbcUrl(ds);
@@ -47,15 +46,15 @@ public class TestedDataSourceProvider {
         return ds;
     }
 
-    private void setThickOrThinJdbcUrl(HikariDataSource ds) throws SQLException {
+    private void setThickOrThinJdbcUrl(OracleDataSource ds) throws SQLException {
         List<String> errors = new ArrayList<>();
         Throwable lastException = null;
 
-        ds.setUsername(config.getUser());
+        ds.setUser(config.getUser());
         ds.setPassword(config.getPassword());
 
         for (ConnectStringPossibility possibility : possibilities) {
-            ds.setJdbcUrl(possibility.getConnectString(config));
+            ds.setURL(possibility.getConnectString(config));
             try (Connection ignored = ds.getConnection()) {
                 logger.info("Use connection string {}", possibility.getMaskedConnectString(config));
                 return;
@@ -69,7 +68,7 @@ public class TestedDataSourceProvider {
         throw new DatabaseConnectionFailed(lastException);
     }
 
-    private void setInitSqlFrom_NLS_LANG(HikariDataSource ds) {
+    private void setInitSqlFrom_NLS_LANG(InitializableOracleDataSource ds) {
         String nls_lang = EnvironmentVariableUtil.getEnvValue("NLS_LANG");
 
         if (nls_lang != null) {
