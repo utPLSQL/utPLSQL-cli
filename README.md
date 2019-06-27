@@ -102,6 +102,9 @@ utplsql run "my/Username"/"myP@ssword"@connectstring
                       Both formats can be mixed in the list.
                       If only schema is provided, then all suites owner by that schema are executed.
                       If -p is omitted, the current schema is used.
+
+--tags=tags         - A comma separated list of tags to run. 
+                      Format: --tags=tag1[,tag2[,tag3]]
                       
 -f=format           - A reporter to be used for reporting.
 (--format)            If no -f option is provided, the default ut_documentation_reporter is used.
