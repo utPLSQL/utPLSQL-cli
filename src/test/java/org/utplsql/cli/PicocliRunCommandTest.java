@@ -20,6 +20,7 @@ public class PicocliRunCommandTest {
         RunCommandConfig config = parseForConfig("run",
                 TestHelper.getConnectionString(),
                 "-p=app.betwnstr,app.basic",
+                "--tags=tag1,tag.2",
                 "-d",
                 "-c",
                 "-q",
@@ -51,6 +52,7 @@ public class PicocliRunCommandTest {
 
         assertNotNull(config.getConnectString());
         assertThat( config.getSuitePaths(), is(new String[]{"app.betwnstr", "app.basic"}));
+        assertThat( config.getTags(), is(new String[]{"tag1", "tag.2"}));
         assertTrue( config.isOutputAnsiColor() );
         assertEquals( LoggerConfiguration.ConfigLevel.NONE, config.getLogConfigLevel());
         assertEquals( 10, config.getFailureExitCode());

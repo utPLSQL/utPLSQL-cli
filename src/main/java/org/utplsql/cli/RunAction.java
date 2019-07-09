@@ -163,7 +163,8 @@ public class RunAction {
                 .includeObjects(Arrays.asList(config.getIncludePackages()))
                 .excludeObjects(Arrays.asList(config.getExcludePackages()))
                 .randomTestOrder(config.isRandomTestOrder())
-                .randomTestOrderSeed(config.getRandomTestOrderSeed());
+                .randomTestOrderSeed(config.getRandomTestOrderSeed())
+                .addTags(Arrays.asList(config.getTags()));
     }
 
     private void outputMainInformation() {

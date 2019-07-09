@@ -17,6 +17,7 @@ public class RunCommandArgumentsTest {
                 "-f=ut_sonar_test_reporter",
                     "-o=sonar_result.xml",
                     "-s",
+                "--tags=tag1,tag2",
                 "-d",
                 "-c",
                 "--failure-exit-code=10",
@@ -52,5 +53,15 @@ public class RunCommandArgumentsTest {
         TestRunner testRunner = runCmd.newTestRunner(new ArrayList<>());
         assertThat( testRunner.getOptions().pathList, contains("app.test_betwnstr", "app.test_award_bonus") );
 
+    }
+
+    @Test
+    void provideTags() {
+        IRunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(),
+                "--tags=tag1,tag.2"
+        );
+
+        TestRunner testRunner = runCmd.newTestRunner(new ArrayList<>());
+        assertThat( testRunner.getOptions().tags, contains("tag1", "tag.2") );
     }
 }

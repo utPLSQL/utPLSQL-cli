@@ -21,9 +21,10 @@ public class RunCommandConfig extends ConnectionConfig {
     private boolean dbmsOutput = false;
     private boolean randomTestOrder = false;
     private final Integer randomTestOrderSeed;
+    private final String[] tags;
 
-    @ConstructorProperties({"connectString", "suitePaths", "reporters", "outputAnsiColor", "failureExitCode", "skipCompatibilityCheck", "includePackages", "excludePackages", "sourceMapping", "testMapping", "logConfigLevel", "timeoutInMinutes", "dbmsOutput", "randomTestOrder", "randomTestOrderSeed"})
-    public RunCommandConfig(String connectString, String[] suitePaths, ReporterConfig[] reporters, boolean outputAnsiColor, Integer failureExitCode, boolean skipCompatibilityCheck, String[] includePackages, String[] excludePackages, FileMapperConfig sourceMapping, FileMapperConfig testMapping, ConfigLevel logConfigLevel, Integer timeoutInMinutes, boolean dbmsOutput, boolean randomTestOrder, Integer randomTestOrderSeed) {
+    @ConstructorProperties({"connectString", "suitePaths", "reporters", "outputAnsiColor", "failureExitCode", "skipCompatibilityCheck", "includePackages", "excludePackages", "sourceMapping", "testMapping", "logConfigLevel", "timeoutInMinutes", "dbmsOutput", "randomTestOrder", "randomTestOrderSeed", "tags"})
+    public RunCommandConfig(String connectString, String[] suitePaths, ReporterConfig[] reporters, boolean outputAnsiColor, Integer failureExitCode, boolean skipCompatibilityCheck, String[] includePackages, String[] excludePackages, FileMapperConfig sourceMapping, FileMapperConfig testMapping, ConfigLevel logConfigLevel, Integer timeoutInMinutes, boolean dbmsOutput, boolean randomTestOrder, Integer randomTestOrderSeed, String[] tags) {
         super(connectString);
         this.suitePaths = suitePaths;
         this.reporters = reporters;
@@ -39,10 +40,15 @@ public class RunCommandConfig extends ConnectionConfig {
         this.dbmsOutput = dbmsOutput;
         this.randomTestOrder = randomTestOrder;
         this.randomTestOrderSeed = randomTestOrderSeed;
+        this.tags = tags;
     }
 
     public String[] getSuitePaths() {
         return suitePaths;
+    }
+
+    public String[] getTags() {
+        return tags;
     }
 
     public ReporterConfig[] getReporters() {
