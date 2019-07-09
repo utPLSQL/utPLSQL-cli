@@ -1,5 +1,6 @@
 package org.utplsql.cli.datasource;
 
+import oracle.jdbc.OracleShardingKeyBuilder;
 import oracle.jdbc.pool.OracleDataSource;
 
 import java.sql.CallableStatement;
@@ -28,5 +29,10 @@ public class InitializableOracleDataSource extends OracleDataSource {
 
     public void setConnectionInitSql( String sql ) {
         this.initSql = sql;
+    }
+
+    @Override
+    public OracleShardingKeyBuilder createShardingKeyBuilder() throws SQLException {
+        return super.createShardingKeyBuilder();
     }
 }
