@@ -35,6 +35,17 @@ env:
     - UTPLSQL_VERSION="develop"
       UTPLSQL_FILE="utPLSQL"
 
+matrix:
+  include:
+    - env: UTPLSQL_VERSION="v3.1.7"
+      jdk: openjdk9
+    - env: UTPLSQL_VERSION="v3.1.7"
+      jdk: openjdk10
+    - env: UTPLSQL_VERSION="v3.1.7"
+      jdk: openjdk11
+    - env: UTPLSQL_VERSION="v3.1.7"
+      jdk: openjdk12
+
 cache:
   directories:
     - $DOCKER_CFG
