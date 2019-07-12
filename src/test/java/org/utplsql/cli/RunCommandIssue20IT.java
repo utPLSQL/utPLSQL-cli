@@ -1,11 +1,11 @@
 package org.utplsql.cli;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.utplsql.api.reporter.CoreReporters;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -15,9 +15,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @author philipp salivsberg
  */
-class RunCommandIssue20Test {
+class RunCommandIssue20IT {
 
-    private static final Logger logger = LoggerFactory.getLogger(RunCommandIssue20Test.class);
+    private static final Logger logger = LoggerFactory.getLogger(RunCommandIssue20IT.class);
 
     @Test
     void runLoop() {
