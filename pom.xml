@@ -14,7 +14,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <junit.jupiter.version>5.4.0</junit.jupiter.version>
+        <junit.jupiter.version>5.5.2</junit.jupiter.version>
+        <oracle.jdbc.version>19.3.0.0</oracle.jdbc.version>
         <travisBuildNumber>local</travisBuildNumber>
     </properties>
 
@@ -55,21 +56,21 @@
           <version>4.0.0-beta-1b</version>
       </dependency>
       <dependency>
-          <groupId>com.oracle.jdbc</groupId>
+          <groupId>com.oracle.ojdbc</groupId>
           <artifactId>ojdbc8</artifactId>
-          <version>12.2.0.1</version>
+          <version>${oracle.jdbc.version}</version>
           <scope>compile</scope>
           <exclusions>
               <exclusion>
-                  <groupId>com.oracle.jdbc</groupId>
+                  <groupId>com.oracle.ojdbc</groupId>
                   <artifactId>ucp</artifactId>
               </exclusion>
           </exclusions>
       </dependency>
       <dependency>
-          <groupId>com.oracle.jdbc</groupId>
+          <groupId>com.oracle.ojdbc</groupId>
           <artifactId>orai18n</artifactId>
-          <version>12.2.0.1</version>
+          <version>${oracle.jdbc.version}</version>
           <scope>compile</scope>
       </dependency>
 
@@ -164,25 +165,7 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
-    <repository>
-      <id>maven.oracle.com</id>
-      <releases>
-          <enabled>true</enabled>
-      </releases>
-      <snapshots>
-          <enabled>false</enabled>
-      </snapshots>
-      <url>https://maven.oracle.com</url>
-      <layout>default</layout>
-    </repository>
   </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>maven.oracle.com</id>
-            <url>https://maven.oracle.com</url>
-        </pluginRepository>
-    </pluginRepositories>
 
     <profiles>
         <profile>
