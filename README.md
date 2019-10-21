@@ -9,9 +9,10 @@ Java command-line client for [utPLSQL v3](https://github.com/utPLSQL/utPLSQL/).
 Provides an easy way of invoking utPLSQL from command-line. Main features:
 
 * Ability to run tests with multiple reporters simultaneously.
+* Realtime reporting during test-run
 * Ability to save output from every individual reporter to a separate output file.
 * Allows execution of selected suites, subset of suite.
-* Maps project and test files to database objects for reporting purposes. (Coming Soon)
+* Maps project and test files to database objects for reporting purposes.
 
 ## Downloading
 
@@ -21,7 +22,7 @@ You can also download all development versions from [Bintray](https://bintray.co
 
 
 ## Requirements
-* [Java SE Runtime Environment 8](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
+* [Java SE Runtime Environment 8](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html) or newer
 * When using reporters for Sonar or Coveralls client needs to be invoked from project's root directory.
 
 ## Compatibility
