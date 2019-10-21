@@ -11,7 +11,7 @@ Provides an easy way of invoking utPLSQL from command-line. Main features:
 * Ability to run tests with multiple reporters simultaneously.
 * Ability to save output from every individual reporter to a separate output file.
 * Allows execution of selected suites, subset of suite.
-* Maps project and test files to database objects for reporting purposes. (Comming Soon)
+* Maps project and test files to database objects for reporting purposes. (Coming Soon)
 
 ## Downloading
 
@@ -23,10 +23,6 @@ You can also download all development versions from [Bintray](https://bintray.co
 ## Requirements
 * [Java SE Runtime Environment 8](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
 * When using reporters for Sonar or Coveralls client needs to be invoked from project's root directory.
-* Due to Oracle license we can't ship the necessary oracle libraries directly with utPLSQL-cli. <b>Please download the libraries directly from oracle website and put the jars into the "lib" folder of your utPLSQL-cli installation</b>
-  * Oracle `ojdbc8` driver
-  * It is highly recommended that you also use the `orai18n` library, especially if you use a charset different than UTF-16 or are on Oracle 11g.
-  * All of the above can be downloaded from [Oracle download site](http://www.oracle.com/technetwork/database/features/jdbc/jdbc-ucp-122-3110062.html)
 
 ## Compatibility
 The latest CLI is always compatible with all database frameworks of the same major version.
