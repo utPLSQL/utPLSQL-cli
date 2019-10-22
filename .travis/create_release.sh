@@ -11,10 +11,6 @@ sed -i '/CYGWIN\*) cygwin=true/c\  CYGWIN*|MINGW*) cygwin=true ;;' target/appass
 
 mkdir dist
 mv target/appassembler utPLSQL-cli
-# Remove Oracle libraries du to licensing problems
-rm -f utPLSQL-cli/lib/ucp*.jar
-rm -f utPLSQL-cli/lib/ojdbc8*.jar
-rm -f utPLSQL-cli/lib/orai18n*.jar
 
 zip -r -q dist/utPLSQL-cli-${TRAVIS_BRANCH}-${VERSION}.zip utPLSQL-cli
 zip -r -q utPLSQL-cli.zip utPLSQL-cli
