@@ -27,15 +27,15 @@
           <scope>compile</scope>
           <exclusions>
               <exclusion>
-                  <groupId>com.oracle.jdbc</groupId>
+                  <groupId>com.oracle.ojdbc</groupId>
                   <artifactId>ucp</artifactId>
               </exclusion>
               <exclusion>
-                  <groupId>com.oracle.jdbc</groupId>
+                  <groupId>com.oracle.ojdbc</groupId>
                   <artifactId>ojdbc8</artifactId>
               </exclusion>
               <exclusion>
-                  <groupId>com.oracle.jdbc</groupId>
+                  <groupId>com.oracle.ojdbc</groupId>
                   <artifactId>orai18n</artifactId>
               </exclusion>
           </exclusions>
@@ -67,7 +67,7 @@
               </exclusion>
           </exclusions>
       </dependency>
-      <dependency>
+     <dependency>
           <groupId>com.oracle.ojdbc</groupId>
           <artifactId>orai18n</artifactId>
           <version>${oracle.jdbc.version}</version>
