@@ -164,6 +164,20 @@ public class PicocliRunCommandTest {
     }
 
     @Test
+    void outputWithDefaultReporter() throws Exception {
+        RunCommandConfig config = parseForConfig("run",
+                TestHelper.getConnectionString(),
+                "-o=output1.txt");
+
+        assertNotNull( config.getReporters() );
+
+        ReporterConfig reporterConfig = config.getReporters()[0];
+        assertEquals("ut_documentation_reporter", reporterConfig.getName());
+        assertEquals("output1.txt", reporterConfig.getOutput());
+        assertFalse(reporterConfig.isForceToScreen());
+    }
+
+    @Test
     void sourceFileMapping() throws Exception {
         RunCommandConfig config = parseForConfig("run",
                 TestHelper.getConnectionString(),

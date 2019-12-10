@@ -75,4 +75,18 @@ class RunCommandIT extends AbstractFileOutputTest {
 
         assertValidReturnCode(result);
     }
+
+    @Test
+    void run_withOutputButNoReporterDefined() throws Exception {
+
+        String outputFileName = "output_" + System.currentTimeMillis() + ".xml";
+        addTempPath(Paths.get(outputFileName));
+
+        int result = TestHelper.runApp("run",
+                TestHelper.getConnectionString(),
+                "-o=" + outputFileName,
+                "--failure-exit-code=2");
+
+        assertValidReturnCode(result);
+    }
 }
