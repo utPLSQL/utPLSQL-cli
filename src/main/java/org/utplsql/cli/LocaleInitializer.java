@@ -1,5 +1,7 @@
 package org.utplsql.cli;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.utplsql.api.EnvironmentVariableUtil;
 
 import java.util.Locale;
@@ -18,6 +20,8 @@ import java.util.regex.Pattern;
  */
 class LocaleInitializer {
 
+    private static final Logger logger = LoggerFactory.getLogger(RunAction.class);
+
     private static final Pattern REGEX_LOCALE = Pattern.compile("^([a-zA-Z]+)[_-]([a-zA-Z]+)"); // We only need the very first part and are pretty forgiving in parsing
 
     /**
@@ -27,7 +31,10 @@ class LocaleInitializer {
 
         boolean localeChanged = setDefaultLocale(EnvironmentVariableUtil.getEnvValue("LC_ALL"));
         if (!localeChanged) {
-            setDefaultLocale(EnvironmentVariableUtil.getEnvValue("LANG"));
+            localeChanged = setDefaultLocale(EnvironmentVariableUtil.getEnvValue("LANG"));
+        }
+        if ( !localeChanged ) {
+            logger.debug("Java Locale not changed from LC_ALL or LANG environment variable");
         }
     }
 
@@ -54,6 +61,7 @@ class LocaleInitializer {
                 Locale l = new Locale.Builder().setLanguageTag(sb.toString()).build();
                 if (l != null) {
                     Locale.setDefault(l);
+                    logger.debug("Java Locale changed to {}", l);
                     return true;
                 }
             }

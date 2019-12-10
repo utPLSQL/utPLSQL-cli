@@ -17,9 +17,6 @@ public class Cli {
 
     static int runPicocliWithExitCode(String[] args) {
 
-        LoggerConfiguration.configure(LoggerConfiguration.ConfigLevel.NONE);
-        LocaleInitializer.initLocale();
-
         CommandLine commandLine = new CommandLine(UtplsqlPicocliCommand.class);
         commandLine.setTrimQuotes(true);
 
