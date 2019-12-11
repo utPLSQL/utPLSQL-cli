@@ -48,6 +48,7 @@ public class RunAction {
 
     void init() {
         LoggerConfiguration.configure(config.getLogConfigLevel());
+        LocaleInitializer.initLocale();
     }
 
     public RunCommandConfig getConfig() {
