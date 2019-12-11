@@ -51,6 +51,22 @@ ALTER SESSION SET NLS_LANGUAGE='AMERICAN';
 ALTER SESSION SET NLS_TERRITORY='AMERICA';
 ```
 
+## Charset
+
+Java will use the default charset of your system for any string output.  
+You can change this by passing the `-Dfile.encoding` property to the JVM when running a java-application.  
+To avoid changing the utPLSQL-cli shell- or batchscript, you can define `-Dfile.encoding` in the environment variable `JAVA_TOOL_OPTIONS`. 
+This environment variable will be picked up and interpreted by the JVM:
+
+```
+export JAVA_TOOL_OPTIONS='-Dfile.encoding=utf8'
+utplsql run user/pw@connecstring
+
+> Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=utf8
+``` 
+
+Make sure that the defined charset matches with the codepage your console is using.
+
 ## Usage
 Currently, utPLSQL-cli supports the following sub-commands:
 - run
