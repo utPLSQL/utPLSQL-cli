@@ -28,6 +28,7 @@ public class ReportersCommand implements ICommand {
 
     @Override
     public int run() {
+        LoggerConfiguration.configure(LoggerConfiguration.ConfigLevel.NONE);
 
         try {
             DataSource ds = DataSourceProvider.getDataSource(connectionString, 1);

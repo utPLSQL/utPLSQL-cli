@@ -23,6 +23,7 @@ public class VersionInfoCommand implements ICommand {
     boolean help;
 
     public int run() {
+        LoggerConfiguration.configure(LoggerConfiguration.ConfigLevel.NONE);
 
         System.out.println(CliVersionInfo.getInfo());
         System.out.println(JavaApiVersionInfo.getInfo());
