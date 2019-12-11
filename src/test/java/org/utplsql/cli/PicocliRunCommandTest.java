@@ -172,7 +172,7 @@ public class PicocliRunCommandTest {
         assertNotNull( config.getReporters() );
 
         ReporterConfig reporterConfig = config.getReporters()[0];
-        assertEquals("ut_documentation_reporter", reporterConfig.getName());
+        assertEquals("ut_documentation_reporter", reporterConfig.getName().toLowerCase());
         assertEquals("output1.txt", reporterConfig.getOutput());
         assertFalse(reporterConfig.isForceToScreen());
     }
