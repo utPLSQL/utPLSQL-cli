@@ -293,6 +293,10 @@ utplsql run "sys as sysdba"/pw@connectstring
 
 It is, however, __not recommended__ to run utPLSQL with sysdba privileges.
 
+## Using utPLSQL-cli with the UT3 user
+
+The UT3 user is a special user and is the owner of the framework. Using this user for running tests is __not supported__. 
+
 ## Enabling Color Outputs on Windows
 
 To enable color outputs on Windows cmd you need to install an open-source utility called [ANSICON](http://adoxa.altervista.org/ansicon/).
