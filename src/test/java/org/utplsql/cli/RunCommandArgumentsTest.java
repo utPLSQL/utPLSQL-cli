@@ -18,6 +18,7 @@ public class RunCommandArgumentsTest {
                     "-o=sonar_result.xml",
                     "-s",
                 "--tags=tag1,tag2",
+                "--coverage-schemes=schema1,some_other_schema",
                 "-d",
                 "-c",
                 "--failure-exit-code=10",
@@ -63,5 +64,15 @@ public class RunCommandArgumentsTest {
 
         TestRunner testRunner = runCmd.newTestRunner(new ArrayList<>());
         assertThat( testRunner.getOptions().tags, contains("tag1", "tag.2") );
+    }
+
+    @Test
+    void provideCoverageSchemes() {
+        IRunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(),
+                "--coverage-schemes=schema-1,some_other_schema"
+        );
+
+        TestRunner testRunner = runCmd.newTestRunner(new ArrayList<>());
+        assertThat( testRunner.getOptions().coverageSchemes, contains("schema-1", "some_other_schema") );
     }
 }

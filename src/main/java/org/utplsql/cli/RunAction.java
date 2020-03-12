@@ -165,7 +165,8 @@ public class RunAction {
                 .excludeObjects(Arrays.asList(config.getExcludePackages()))
                 .randomTestOrder(config.isRandomTestOrder())
                 .randomTestOrderSeed(config.getRandomTestOrderSeed())
-                .addTags(Arrays.asList(config.getTags()));
+                .addTags(Arrays.asList(config.getTags()))
+                .addCoverageSchemes(Arrays.asList(config.getCoverageSchemes()));
     }
 
     private void outputMainInformation() {
