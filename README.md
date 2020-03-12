@@ -179,6 +179,9 @@ utplsql run "my/Username"/"myP@ssword"@connectstring
 
 -seed              - Sets the seed to use for random test execution order. If set, it sets -random to true
 (--random-test-order-seed)
+
+--coverage-schemes - A comma separated list of schemas on which coverage should be gathered
+                     Format: --coverage-schemes=schema1[,schema2[,schema3]]
 ```
 
 Parameters -f, -o, -s are correlated. That is parameters -o and -s are controlling outputs for reporter specified by the preceding -f parameter.
