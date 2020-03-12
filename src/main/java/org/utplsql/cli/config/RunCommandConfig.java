@@ -22,9 +22,10 @@ public class RunCommandConfig extends ConnectionConfig {
     private boolean randomTestOrder = false;
     private final Integer randomTestOrderSeed;
     private final String[] tags;
+    private final String[] coverageSchemes;
 
-    @ConstructorProperties({"connectString", "suitePaths", "reporters", "outputAnsiColor", "failureExitCode", "skipCompatibilityCheck", "includePackages", "excludePackages", "sourceMapping", "testMapping", "logConfigLevel", "timeoutInMinutes", "dbmsOutput", "randomTestOrder", "randomTestOrderSeed", "tags"})
-    public RunCommandConfig(String connectString, String[] suitePaths, ReporterConfig[] reporters, boolean outputAnsiColor, Integer failureExitCode, boolean skipCompatibilityCheck, String[] includePackages, String[] excludePackages, FileMapperConfig sourceMapping, FileMapperConfig testMapping, ConfigLevel logConfigLevel, Integer timeoutInMinutes, boolean dbmsOutput, boolean randomTestOrder, Integer randomTestOrderSeed, String[] tags) {
+    @ConstructorProperties({"connectString", "suitePaths", "reporters", "outputAnsiColor", "failureExitCode", "skipCompatibilityCheck", "includePackages", "excludePackages", "sourceMapping", "testMapping", "logConfigLevel", "timeoutInMinutes", "dbmsOutput", "randomTestOrder", "randomTestOrderSeed", "tags", "coverageSchemes"})
+    public RunCommandConfig(String connectString, String[] suitePaths, ReporterConfig[] reporters, boolean outputAnsiColor, Integer failureExitCode, boolean skipCompatibilityCheck, String[] includePackages, String[] excludePackages, FileMapperConfig sourceMapping, FileMapperConfig testMapping, ConfigLevel logConfigLevel, Integer timeoutInMinutes, boolean dbmsOutput, boolean randomTestOrder, Integer randomTestOrderSeed, String[] tags, String[] coverageSchemes) {
         super(connectString);
         this.suitePaths = suitePaths;
         this.reporters = reporters;
@@ -41,6 +42,7 @@ public class RunCommandConfig extends ConnectionConfig {
         this.randomTestOrder = randomTestOrder;
         this.randomTestOrderSeed = randomTestOrderSeed;
         this.tags = tags;
+        this.coverageSchemes = coverageSchemes;
     }
 
     public String[] getSuitePaths() {
@@ -102,4 +104,6 @@ public class RunCommandConfig extends ConnectionConfig {
     public Integer getRandomTestOrderSeed() {
         return randomTestOrderSeed;
     }
+
+    public String[] getCoverageSchemes() { return coverageSchemes; }
 }

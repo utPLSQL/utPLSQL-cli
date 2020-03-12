@@ -28,6 +28,11 @@ public class RunPicocliCommand implements IRunCommand {
             split = ",")
     private List<String> tags = new ArrayList<>();
 
+    @Option(names = {"--coverage-schemes"},
+            description = "comma-separated list of schemas on which coverage should be gathered",
+            split = ",")
+    private List<String> coverageSchemes = new ArrayList<>();
+
 
     @Option(
             names = {"-c", "--color"},
@@ -238,7 +243,8 @@ public class RunPicocliCommand implements IRunCommand {
                 enableDbmsOutput,
                 randomTestOrder,
                 randomTestOrderSeed,
-                tags.toArray(new String[0]));
+                tags.toArray(new String[0]),
+                coverageSchemes.toArray(new String[0]));
     }
 
     private RunAction getRunAction() {
