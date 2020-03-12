@@ -227,24 +227,25 @@ public class RunPicocliCommand implements IRunCommand {
             }
         }
 
-        return new RunCommandConfig(
-                connectionString,
-                suitePaths.toArray(new String[0]),
-                reporterConfigs.toArray(new ReporterConfig[0]),
-                colorConsole,
-                failureExitCode,
-                skipCompatibilityCheck,
-                splitOrEmpty(includeObjects),
-                splitOrEmpty(excludeObjects),
-                sourceFileMapping,
-                testFileMapping,
-                loggerConfigLevel,
-                timeoutInMinutes,
-                enableDbmsOutput,
-                randomTestOrder,
-                randomTestOrderSeed,
-                tags.toArray(new String[0]),
-                coverageSchemes.toArray(new String[0]));
+        return new RunCommandConfig.Builder()
+                .connectString(connectionString)
+                .suitePaths(suitePaths.toArray(new String[0]))
+                .reporters(reporterConfigs.toArray(new ReporterConfig[0]))
+                .outputAnsiColor(colorConsole)
+                .failureExitCode(failureExitCode)
+                .skipCompatibilityCheck(skipCompatibilityCheck)
+                .includePackages(splitOrEmpty(includeObjects))
+                .excludePackages(splitOrEmpty(excludeObjects))
+                .sourceMapping(sourceFileMapping)
+                .testMapping(testFileMapping)
+                .logConfigLevel(loggerConfigLevel)
+                .timeoutInMinutes(timeoutInMinutes)
+                .dbmsOutput(enableDbmsOutput)
+                .randomTestOrder(randomTestOrder)
+                .randomTestOrderSeed(randomTestOrderSeed)
+                .tags(tags.toArray(new String[0]))
+                .coverageSchemes(coverageSchemes.toArray(new String[0]))
+                .create();
     }
 
     private RunAction getRunAction() {
