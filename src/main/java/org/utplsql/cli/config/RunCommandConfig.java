@@ -112,13 +112,13 @@ public class RunCommandConfig extends ConnectionConfig {
     public static class Builder {
 
         private String connectString;
-        private String[] suitePaths;
+        private String[] suitePaths = new String[0];
         private ReporterConfig[] reporters;
         private boolean outputAnsiColor;
         private Integer failureExitCode;
         private boolean skipCompatibilityCheck;
-        private String[] includePackages;
-        private String[] excludePackages;
+        private String[] includePackages = new String[0];
+        private String[] excludePackages = new String[0];
         private FileMapperConfig sourceMapping;
         private FileMapperConfig testMapping;
         private ConfigLevel logConfigLevel;
@@ -126,8 +126,8 @@ public class RunCommandConfig extends ConnectionConfig {
         private boolean dbmsOutput;
         private boolean randomTestOrder;
         private Integer randomTestOrderSeed;
-        private String[] tags;
-        private String[] coverageSchemes;
+        private String[] tags = new String[0];
+        private String[] coverageSchemes = new String[0];
 
         public Builder connectString(String connectString) {
             this.connectString = connectString;
