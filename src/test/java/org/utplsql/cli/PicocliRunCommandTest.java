@@ -48,7 +48,8 @@ public class PicocliRunCommandTest {
                     "-type_mapping=\"tsql=PACKAGE BODY\"",
                     "-owner_subexpression=1",
                     "-type_subexpression=2",
-                    "-name_subexpression=3");
+                    "-name_subexpression=3",
+                "--coverage-schemes=schema1,other_schema");
 
         assertNotNull(config.getConnectString());
         assertThat( config.getSuitePaths(), is(new String[]{"app.betwnstr", "app.basic"}));
@@ -65,6 +66,7 @@ public class PicocliRunCommandTest {
         assertEquals( 123, config.getRandomTestOrderSeed() );
         assertNotNull( config.getReporters() );
         assertEquals( 1, config.getReporters().length );
+        assertThat( config.getCoverageSchemes(), is(new String[]{"schema1", "other_schema"}) );
 
         // Source FileMapping
         assertNotNull(config.getSourceMapping());
