@@ -41,7 +41,8 @@ public class RunCommandArgumentsTest {
                     "-type_mapping=\"sql=PACKAGE BODY\"",
                     "-owner_subexpression=0",
                     "-type_subexpression=0",
-                    "-name_subexpression=0"
+                    "-name_subexpression=0",
+                "--catch-ora-stuck"
         );
 
         TestRunner testRunner = runCmd.newTestRunner(new ArrayList<>());

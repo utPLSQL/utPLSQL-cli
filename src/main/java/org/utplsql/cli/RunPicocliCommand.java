@@ -183,6 +183,9 @@ public class RunPicocliCommand implements IRunCommand {
     @Option(names = "-h", usageHelp = true, description = "display this help and exit")
     boolean help;
 
+    @Option(names = "--catch-ora-stuck", description = "Sets a timeout around Reporter creation and retries when not ready after a while")
+    boolean catchOraStuck = false;
+
     private RunAction runAction;
 
     private String[] splitOrEmpty(String value) {
@@ -245,6 +248,7 @@ public class RunPicocliCommand implements IRunCommand {
                 .randomTestOrderSeed(randomTestOrderSeed)
                 .tags(tags.toArray(new String[0]))
                 .coverageSchemes(coverageSchemes.toArray(new String[0]))
+                .catchOraStuck(catchOraStuck)
                 .create();
     }
 

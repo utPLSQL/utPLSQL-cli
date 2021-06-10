@@ -24,7 +24,8 @@ class RunCommandIssue20IT {
         IRunCommand runCmd = TestHelper.createRunCommand(
                 TestHelper.getConnectionString(),
                 "-p=TEST_BETWNSTR.normal_case",
-                "-f=ut_documentation_reporter");
+                "-f=ut_documentation_reporter",
+                "--catch-ora-stuck");
         List<ReporterOptions> reporterOptionsList = runCmd.getReporterOptionsList();
         ReporterOptions reporterOptions1 = reporterOptionsList.get(0);
         assertEquals(CoreReporters.UT_DOCUMENTATION_REPORTER.name(), reporterOptions1.getReporterName());
