@@ -1,5 +1,6 @@
 package org.utplsql.cli;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.utplsql.api.TestRunner;
 
@@ -11,6 +12,7 @@ import static org.hamcrest.Matchers.contains;
 public class RunCommandArgumentsTest {
 
     @Test
+    @DisplayName("All arguments are recognized")
     public void allArgumentsAreRecognized() {
         IRunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(),
                 "-p=app",
