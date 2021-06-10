@@ -23,9 +23,10 @@ public class RunCommandConfig extends ConnectionConfig {
     private final Integer randomTestOrderSeed;
     private final String[] tags;
     private final String[] coverageSchemes;
+    private final boolean catchOraStuck;
 
-    @ConstructorProperties({"connectString", "suitePaths", "reporters", "outputAnsiColor", "failureExitCode", "skipCompatibilityCheck", "includePackages", "excludePackages", "sourceMapping", "testMapping", "logConfigLevel", "timeoutInMinutes", "dbmsOutput", "randomTestOrder", "randomTestOrderSeed", "tags", "coverageSchemes"})
-    public RunCommandConfig(String connectString, String[] suitePaths, ReporterConfig[] reporters, boolean outputAnsiColor, Integer failureExitCode, boolean skipCompatibilityCheck, String[] includePackages, String[] excludePackages, FileMapperConfig sourceMapping, FileMapperConfig testMapping, ConfigLevel logConfigLevel, Integer timeoutInMinutes, boolean dbmsOutput, boolean randomTestOrder, Integer randomTestOrderSeed, String[] tags, String[] coverageSchemes) {
+    @ConstructorProperties({"connectString", "suitePaths", "reporters", "outputAnsiColor", "failureExitCode", "skipCompatibilityCheck", "includePackages", "excludePackages", "sourceMapping", "testMapping", "logConfigLevel", "timeoutInMinutes", "dbmsOutput", "randomTestOrder", "randomTestOrderSeed", "tags", "coverageSchemes", "catchOraStuck"})
+    public RunCommandConfig(String connectString, String[] suitePaths, ReporterConfig[] reporters, boolean outputAnsiColor, Integer failureExitCode, boolean skipCompatibilityCheck, String[] includePackages, String[] excludePackages, FileMapperConfig sourceMapping, FileMapperConfig testMapping, ConfigLevel logConfigLevel, Integer timeoutInMinutes, boolean dbmsOutput, boolean randomTestOrder, Integer randomTestOrderSeed, String[] tags, String[] coverageSchemes, boolean catchOraStuck) {
         super(connectString);
         this.suitePaths = suitePaths;
         this.reporters = reporters;
@@ -43,6 +44,7 @@ public class RunCommandConfig extends ConnectionConfig {
         this.randomTestOrderSeed = randomTestOrderSeed;
         this.tags = tags;
         this.coverageSchemes = coverageSchemes;
+        this.catchOraStuck = catchOraStuck;
     }
 
     public String[] getSuitePaths() {
@@ -109,6 +111,8 @@ public class RunCommandConfig extends ConnectionConfig {
         return coverageSchemes;
     }
 
+    public boolean isCatchOraStuck() { return catchOraStuck; }
+
     public static class Builder {
 
         private String connectString;
@@ -128,6 +132,7 @@ public class RunCommandConfig extends ConnectionConfig {
         private Integer randomTestOrderSeed;
         private String[] tags = new String[0];
         private String[] coverageSchemes = new String[0];
+        private boolean catchOraStuck;
 
         public Builder connectString(String connectString) {
             this.connectString = connectString;
@@ -214,8 +219,13 @@ public class RunCommandConfig extends ConnectionConfig {
             return this;
         }
 
+        public Builder catchOraStuck(boolean catchOraStuck) {
+            this.catchOraStuck = catchOraStuck;
+            return this;
+        }
+
         public RunCommandConfig create() {
-            return new RunCommandConfig(connectString, suitePaths, reporters, outputAnsiColor, failureExitCode, skipCompatibilityCheck, includePackages, excludePackages, sourceMapping, testMapping, logConfigLevel, timeoutInMinutes, dbmsOutput, randomTestOrder, randomTestOrderSeed, tags, coverageSchemes);
+            return new RunCommandConfig(connectString, suitePaths, reporters, outputAnsiColor, failureExitCode, skipCompatibilityCheck, includePackages, excludePackages, sourceMapping, testMapping, logConfigLevel, timeoutInMinutes, dbmsOutput, randomTestOrder, randomTestOrderSeed, tags, coverageSchemes, catchOraStuck);
         }
     }
 }
