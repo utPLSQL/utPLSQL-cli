@@ -58,7 +58,7 @@ public class TestedDataSourceProvider {
             try (Connection ignored = ds.getConnection()) {
                 logger.info("Use connection string {}", possibility.getMaskedConnectString(config));
                 return;
-            } catch (UnsatisfiedLinkError | Exception e) {
+            } catch (Error | Exception e) {
                 errors.add(possibility.getMaskedConnectString(config) + ": " + e.getMessage());
                 lastException = e;
             }
