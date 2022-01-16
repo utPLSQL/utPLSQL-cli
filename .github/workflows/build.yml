@@ -1,7 +1,7 @@
 name: Build and test
 on:
   push:
-    branches: [ develop ]
+    branches: [ develop, feature/github_actions ]
     tags:
       - v*
   pull_request:
