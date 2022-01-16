@@ -60,7 +60,7 @@ class RunCommandCoverageReporterIT extends AbstractFileOutputTest {
         Matcher m = REGEX_COVERAGE_TITLE.matcher(content);
 
         while (m.find()) {
-            if (packageName.equals(m.group(1)))
+            if (packageName.equals(m.group(2)))
                 return true;
         }
 
