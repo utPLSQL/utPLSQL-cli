@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ev
+set -evx
 cd $(dirname $(readlink -f $0))
 
 PROJECT_FILE="utPLSQL-demo-project"
@@ -13,7 +13,7 @@ grant select any dictionary to ${DB_USER};
 exit
 SQL
 
-cd ${PROJECT_FILE}
+cd /${PROJECT_FILE}
 sqlplus -S -L ${DB_USER}/${DB_PASS}@//127.0.0.1:1521/xe <<SQL
 whenever sqlerror exit failure rollback
 whenever oserror  exit failure rollback
@@ -39,6 +39,6 @@ exit
 SQL
 EOF
 
-docker cp ./$PROJECT_FILE $ORACLE_VERSION:/$PROJECT_FILE
-docker cp ./demo_project.sh.tmp $ORACLE_VERSION:/demo_project.sh
-docker exec $ORACLE_VERSION bash demo_project.sh
+docker cp ./${PROJECT_FILE} oracle:/${PROJECT_FILE}
+docker cp ./demo_project.sh.tmp oracle:/demo_project.sh
+docker exec oracle bash /demo_project.sh
