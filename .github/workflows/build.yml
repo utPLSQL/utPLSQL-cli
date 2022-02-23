@@ -7,8 +7,9 @@ on:
   pull_request:
     branches: [ develop ]
   workflow_dispatch:
+
   repository_dispatch:
-    types: [utPLSQL-build]
+    types: [utPLSQL-build,utPLSQL-java-api-build]
 
 defaults:
   run:
