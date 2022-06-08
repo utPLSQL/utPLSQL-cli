@@ -91,10 +91,10 @@ class RunCommandIT extends AbstractFileOutputTest {
     }
 
     @Test
-    void run_withCatchOraStuck() throws Exception {
+    void run_withOraStuckTimeout() throws Exception {
         int result = TestHelper.runApp("run",
                 TestHelper.getConnectionString(),
-                "--catch-ora-stuck",
+                "--ora-stuck-timeout=2",
                 "--failure-exit-code=2");
 
         assertValidReturnCode(result);
