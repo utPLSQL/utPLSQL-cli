@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class RunCommandCoverageReporterIT extends AbstractFileOutputTest {
 
-    private static final Pattern REGEX_COVERAGE_TITLE = Pattern.compile("<a href=\"[a-zA-Z0-9#]+\" class=\"src_link\" title=\"[a-zA-Z\\._]+\">([a-zA-Z0-9\\._]+)<\\/a>");
+    private static final Pattern REGEX_COVERAGE_TITLE = Pattern.compile("<a href=\"[a-zA-Z0-9#]+\" class=\"src_link\" title=\"[a-zA-Z\\._ ]+\">([a-zA-Z ]+ )?([a-zA-Z0-9\\._]+)<\\/a>");
 
 
     private String getTempCoverageFileName(int counter) {
@@ -60,7 +60,7 @@ class RunCommandCoverageReporterIT extends AbstractFileOutputTest {
         Matcher m = REGEX_COVERAGE_TITLE.matcher(content);
 
         while (m.find()) {
-            if (packageName.equals(m.group(1)))
+            if (packageName.equals(m.group(2)))
                 return true;
         }
 
