@@ -167,7 +167,7 @@ public class RunAction {
                 .randomTestOrderSeed(config.getRandomTestOrderSeed())
                 .addTags(Arrays.asList(config.getTags()))
                 .addCoverageSchemes(Arrays.asList(config.getCoverageSchemes()))
-                .catchOraStuck(config.isCatchOraStuck());
+                .oraStuckTimeout(config.getOraStuckTimeout());
     }
 
     private void outputMainInformation() {

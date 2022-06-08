@@ -42,7 +42,7 @@ public class RunCommandArgumentsTest {
                     "-owner_subexpression=0",
                     "-type_subexpression=0",
                     "-name_subexpression=0",
-                "--catch-ora-stuck"
+                "--ora-stuck-timeout=2"
         );
 
         TestRunner testRunner = runCmd.newTestRunner(new ArrayList<>());

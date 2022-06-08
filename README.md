@@ -182,6 +182,8 @@ utplsql run "my/Username"/"myP@ssword"@connectstring
 
 --coverage-schemes - A comma separated list of schemas on which coverage should be gathered
                      Format: --coverage-schemes=schema1[,schema2[,schema3]]
+                     
+--ora-stuck-timeout - Sets a timeout around Reporter creation and retries when not ready after a while. 0 = no timeout.
 ```
 
 Parameters -f, -o, -s are correlated. That is parameters -o and -s are controlling outputs for reporter specified by the preceding -f parameter.

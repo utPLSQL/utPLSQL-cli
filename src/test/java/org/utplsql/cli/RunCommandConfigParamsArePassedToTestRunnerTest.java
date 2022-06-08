@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RunCommandConfigParamsArePassedToTestRunnerTest {
@@ -31,11 +32,11 @@ public class RunCommandConfigParamsArePassedToTestRunnerTest {
     }
 
     @Test
-    void catchOraStuck() {
+    void oraStuckTimeout() {
         RunCommandConfig config = new RunCommandConfig.Builder()
-                .catchOraStuck(true)
+                .oraStuckTimeout(2)
                 .create();
         TestRunner testRunner = new RunAction(config).newTestRunner(new ArrayList<>());
-        assertTrue( testRunner.getOptions().catchOraStuck );
+        assertThat( testRunner.getOptions().oraStuckTimeout, equalTo(2) );
     }
 }
