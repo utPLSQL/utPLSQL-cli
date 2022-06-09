@@ -56,19 +56,19 @@
           <version>4.6.3</version>
       </dependency>
       <dependency>
-          <groupId>com.oracle.ojdbc</groupId>
+          <groupId>com.oracle.database.jdbc</groupId>
           <artifactId>ojdbc8</artifactId>
           <version>${oracle.jdbc.version}</version>
           <scope>compile</scope>
           <exclusions>
               <exclusion>
-                  <groupId>com.oracle.ojdbc</groupId>
+                  <groupId>com.oracle.database.jdbc</groupId>
                   <artifactId>ucp</artifactId>
               </exclusion>
           </exclusions>
       </dependency>
      <dependency>
-          <groupId>com.oracle.ojdbc</groupId>
+          <groupId>com.oracle.database.nls</groupId>
           <artifactId>orai18n</artifactId>
           <version>${oracle.jdbc.version}</version>
           <scope>compile</scope>
