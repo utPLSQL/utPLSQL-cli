@@ -166,7 +166,8 @@ public class RunAction {
                 .randomTestOrder(config.isRandomTestOrder())
                 .randomTestOrderSeed(config.getRandomTestOrderSeed())
                 .addTags(Arrays.asList(config.getTags()))
-                .addCoverageSchemes(Arrays.asList(config.getCoverageSchemes()));
+                .addCoverageSchemes(Arrays.asList(config.getCoverageSchemes()))
+                .oraStuckTimeout(config.getOraStuckTimeout());
     }
 
     private void outputMainInformation() {

@@ -8,6 +8,8 @@ import java.util.ArrayList;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RunCommandConfigParamsArePassedToTestRunnerTest {
 
@@ -27,5 +29,14 @@ public class RunCommandConfigParamsArePassedToTestRunnerTest {
                 .create();
         TestRunner testRunner = new RunAction(config).newTestRunner(new ArrayList<>());
         assertThat( testRunner.getOptions().coverageSchemes, contains("schema1", "another_schema", "and-another-one") );
+    }
+
+    @Test
+    void oraStuckTimeout() {
+        RunCommandConfig config = new RunCommandConfig.Builder()
+                .oraStuckTimeout(2)
+                .create();
+        TestRunner testRunner = new RunAction(config).newTestRunner(new ArrayList<>());
+        assertThat( testRunner.getOptions().oraStuckTimeout, equalTo(2) );
     }
 }
