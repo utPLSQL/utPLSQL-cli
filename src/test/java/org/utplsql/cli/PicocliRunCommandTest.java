@@ -240,4 +240,13 @@ public class PicocliRunCommandTest {
         assertNull( testMapperConfig.getTypeSubexpression());
         assertNull( testMapperConfig.getNameSubexpression());
     }
+
+    @Test
+    void negatedTag() throws Exception {
+        RunCommandConfig config = parseForConfig("run",
+                TestHelper.getConnectionString(),
+                "--tags=\"-dontwantit\"");
+
+        assertThat(config.getTags(), hasItemInArray("-dontwantit") );
+    }
 }

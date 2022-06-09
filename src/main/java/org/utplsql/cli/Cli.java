@@ -1,10 +1,14 @@
 package org.utplsql.cli;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
 import java.util.List;
 
 public class Cli {
+
+    private static final Logger logger = LoggerFactory.getLogger(Cli.class);
 
     static final int DEFAULT_ERROR_CODE = 1;
 
@@ -16,6 +20,8 @@ public class Cli {
     }
 
     static int runPicocliWithExitCode(String[] args) {
+
+        logger.debug("Args: "+String.join(", ", args));
 
         CommandLine commandLine = new CommandLine(UtplsqlPicocliCommand.class);
         commandLine.setTrimQuotes(true);

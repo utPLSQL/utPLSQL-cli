@@ -54,11 +54,12 @@ public class TestedDataSourceProvider {
         ds.setPassword(config.getPassword());
 
         for (ConnectStringPossibility possibility : possibilities) {
+            logger.debug("Try connecting {}", possibility.getMaskedConnectString(config));
             ds.setURL(possibility.getConnectString(config));
             try (Connection ignored = ds.getConnection()) {
                 logger.info("Use connection string {}", possibility.getMaskedConnectString(config));
                 return;
-            } catch (UnsatisfiedLinkError | Exception e) {
+            } catch (Error | Exception e) {
                 errors.add(possibility.getMaskedConnectString(config) + ": " + e.getMessage());
                 lastException = e;
             }

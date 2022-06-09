@@ -104,7 +104,7 @@ public class RunPicocliCommand implements IRunCommand {
     private List<Format> reporters = new ArrayList<>();
 
     static class Format {
-        @Option(names = {"-f", "--format"}, required = true, description = "Enables specified format reporting")
+        @Option(names = {"-f", "--format"}, description = "Enables specified format reporting")
         String format;
         @Option(names = {"-o"}, description = "Outputs format to file")
         String outputFile;
