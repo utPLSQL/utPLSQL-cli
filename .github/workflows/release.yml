@@ -23,7 +23,7 @@ jobs:
           java-version: 8
 
       - name: Build Release
-        run: mvn package appassembler:assemble assembly:single -DskipTests
+        run: mvn package appassembler:assemble assembly:single checksum:files -DskipTests
 
       - name: Release
         uses: softprops/action-gh-release@v1
