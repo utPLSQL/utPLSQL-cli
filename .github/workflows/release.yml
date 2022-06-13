@@ -35,7 +35,7 @@ jobs:
   slack-workflow-status:
     if: always()
     name: Post Workflow Status To Slack
-    needs: [ build ]
+    needs: [ release ]
     runs-on: ubuntu-latest
     steps:
       - name: Slack Workflow Notification
