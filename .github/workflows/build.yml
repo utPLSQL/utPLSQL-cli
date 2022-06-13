@@ -60,7 +60,6 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: ${{matrix.jdk}}
-          cache: 'maven'
 
       - name: Install utplsql
         run:  .travis/install_utplsql.sh
