@@ -30,6 +30,7 @@ jobs:
         with:
           files: |
             target/utPLSQL-cli.zip
+            target/utPLSQL-cli.zip.md5
 
   slack-workflow-status:
     if: always()
