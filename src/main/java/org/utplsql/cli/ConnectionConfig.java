@@ -9,15 +9,25 @@ public class ConnectionConfig {
     private final String password;
     private final String connect;
 
-    public ConnectionConfig( String connectString ) {
-        Matcher m = Pattern.compile("^([^/]+)/([^@]+)@(.*)$").matcher(connectString);
-        if ( m.find() ) {
-            user = m.group(1);
-            password = m.group(2);
+    public ConnectionConfig(String connectString) {
+        Matcher m = Pattern.compile("^(\".+\"|[^/]+)/(\".+\"|[^@]+)@(.*)$").matcher(connectString);
+        if (m.find()) {
+            user = stripEnclosingQuotes(m.group(1));
+            password = stripEnclosingQuotes(m.group(2));
             connect = m.group(3);
-        }
-        else
+        } else {
             throw new IllegalArgumentException("Not a valid connectString: '" + connectString + "'");
+        }
+    }
+
+    private String stripEnclosingQuotes(String value) {
+        if (value.length() > 1
+                && value.startsWith("\"")
+                && value.endsWith("\"")) {
+            return value.substring(1, value.length() - 1);
+        } else {
+            return value;
+        }
     }
 
     public String getConnect() {
@@ -34,5 +44,11 @@ public class ConnectionConfig {
 
     public String getConnectString() {
         return user + "/" + password + "@" + connect;
+    }
+
+    public boolean isSysDba() {
+        return user != null &&
+                (user.toLowerCase().endsWith(" as sysdba")
+                        || user.toLowerCase().endsWith(" as sysoper"));
     }
 }

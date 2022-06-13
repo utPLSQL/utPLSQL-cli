@@ -1,61 +1,68 @@
 package org.utplsql.cli;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
-import org.utplsql.api.exception.DatabaseNotCompatibleException;
-import org.utplsql.api.exception.UtPLSQLNotInstalledException;
-import org.utplsql.cli.exception.DatabaseConnectionFailed;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
+
+import java.util.List;
 
 public class Cli {
 
-    static final int DEFAULT_ERROR_CODE = 1;
+    private static final Logger logger = LoggerFactory.getLogger(Cli.class);
 
-    static final String HELP_CMD = "-h";
+    static final int DEFAULT_ERROR_CODE = 1;
 
     public static void main(String[] args) {
 
-        int exitCode = runWithExitCode(args);
+        int exitCode = runPicocliWithExitCode(args);
 
         System.exit(exitCode);
     }
 
-    static int runWithExitCode( String[] args ) {
-        LocaleInitializer.initLocale();
+    static int runPicocliWithExitCode(String[] args) {
 
-        JCommander jc = new JCommander();
-        jc.setProgramName("utplsql");
+        logger.debug("Args: "+String.join(", ", args));
 
-        CommandProvider cmdProvider = new CommandProvider();
-
-        cmdProvider.commands().forEach(cmd -> jc.addCommand(cmd.getCommand(), cmd));
+        CommandLine commandLine = new CommandLine(UtplsqlPicocliCommand.class);
+        commandLine.setTrimQuotes(true);
 
         int exitCode = DEFAULT_ERROR_CODE;
 
         try {
-            jc.parse(args);
 
-            exitCode = cmdProvider.getCommand(jc.getParsedCommand()).run();
+            List<CommandLine> parsedLines = commandLine.parse(args);
 
-        } catch (ParameterException e) {
-            if (jc.getParsedCommand() != null) {
-                System.err.println(e.getMessage());
-                jc.usage(jc.getParsedCommand());
-            } else {
-                jc.usage();
+            boolean commandWasRun = false;
+            for (CommandLine parsedLine : parsedLines) {
+                if (parsedLine.isUsageHelpRequested()) {
+                    parsedLine.usage(System.out);
+                    return 0;
+                } else if (parsedLine.isVersionHelpRequested()) {
+                    parsedLine.printVersionHelp(System.out);
+                    return 0;
+                }
+
+                Object command = parsedLine.getCommand();
+                if (command instanceof ICommand) {
+                    exitCode = ((ICommand) command).run();
+                    commandWasRun = true;
+                    break;
+                }
             }
-        }  catch (Exception e) {
+
+            if (!commandWasRun) {
+                commandLine.usage(System.out);
+            }
+        } catch (CommandLine.ParameterException e) {
+            System.err.println(e.getMessage());
+            if (!CommandLine.UnmatchedArgumentException.printSuggestions(e, System.err)) {
+                e.getCommandLine().usage(System.err);
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         return exitCode;
-    }
-
-    private static class HelpCommand {
-
-        @Parameter(names = {HELP_CMD, "--help"}, help = true)
-        public boolean callHelp;
-
     }
 
 }

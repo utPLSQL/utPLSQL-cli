@@ -14,15 +14,15 @@ public class ReporterOptions {
 
     private Reporter reporterObj = null;
 
-    public ReporterOptions(String reporterName, String outputFileName, boolean outputToScreen) {
+    public ReporterOptions(String reporterName, String outputFileName) {
         setReporterName(reporterName);
         setOutputFileName(outputFileName);
-        this.outputToScreen = outputToScreen;
+        this.outputToScreen = (outputFileName == null); // If outputFileName is null we assume it should be sent to screen
         this.forceOutputToScreen = false;
     }
 
     public ReporterOptions(String reporterName) {
-        this(reporterName, null, true);
+        this(reporterName, null);
     }
 
     public Reporter getReporterObj() {

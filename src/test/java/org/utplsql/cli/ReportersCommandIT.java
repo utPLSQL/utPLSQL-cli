@@ -4,10 +4,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ReportersCommandIT {
+class ReportersCommandIT {
 
     @Test
-    public void callReportersWorks() {
+    void callReportersWorks() {
 
         int result = TestHelper.runApp("reporters", TestHelper.getConnectionString());
 

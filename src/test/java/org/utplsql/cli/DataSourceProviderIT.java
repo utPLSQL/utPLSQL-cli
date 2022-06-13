@@ -4,21 +4,26 @@ import org.junit.jupiter.api.Test;
 import org.utplsql.cli.datasource.TestedDataSourceProvider;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 class DataSourceProviderIT {
 
     @Test
     void connectToDatabase() throws SQLException {
         DataSource dataSource = getDataSource();
+
+        assertNotNull(dataSource);
+    }
+
+    //@Test
+    void connectAsSysdba() throws SQLException {
+        ConnectionConfig config = new ConnectionConfig("sys as sysdba/oracle@localhost:1522/ORCLPDB1");
+        DataSource dataSource = new TestedDataSourceProvider(config, 2).getDataSource();
 
         assertNotNull(dataSource);
     }
@@ -61,7 +66,7 @@ class DataSourceProviderIT {
 
     private DataSource getDataSource() throws SQLException {
         ConnectionConfig config = new ConnectionConfig(TestHelper.getConnectionString());
-        return new TestedDataSourceProvider(config).getDataSource();
+        return new TestedDataSourceProvider(config, 2).getDataSource();
     }
 
     private void checkNlsSessionParameter( DataSource dataSource, String parameterName, String expectedValue ) throws SQLException {

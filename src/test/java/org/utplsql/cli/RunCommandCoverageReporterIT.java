@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -17,14 +17,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @author pesse
  */
-public class RunCommandCoverageReporterIT extends AbstractFileOutputTest {
+class RunCommandCoverageReporterIT extends AbstractFileOutputTest {
 
-    private static final Pattern REGEX_COVERAGE_TITLE = Pattern.compile("<a href=\"[a-zA-Z0-9#]+\" class=\"src_link\" title=\"[a-zA-Z\\._]+\">([a-zA-Z0-9\\._]+)<\\/a>");
+    private static final Pattern REGEX_COVERAGE_TITLE = Pattern.compile("<a href=\"[a-zA-Z0-9#]+\" class=\"src_link\" title=\"[a-zA-Z\\._ ]+\">([a-zA-Z ]+ )?([a-zA-Z0-9\\._]+)<\\/a>");
 
 
     private String getTempCoverageFileName(int counter) {
 
-        return "tmpCoverage_" + String.valueOf(System.currentTimeMillis()) + "_" + String.valueOf(counter) + ".html";
+        return "tmpCoverage_" + System.currentTimeMillis() + "_" + counter + ".html";
     }
 
     /**
@@ -60,7 +60,7 @@ public class RunCommandCoverageReporterIT extends AbstractFileOutputTest {
         Matcher m = REGEX_COVERAGE_TITLE.matcher(content);
 
         while (m.find()) {
-            if (packageName.equals(m.group(1)))
+            if (packageName.equals(m.group(2)))
                 return true;
         }
 
@@ -68,7 +68,7 @@ public class RunCommandCoverageReporterIT extends AbstractFileOutputTest {
     }
 
     @Test
-    public void run_CodeCoverageWithIncludeAndExclude() throws Exception {
+    void run_CodeCoverageWithIncludeAndExclude() throws Exception {
 
         Path coveragePath = getTempCoverageFilePath();
 
@@ -78,14 +78,14 @@ public class RunCommandCoverageReporterIT extends AbstractFileOutputTest {
 
         String content = new String(Files.readAllBytes(coveragePath));
 
-        assertEquals(true, hasCoverageListed(content, "app.remove_rooms_by_name"));
-        assertEquals(false, hasCoverageListed(content, "app.award_bonus"));
-        assertEquals(false, hasCoverageListed(content, "app.betwnstr"));
+        assertTrue(hasCoverageListed(content, "app.remove_rooms_by_name"));
+        assertFalse(hasCoverageListed(content, "app.award_bonus"));
+        assertFalse(hasCoverageListed(content, "app.betwnstr"));
 
     }
 
     @Test
-    public void coverageReporterWriteAssetsToOutput() throws Exception {
+    void coverageReporterWriteAssetsToOutput() throws Exception {
         Path coveragePath = getTempCoverageFilePath();
         Path coverageAssetsPath = Paths.get(coveragePath.toString() + "_assets");
 
@@ -110,7 +110,7 @@ public class RunCommandCoverageReporterIT extends AbstractFileOutputTest {
     }
 
     @Test
-    public void coverageReporterWriteAssetsToSubfolder() throws Exception {
+    void coverageReporterWriteAssetsToSubfolder() throws Exception {
 
         Path origCoveratePath = getTempCoverageFilePath();
         Path coveragePath = Paths.get(origCoveratePath.toString(), origCoveratePath.toString());
