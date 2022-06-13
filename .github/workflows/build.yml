@@ -1,11 +1,11 @@
 name: Build and test
+
 on:
   push:
-    branches: [ develop, feature/github_actions ]
-    tags:
-      - v*
+
   pull_request:
     branches: [ develop ]
+
   workflow_dispatch:
 
   repository_dispatch:
@@ -67,10 +67,8 @@ jobs:
       - name: Install demo project
         run:  .travis/install_demo_project.sh
 
-      - name: Build
-        run:  mvn package -DskipTests
-      - name: Test
-        run:  mvn package verify jar:jar appassembler:assemble
+      - name: Build and Test
+        run:  mvn verify jar:jar appassembler:assemble
 
   slack-workflow-status:
     if: always()
