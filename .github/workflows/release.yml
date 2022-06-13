@@ -21,7 +21,6 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: 8
-          cache: 'maven'
 
       - name: Build Release
         run: mvn package appassembler:assemble assembly:single -DskipTests
