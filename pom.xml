@@ -4,7 +4,7 @@
 
     <groupId>org.utplsql</groupId>
     <artifactId>cli</artifactId>
-    <version>3.1.10-SNAPSHOT</version>
+    <version>3.1.9</version>
 
     <name>utPLSQL CLI</name>
     <description>CLI for running Unit Tests with utPLSQL v3+.</description>
