@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
-          java-version: ${{matrix.jdk}}
+          java-version: 8
           cache: 'maven'
 
       - name: Build Release
