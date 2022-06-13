@@ -158,7 +158,9 @@
                 <version>1.18.0</version>
                 <configuration>
                     <verbose>true</verbose>
-                    <branchName>main</branchName>
+                    <gitFlowConfig>
+                        <productionBranch>main</productionBranch>
+                    </gitFlowConfig>
                 </configuration>
             </plugin>
         </plugins>
