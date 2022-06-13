@@ -7,49 +7,10 @@ on:
 
   workflow_dispatch:
 
-  repository_dispatch:
-    types: [utPLSQL-build,utPLSQL-java-api-build]
-
-defaults:
-  run:
-    shell: bash
-
 jobs:
   build:
-    name: Test on JDK ${{ matrix.jdk }} with utPLSQL ${{ matrix.utplsql_version }}
-    runs-on: ubuntu-latest
-    env:
-      ORACLE_VERSION: "gvenzl/oracle-xe:18.4.0-slim"
-      UTPLSQL_VERSION: ${{matrix.utplsql_version}}
-      UTPLSQL_FILE: ${{matrix.utplsql_file}}
-      ORACLE_PASSWORD: oracle
-      DB_URL: "127.0.0.1:1521:XE"
-      DB_USER: app
-      DB_PASS: app
 
-    strategy:
-      fail-fast: false
-      matrix:
-        utplsql_version: ["v3.0.1","v3.0.2","v3.0.3","v3.0.4","v3.1.1","v3.1.2","v3.1.3","v3.1.6","v3.1.7","v3.1.8","v3.1.9","v3.1.10","v3.1.11","develop"]
-        utplsql_file: ["utPLSQL"]
-        jdk: ['8']
-        include:
-          - utplsql_version: "v3.0.0"
-            jdk: '8'
-            utplsql_file: "utPLSQLv3.0.0"
-    services:
-      oracle:
-        image: gvenzl/oracle-xe:18.4.0-slim
-        env:
-          ORACLE_PASSWORD: oracle
-        ports:
-          - 1521:1521
-        options: >-
-          --health-cmd healthcheck.sh
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
-          --name oracle
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -61,14 +22,8 @@ jobs:
           java-version: ${{matrix.jdk}}
           cache: 'maven'
 
-      - name: Install utplsql
-        run:  .travis/install_utplsql.sh
-
-      - name: Install demo project
-        run:  .travis/install_demo_project.sh
-
-      - name: Test
-        run:  mvn verify appassembler:assemble assembly:single
+      - name: Build Release
+        run:  mvn package appassembler:assemble assembly:single -DskipTests
 
   slack-workflow-status:
     if: always()
