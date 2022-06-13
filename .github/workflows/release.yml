@@ -1,14 +1,15 @@
 name: Release
+
 on:
   push:
-    branches: [ main ]
     tags:
-      - v*
+      - "v*.*.*"
 
   workflow_dispatch:
 
 jobs:
-  build:
+
+  release:
 
     runs-on: ubuntu-latest
 
@@ -23,7 +24,13 @@ jobs:
           cache: 'maven'
 
       - name: Build Release
-        run:  mvn package appassembler:assemble assembly:single -DskipTests
+        run: mvn package appassembler:assemble assembly:single -DskipTests
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            target/utPLSQL-cli.zip
 
   slack-workflow-status:
     if: always()

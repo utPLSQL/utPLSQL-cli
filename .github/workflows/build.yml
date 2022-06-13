@@ -1,11 +1,11 @@
 name: Build and test
 on:
   push:
-    branches: [ develop, feature/github_actions ]
-    tags:
-      - v*
+    branches: [ * ]
+
   pull_request:
     branches: [ develop ]
+
   workflow_dispatch:
 
   repository_dispatch:
