@@ -67,8 +67,6 @@ jobs:
       - name: Install demo project
         run:  .travis/install_demo_project.sh
 
-      - name: Build
-        run:  mvn package -DskipTests
       - name: Test
         run:  mvn verify appassembler:assemble assembly:single
 
