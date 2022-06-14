@@ -17,6 +17,7 @@
         <junit.jupiter.version>5.5.2</junit.jupiter.version>
         <oracle.jdbc.version>19.3.0.0</oracle.jdbc.version>
         <travisBuildNumber>local</travisBuildNumber>
+        <app.main.class>org.utplsql.cli.Cli</app.main.class>
     </properties>
 
     <licenses>
@@ -111,7 +112,7 @@
                     <repositoryLayout>flat</repositoryLayout>
                     <programs>
                         <program>
-                            <mainClass>org.utplsql.cli.Cli</mainClass>
+                            <mainClass>${app.main.class}</mainClass>
                             <id>utplsql</id>
                         </program>
                     </programs>
@@ -152,6 +153,7 @@
                     </descriptors>
                 </configuration>
             </plugin>
+            <!--
             <plugin>
                 <groupId>net.nicoulaj.maven.plugins</groupId>
                 <artifactId>checksum-maven-plugin</artifactId>
@@ -168,6 +170,44 @@
                     <algorithms>
                         <algorithm>MD5</algorithm>
                     </algorithms>
+                </configuration>
+            </plugin>
+            -->
+            <plugin>
+                <groupId>org.jreleaser</groupId>
+                <artifactId>jreleaser-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <configuration>
+                    <jreleaser>
+                        <project>
+                            <java>
+                                <mainClass>${app.main.class}</mainClass>
+                            </java>
+                            <authors>
+                                <author>Samuel Nitsche</author>
+                                <author>Vinicius Avellar</author>
+                                <author>Jacek Gębal</author>
+                                <author>Pazus</author>
+                                <author>dmpe</author>
+                                <author>Simon Martinelli</author>
+                            </authors>
+                        </project>
+                        <release>
+                            <github>
+                                <owner>utPLSQL</owner>
+                                <overwrite>true</overwrite>
+                            </github>
+                        </release>
+                        <distributions>
+                            <app>
+                                <artifacts>
+                                    <artifact>
+                                        <path>${project.build.directory}/utPLSQL-cli.zip</path>
+                                    </artifact>
+                                </artifacts>
+                            </app>
+                        </distributions>
+                    </jreleaser>
                 </configuration>
             </plugin>
             <plugin>
