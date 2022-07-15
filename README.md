@@ -116,9 +116,11 @@ utplsql run "my/Username"/"myP@ssword"@connectstring
                       If only schema is provided, then all suites owner by that schema are executed.
                       If -p is omitted, the current schema is used.
 
---tags=tags         - A comma separated list of tags to run. 
-                      Format: --tags=tag1[,tag2[,tag3]]
-                      
+--tags=tags         - A comma separated list of tags to include or exclude in the run. 
+                      The excluded tags must be preceeded by a `-` (minus) sign and the entire expression must be surrounded by escaped doubleqotes in command line.
+                      Format: --tags=tag1[,tag2,...,tagN]
+                      or
+                      Format: --tags=\"-tag1\"[,\"-tag2\",...,tagN]
 -f=format           - A reporter to be used for reporting.
 (--format)            If no -f option is provided, the default ut_documentation_reporter is used.
                       See reporters command for possible values
