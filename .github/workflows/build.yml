@@ -40,7 +40,7 @@ jobs:
             utplsql_file: "utPLSQLv3.0.0"
     services:
       oracle:
-        image: gvenzl/ooci-oracle-free:slim-faststart
+        image: gvenzl/oracle-free:23-slim-faststart
         env:
           ORACLE_PASSWORD: oracle
         ports:
