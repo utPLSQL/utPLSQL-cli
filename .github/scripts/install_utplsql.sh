@@ -15,7 +15,7 @@ chmod -R go+w ./${UTPLSQL_FILE}/{source,examples}
 # Create a temporary install script.
 cat > install.sh.tmp <<EOF
 cd /${UTPLSQL_FILE}/source
-sqlplus -S -L sys/oracle@//127.0.0.1:1521/xe AS SYSDBA @install_headless.sql ut3 ut3 users
+sqlplus -S -L sys/oracle@//127.0.0.1:1521/${SERVICE_NAME} AS SYSDBA @install_headless.sql ut3 ut3 users
 EOF
 
 # Copy utPLSQL files to the container and install it.

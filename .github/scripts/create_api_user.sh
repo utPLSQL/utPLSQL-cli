@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ev
 
-sqlplus -S -L sys/oracle@//127.0.0.1:1521/xe AS SYSDBA <<EOF
+sqlplus -S -L sys/oracle@//127.0.0.1:1521/${SERVICE_NAME} AS SYSDBA <<EOF
 create user api identified by api
 quota unlimited on USERS
 default tablespace USERS;
