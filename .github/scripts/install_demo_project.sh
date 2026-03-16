@@ -6,7 +6,7 @@ PROJECT_FILE="utPLSQL-demo-project"
 git clone -b develop --single-branch https://github.com/utPLSQL/utPLSQL-demo-project.git
 
 cat > demo_project.sh.tmp <<EOF
-sqlplus -S -L sys/oracle@//127.0.0.1:1521/${SERVICE_NAME} AS SYSDBA <<SQL
+sqlplus -S -L sys/oracle@//localhost:1521/${SERVICE_NAME} AS SYSDBA <<SQL
 create user ${DB_USER} identified by ${DB_PASS} quota unlimited on USERS default tablespace USERS;
 grant create session, create procedure, create type, create table, create sequence, create view to ${DB_USER};
 grant select any dictionary to ${DB_USER};
@@ -14,14 +14,14 @@ exit
 SQL
 
 cd /${PROJECT_FILE}
-sqlplus -S -L ${DB_USER}/${DB_PASS}@//127.0.0.1:1521/${SERVICE_NAME} <<SQL
+sqlplus -S -L ${DB_USER}/${DB_PASS}@//localhost:1521/${SERVICE_NAME} <<SQL
 whenever sqlerror exit failure rollback
 whenever oserror  exit failure rollback
 @source/install.sql
 exit
 SQL
 
-sqlplus -S -L ${DB_USER}/${DB_PASS}@//127.0.0.1:1521/${SERVICE_NAME} <<SQL
+sqlplus -S -L ${DB_USER}/${DB_PASS}@//localhost:1521/${SERVICE_NAME} <<SQL
 whenever sqlerror exit failure rollback
 whenever oserror  exit failure rollback
 @test/install.sql
