@@ -8,8 +8,13 @@ git clone -b develop --single-branch https://github.com/utPLSQL/utPLSQL-demo-pro
 cat > demo_project.sh.tmp <<EOF
 sqlplus -S -L sys/oracle@//localhost:1521/${SERVICE_NAME} AS SYSDBA <<SQL
 PROMPT Creating Database User ${DB_USER}
+PROMPT create user ${DB_USER} identified by ${DB_PASS} quota unlimited on USERS default tablespace USERS;
+PROMPT grant create session, create procedure, create type, create table, create sequence, create view to ${DB_USER};
+PROMPT grant connect to ${DB_USER};
+PROMPT grant select any dictionary to ${DB_USER};
 create user ${DB_USER} identified by ${DB_PASS} quota unlimited on USERS default tablespace USERS;
 grant create session, create procedure, create type, create table, create sequence, create view to ${DB_USER};
+grant connect to ${DB_USER};
 grant select any dictionary to ${DB_USER};
 exit
 SQL
