@@ -23,19 +23,15 @@ jobs:
       UTPLSQL_VERSION: ${{matrix.utplsql_version}}
       UTPLSQL_FILE: ${{matrix.utplsql_file}}
       DB_URL: "localhost:1521/FREEPDB1"
-      DB_USER: app
-      DB_PASS: app
+      DB_USER: APP
+      DB_PASS: APP
 
     strategy:
       fail-fast: false
       matrix:
-        utplsql_version: ["v3.0.1","v3.0.2","v3.0.3","v3.0.4","v3.1.1","v3.1.2","v3.1.3","v3.1.6","v3.1.7","v3.1.8","v3.1.9","v3.1.10","v3.1.11","develop"]
+        utplsql_version: ["v3.1.11","v3.1.12","v3.1.13","v3.1.14","develop"]
         utplsql_file: ["utPLSQL"]
         jdk: ['8']
-        include:
-          - utplsql_version: "v3.0.0"
-            jdk: '8'
-            utplsql_file: "utPLSQLv3.0.0"
     services:
       oracle:
         image: gvenzl/oracle-free:23-slim-faststart
