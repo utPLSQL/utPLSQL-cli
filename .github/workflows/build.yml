@@ -40,7 +40,7 @@ jobs:
             utplsql_file: "utPLSQLv3.0.0"
     services:
       oracle:
-        image: gvenzl/oracle-xe:18.4.0-slim
+        image: gvenzl/ooci-oracle-free:slim-faststart
         env:
           ORACLE_PASSWORD: oracle
         ports:
@@ -53,10 +53,10 @@ jobs:
           --name oracle
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-java@v2
+      - uses: actions/setup-java@v5
         with:
           distribution: 'adopt'
           java-version: ${{matrix.jdk}}
