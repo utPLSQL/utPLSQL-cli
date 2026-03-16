@@ -20,11 +20,9 @@ jobs:
     name: Test on JDK ${{ matrix.jdk }} with utPLSQL ${{ matrix.utplsql_version }}
     runs-on: ubuntu-latest
     env:
-      ORACLE_VERSION: "gvenzl/oracle-xe:18.4.0-slim"
       UTPLSQL_VERSION: ${{matrix.utplsql_version}}
       UTPLSQL_FILE: ${{matrix.utplsql_file}}
-      ORACLE_PASSWORD: oracle
-      DB_URL: "127.0.0.1:1521:XE"
+      DB_URL: "127.0.0.1:1521:FREEPDB1"
       DB_USER: app
       DB_PASS: app
 
@@ -43,6 +41,7 @@ jobs:
         image: gvenzl/oracle-free:23-slim-faststart
         env:
           ORACLE_PASSWORD: oracle
+          SERVICE_NAME: FREEPDB1
         ports:
           - 1521:1521
         options: >-
@@ -62,10 +61,10 @@ jobs:
           java-version: ${{matrix.jdk}}
 
       - name: Install utplsql
-        run:  .travis/install_utplsql.sh
+        run:  .github/scripts/install_utplsql.sh
 
       - name: Install demo project
-        run:  .travis/install_demo_project.sh
+        run:  .github/scripts/install_demo_project.sh
 
       - name: Build and Test
         run:  mvn verify jar:jar appassembler:assemble
