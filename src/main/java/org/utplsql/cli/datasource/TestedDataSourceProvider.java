@@ -46,7 +46,7 @@ public class TestedDataSourceProvider {
         return ds;
     }
 
-    private void setThickOrThinJdbcUrl(OracleDataSource ds) throws SQLException {
+    private void setThickOrThinJdbcUrl(InitializableOracleDataSource ds) throws SQLException {
         List<String> errors = new ArrayList<>();
         Throwable lastException = null;
 
