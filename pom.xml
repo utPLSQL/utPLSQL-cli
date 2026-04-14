@@ -224,13 +224,6 @@
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-failsafe-plugin</artifactId>
-                            <configuration>
-                                <environmentVariables>
-                                    <DB_URL>${dbUrl}</DB_URL>
-                                    <DB_USER>${dbUser}</DB_USER>
-                                    <DB_PASS>${dbPass}</DB_PASS>
-                                </environmentVariables>
-                            </configuration>
                         </plugin>
                     </plugins>
                 </pluginManagement>

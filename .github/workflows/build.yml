@@ -22,7 +22,7 @@ jobs:
     env:
       UTPLSQL_VERSION: ${{matrix.utplsql_version}}
       UTPLSQL_FILE: ${{matrix.utplsql_file}}
-      DB_URL: "localhost:1521/FREEPDB1"
+      DB_URL: "//localhost:1521/FREEPDB1"
       DB_USER: APP
       DB_PASS: APP
 
