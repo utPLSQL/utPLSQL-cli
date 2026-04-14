@@ -6,7 +6,7 @@ PROJECT_FILE="utPLSQL-demo-project"
 git clone -b develop --single-branch https://github.com/utPLSQL/utPLSQL-demo-project.git
 
 cat > demo_project.sh.tmp <<- EOF
-  sqlplus -S -L sys/oracle@//localhost:1521/${SERVICE_NAME} AS SYSDBA <<- SQL
+  sqlplus -S -L sys/oracle@${DB_URL} AS SYSDBA <<- SQL
     PROMPT Creating Database User ${DB_USER}
     PROMPT create user ${DB_USER} identified by ${DB_PASS} quota unlimited on USERS default tablespace USERS;
     PROMPT grant create session, create procedure, create type, create table, create sequence, create view to ${DB_USER};
@@ -20,7 +20,7 @@ cat > demo_project.sh.tmp <<- EOF
   SQL
 
   cd /${PROJECT_FILE}
-  sqlplus -S -L ${DB_USER}/${DB_PASS}@//localhost:1521/${SERVICE_NAME} <<- SQL
+  sqlplus -S -L ${DB_USER}/${DB_PASS}@${DB_URL} <<- SQL
     whenever sqlerror exit failure rollback
     whenever oserror  exit failure rollback
     PROMPT Installing sources of demo project into schema ${DB_USER}
@@ -28,7 +28,7 @@ cat > demo_project.sh.tmp <<- EOF
     exit
   SQL
 
-  sqlplus -S -L ${DB_USER}/${DB_PASS}@//localhost:1521/${SERVICE_NAME} <<- SQL
+  sqlplus -S -L ${DB_USER}/${DB_PASS}@${DB_URL} <<- SQL
     whenever sqlerror exit failure rollback
     whenever oserror  exit failure rollback
     PROMPT Installing tests for demo project into schema ${DB_USER}
