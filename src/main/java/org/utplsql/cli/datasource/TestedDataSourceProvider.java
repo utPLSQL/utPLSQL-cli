@@ -1,6 +1,5 @@
 package org.utplsql.cli.datasource;
 
-import oracle.jdbc.pool.OracleDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.utplsql.api.EnvironmentVariableUtil;
