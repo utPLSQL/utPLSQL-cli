@@ -12,8 +12,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.release>11</maven.compiler.release>
         <junit.jupiter.version>5.5.2</junit.jupiter.version>
         <oracle.jdbc.version>21.9.0.0</oracle.jdbc.version>
         <travisBuildNumber>local</travisBuildNumber>
