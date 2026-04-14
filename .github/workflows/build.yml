@@ -65,7 +65,7 @@ jobs:
         run:  .github/scripts/install_demo_project.sh
 
       - name: Build and Test
-        run:  mvn verify jar:jar appassembler:assemble
+        run:  mvn verify appassembler:assemble
 
   slack-workflow-status:
     if: always()
