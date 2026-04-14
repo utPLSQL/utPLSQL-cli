@@ -31,7 +31,7 @@ jobs:
       matrix:
         utplsql_version: ["v3.1.11","v3.1.12","v3.1.13","v3.1.14","develop"]
         utplsql_file: ["utPLSQL"]
-        jdk: ['8']
+        jdk: ['8', '11', '17']
     services:
       oracle:
         image: gvenzl/oracle-free:23-slim-faststart
