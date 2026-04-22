@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.utplsql</groupId>
-            <artifactId>java-api</artifactId>
+            <artifactId>utplsql-java-api</artifactId>
             <version>3.2.2</version>
             <scope>compile</scope>
             <exclusions>
