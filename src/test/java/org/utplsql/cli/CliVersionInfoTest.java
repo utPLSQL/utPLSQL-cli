@@ -8,6 +8,6 @@ class CliVersionInfoTest {
 
     @Test
     void getCliVersionInfo() {
-        assertTrue(CliVersionInfo.getVersion().startsWith("3.1"));
+        assertTrue(CliVersionInfo.getVersion().startsWith("3.2"));
     }
 }

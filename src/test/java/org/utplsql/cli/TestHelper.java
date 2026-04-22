@@ -19,9 +19,9 @@ class TestHelper {
     private static String sPass;
 
     static {
-        sUrl  = EnvironmentVariableUtil.getEnvValue("DB_URL", "192.168.99.100:1521:XE");
-        sUser = EnvironmentVariableUtil.getEnvValue("DB_USER", "app");
-        sPass = EnvironmentVariableUtil.getEnvValue("DB_PASS", "app");
+        sUrl  = EnvironmentVariableUtil.getEnvValue("DB_URL", "//localhost:1521/FREEPDB1");
+        sUser = EnvironmentVariableUtil.getEnvValue("DB_USER", "APP");
+        sPass = EnvironmentVariableUtil.getEnvValue("DB_PASS", "pass");
     }
 
     static RunPicocliCommand createPicocliRunCommand(String... args ) {
