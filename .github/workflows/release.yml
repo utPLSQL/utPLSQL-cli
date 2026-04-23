@@ -19,8 +19,8 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-java@v5
         with:
-          distribution: 'adopt'
-          java-version: 8
+          distribution: 'temurin'
+          java-version: 11
 
       - name: Build Release
         run: mvn package appassembler:assemble assembly:single checksum:files -DskipTests
