@@ -29,11 +29,15 @@ public class LocalAssetsCoverageHTMLReporter extends CoverageHTMLReporter implem
     public Reporter init(Connection con, CompatibilityProxy compatibilityProxy, ReporterFactory reporterFactory) throws SQLException {
         super.init(con, compatibilityProxy, reporterFactory);
 
-        if (hasOutputToFile()) {
+        if (hasOutputToFile() && assetsAreBundled()) {
             writeReportAssetsTo(getPhysicalAssetPath());
         }
 
         return this;
+    }
+
+    private static boolean assetsAreBundled() {
+        return CoverageHTMLReporter.class.getResource("/CoverageHTMLReporter") != null;
     }
 
     private String getNameOfOutputFile() {
@@ -51,7 +55,7 @@ public class LocalAssetsCoverageHTMLReporter extends CoverageHTMLReporter implem
     }
 
     private void setAssetsPathFromOptions() {
-        if (hasOutputToFile()) {
+        if (hasOutputToFile() && assetsAreBundled()) {
             setAssetsPath(getNameOfOutputFile() + "_assets/");
         }
     }
