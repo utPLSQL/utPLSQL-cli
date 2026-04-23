@@ -30,7 +30,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        utplsql_version: ["v3.1.14","develop"]
+        utplsql_version: ["v3.2.01","develop"]
         utplsql_file: ["utPLSQL"]
         jdk: ['11', '17', '21', '25']
     services:
