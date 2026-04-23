@@ -22,12 +22,12 @@ You can also download all development versions from [Bintray](https://bintray.co
 
 
 ## Requirements
-* [Java SE Runtime Environment 8](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html) or newer
+* [Java SE Runtime Environment 17](https://www.oracle.com/java/technologies/downloads/) or newer
 * When using reporters for Sonar or Coveralls client needs to be invoked from project's root directory.
 
 ## Compatibility
-The latest CLI is always compatible with all database frameworks of the same major version.
-For example CLI-3.1.0 is compatible with database framework 3.0.0-3.1.* but not with database framework 2.x.
+The latest CLI is compatible with database frameworks of the same **minor** version.
+For example CLI-3.2.0 is compatible with database framework 3.2.* but not necessarily with framework 3.1.* or 3.3.*
 
 ## Localization and NLS settings
 utPLSQL-cli will use the environment variables "LC_ALL" or "LANG" to change the locale and therefore the client NLS settings.

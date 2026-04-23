@@ -30,7 +30,7 @@ jobs:
       matrix:
         utplsql_version: ["v3.2.01","develop"]
         utplsql_file: ["utPLSQL"]
-        jdk: ['11', '17', '21', '25']
+        jdk: ['17', '21', '25']
     services:
       oracle:
         image: gvenzl/oracle-free:23-slim-faststart
@@ -52,7 +52,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-java@v5
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: ${{matrix.jdk}}

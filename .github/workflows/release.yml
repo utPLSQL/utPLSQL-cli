@@ -17,10 +17,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-java@v5
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
-          java-version: 11
+          java-version: '21'
 
       - name: Build Release
         run: mvn package appassembler:assemble assembly:single checksum:files -DskipTests
