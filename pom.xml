@@ -11,6 +11,7 @@
     <url>https://github.com/utPLSQL/utPLSQL-cli</url>
 
     <properties>
+        <utplsql-java-api.version>3.2.3</utplsql-java-api.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>11</maven.compiler.release>
         <junit.jupiter.version>5.12.2</junit.jupiter.version>
@@ -68,7 +69,7 @@
         <dependency>
             <groupId>org.utplsql</groupId>
             <artifactId>utplsql-java-api</artifactId>
-            <version>3.2.3</version>
+            <version>${utplsql-java-api.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.xml.bind</groupId>
@@ -210,16 +211,9 @@
 
     <repositories>
         <repository>
-            <id>utplsql-java-api</id>
-            <url>
-                https://packagecloud.io/utplsql/utplsql-java-api/maven2
-            </url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
+            <id>central-snapshots</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+            <snapshots><enabled>true</enabled></snapshots>
         </repository>
     </repositories>
 

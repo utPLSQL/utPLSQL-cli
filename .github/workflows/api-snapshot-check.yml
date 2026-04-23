@@ -1,16 +1,14 @@
-name: Build and test
+name: Test with utplsql-java-api snapshot
 
 on:
-  push:
-    branches: [ develop ]
-
-  pull_request:
-    branches: [ develop ]
-
   workflow_dispatch:
+    inputs:
+      api_version:
+        description: 'utplsql-java-api snapshot version (e.g. 3.2.4-SNAPSHOT)'
+        required: true
 
   repository_dispatch:
-    types: [utPLSQL-build,utPLSQL-java-api-build]
+    types: [utPLSQL-java-api-build]
 
 defaults:
   run:
@@ -18,21 +16,15 @@ defaults:
 
 jobs:
   build:
-    name: Test on JDK ${{ matrix.jdk }} with utPLSQL ${{ matrix.utplsql_version }}
+    name: Test with utplsql-java-api ${{ github.event.client_payload.api_version || inputs.api_version }}
     runs-on: ubuntu-latest
     env:
-      UTPLSQL_VERSION: ${{matrix.utplsql_version}}
-      UTPLSQL_FILE: ${{matrix.utplsql_file}}
+      UTPLSQL_VERSION: develop
+      UTPLSQL_FILE: utPLSQL
       DB_URL: "//localhost:1521/FREEPDB1"
       DB_USER: APP
       DB_PASS: APP
 
-    strategy:
-      fail-fast: false
-      matrix:
-        utplsql_version: ["v3.1.14","develop"]
-        utplsql_file: ["utPLSQL"]
-        jdk: ['11', '17', '21', '25']
     services:
       oracle:
         image: gvenzl/oracle-free:23-slim-faststart
@@ -54,19 +46,22 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - uses: actions/setup-java@v5
         with:
           distribution: 'adopt'
-          java-version: ${{matrix.jdk}}
+          java-version: '17'
 
       - name: Install utplsql
-        run:  .github/scripts/install_utplsql.sh
+        run: .github/scripts/install_utplsql.sh
 
       - name: Install demo project
-        run:  .github/scripts/install_demo_project.sh
+        run: .github/scripts/install_demo_project.sh
 
       - name: Build and Test
-        run:  mvn verify appassembler:assemble
+        run: |
+          API_VERSION="${{ github.event.client_payload.api_version || inputs.api_version }}"
+          mvn verify appassembler:assemble -Dutplsql-java-api.version="$API_VERSION"
 
   slack-workflow-status:
     if: always()
