@@ -192,8 +192,8 @@ public class RunAction {
 
             compatibilityProxy = checkFrameworkCompatibility(conn);
 
-            logger.info("Successfully connected to database. UtPLSQL core: {}", compatibilityProxy.getVersionDescription());
-            logger.info("Oracle-Version: {}", new DefaultDatabaseInformation().getOracleVersion(conn));
+            logger.info("Connected to Oracle database: {}", new DefaultDatabaseInformation().getOracleVersion(conn));
+            logger.info("utPLSQL core: {}", compatibilityProxy.getVersionDescription());
         } catch (SQLException e) {
             if (e.getErrorCode() == 1017 || e.getErrorCode() == 12514) {
                 throw new DatabaseConnectionFailed(e);
