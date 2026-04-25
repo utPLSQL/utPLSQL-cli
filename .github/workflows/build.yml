@@ -23,7 +23,7 @@ jobs:
       UTPLSQL_FILE: ${{matrix.utplsql_file}}
       DB_URL: "//localhost:1521/FREEPDB1"
       DB_USER: APP
-      DB_PASS: APP
+      DB_PASS: pass
 
     strategy:
       fail-fast: false
@@ -37,8 +37,6 @@ jobs:
         env:
           ORACLE_PASSWORD: oracle
           DB_URL: "//localhost:1521/FREEPDB1"
-          DB_USER: APP
-          DB_PASS: pass
         ports:
           - 1521:1521
         options: >-
