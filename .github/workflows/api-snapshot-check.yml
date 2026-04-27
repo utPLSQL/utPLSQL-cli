@@ -22,6 +22,8 @@ jobs:
       UTPLSQL_VERSION: develop
       UTPLSQL_FILE: utPLSQL
       DB_URL: "//localhost:1521/FREEPDB1"
+      DB_USER: APP
+      DB_PASS: pass
 
     services:
       oracle:
@@ -29,8 +31,6 @@ jobs:
         env:
           ORACLE_PASSWORD: oracle
           DB_URL: "//localhost:1521/FREEPDB1"
-          DB_USER: APP
-          DB_PASS: pass
         ports:
           - 1521:1521
         options: >-
