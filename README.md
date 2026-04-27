@@ -1,6 +1,7 @@
 [![latest-release](https://img.shields.io/github/release/utPLSQL/utPLSQL-cli.svg)](https://github.com/utPLSQL/utPLSQL-cli/releases)
 [![license](https://img.shields.io/github/license/utPLSQL/utPLSQL-cli.svg)](https://www.apache.org/licenses/LICENSE-2.0)
-[![Build status](https://github.com/utPLSQL/utPLSQL-cli/actions/workflows/build.yml/badge.svg)](https://github.com/utPLSQL/utPLSQL-cli/actions/workflows/build.yml)
+[![Build and test](https://github.com/utPLSQL/utPLSQL-cli/actions/workflows/build.yml/badge.svg?branch=develop)](https://github.com/utPLSQL/utPLSQL-cli/actions/workflows/build.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=utPLSQL_utPLSQL-cli&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=utPLSQL_utPLSQL-cli)
 
 ----------
 # utPLSQL-cli
