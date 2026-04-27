@@ -1,13 +1,13 @@
-name: Prepare Release
+name: Release
 
 on:
   workflow_dispatch:
     inputs:
-      releaseVersion:
-        description: 'Release version (e.g. 3.2.0)'
+      release_version:
+        description: 'Release version (e.g. 3.2.3)'
         required: true
-      nextDevVersion:
-        description: 'Next development version (default: auto-increment patch, e.g. 3.2.1-SNAPSHOT)'
+      next_snapshot:
+        description: 'Next development version (default: auto-increment patch, e.g. 3.2.4) without the "-SNAPSHOT" word'
         required: false
 
 permissions:
@@ -15,8 +15,12 @@ permissions:
   id-token: write
   attestations: write
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
-  prepare-and-release:
+  release:
     runs-on: ubuntu-latest
 
     steps:
@@ -34,36 +38,10 @@ jobs:
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Set release version
-        run: mvn -B versions:set -DnewVersion=${{ inputs.releaseVersion }} -DgenerateBackupPoms=false
-
-      - name: Commit and tag release
-        run: |
-          git add pom.xml
-          git commit -m "Release v${{ inputs.releaseVersion }}"
-          git tag "v${{ inputs.releaseVersion }}"
-
-      - name: Calculate and set next development version
-        run: |
-          if [[ -n "${{ inputs.nextDevVersion }}" ]]; then
-            NEXT="${{ inputs.nextDevVersion }}"
-          else
-            IFS='.' read -r major minor patch <<< "${{ inputs.releaseVersion }}"
-            NEXT="${major}.${minor}.$((patch + 1))-SNAPSHOT"
-          fi
-          mvn -B versions:set -DnewVersion="$NEXT" -DgenerateBackupPoms=false
-          git add pom.xml
-          git commit -m "Prepare next development version $NEXT"
-
-      - name: Push branch and tag
-        run: |
-          git push origin HEAD:${{ github.ref_name }}
-          git push origin "v${{ inputs.releaseVersion }}"
-
-      - name: Checkout release tag for build
-        run: git checkout "v${{ inputs.releaseVersion }}"
+        run: mvn versions:set -DnewVersion=${{ inputs.release_version }} -DgenerateBackupPoms=false
 
       - name: Build Release
         run: mvn package appassembler:assemble assembly:single checksum:files -DskipTests
@@ -75,10 +53,34 @@ jobs:
             target/utPLSQL-cli.zip
             target/utPLSQL-cli.zip.sha256
 
+      - name: Commit and tag release version
+        run: |
+          git add pom.xml
+          git commit -m "Release v${{ inputs.release_version }}"
+          git tag -a "v${{ inputs.release_version }}" -m "Release ${{ inputs.release_version }}"
+
+      - name: Calculate and set next development version
+        run: |
+          if [[ -n "${{ inputs.next_snapshot }}" ]]; then
+            NEXT="${{ inputs.next_snapshot }}-SNAPSHOT"
+          else
+            IFS='.' read -r major minor patch <<< "${{ inputs.release_version }}"
+            NEXT="${major}.${minor}.$((patch + 1))-SNAPSHOT"
+          fi
+          mvn -B versions:set -DnewVersion="$NEXT" -DgenerateBackupPoms=false
+          git add pom.xml
+          git commit -m "Prepare next development version $NEXT [skip ci]"
+
+      - name: Push commits and tag
+        run: |
+          git push origin HEAD:${{ github.ref_name }}
+          git push origin "v${{ inputs.release_version }}"
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ inputs.releaseVersion }}
+          tag_name: v${{ inputs.release_version }}
+          name: "utPLSQL-cli v${{ inputs.release_version }}"
           generate_release_notes: true
           fail_on_unmatched_files: true
           files: |
