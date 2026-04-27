@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>17</maven.compiler.release>
 
-        <utplsql-java-api.version>3.2.3</utplsql-java-api.version>
+        <utplsql-java-api.version>3.2.4</utplsql-java-api.version>
 
         <junit.jupiter.version>5.12.2</junit.jupiter.version>
         <picocli.version>4.7.7</picocli.version>
