@@ -9,8 +9,6 @@ on:
 
   workflow_dispatch:
 
-  repository_dispatch:
-    types: [utPLSQL-build,utPLSQL-java-api-build]
 
 defaults:
   run:
@@ -25,22 +23,20 @@ jobs:
       UTPLSQL_FILE: ${{matrix.utplsql_file}}
       DB_URL: "//localhost:1521/FREEPDB1"
       DB_USER: APP
-      DB_PASS: APP
+      DB_PASS: pass
 
     strategy:
       fail-fast: false
       matrix:
         utplsql_version: ["v3.2.01","develop"]
         utplsql_file: ["utPLSQL"]
-        jdk: ['11', '17', '21', '25']
+        jdk: ['17', '21', '25']
     services:
       oracle:
         image: gvenzl/oracle-free:23-slim-faststart
         env:
           ORACLE_PASSWORD: oracle
           DB_URL: "//localhost:1521/FREEPDB1"
-          DB_USER: APP
-          DB_PASS: pass
         ports:
           - 1521:1521
         options: >-
@@ -54,9 +50,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-java@v5
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
         with:
-          distribution: 'adopt'
+          distribution: 'temurin'
           java-version: ${{matrix.jdk}}
 
       - name: Install utplsql
@@ -67,17 +65,3 @@ jobs:
 
       - name: Build and Test
         run:  mvn verify appassembler:assemble
-
-  slack-workflow-status:
-    if: always()
-    name: Post Workflow Status To Slack
-    needs: [ build ]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Slack Workflow Notification
-        uses: Gamesight/slack-workflow-status@master
-        with:
-          repo_token: ${{secrets.GITHUB_TOKEN}}
-          slack_webhook_url: ${{secrets.SLACK_WEBHOOK_URL}}
-          name: 'Github Actions[bot]'
-          icon_url: 'https://octodex.github.com/images/mona-the-rivetertocat.png'
