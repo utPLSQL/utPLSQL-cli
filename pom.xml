@@ -177,19 +177,8 @@
                         </fileSet>
                     </fileSets>
                     <algorithms>
-                        <algorithm>MD5</algorithm>
+                        <algorithm>SHA-256</algorithm>
                     </algorithms>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>com.amashchenko.maven.plugin</groupId>
-                <artifactId>gitflow-maven-plugin</artifactId>
-                <version>1.21.0</version>
-                <configuration>
-                    <verbose>true</verbose>
-                    <gitFlowConfig>
-                        <productionBranch>main</productionBranch>
-                    </gitFlowConfig>
                 </configuration>
             </plugin>
         </plugins>

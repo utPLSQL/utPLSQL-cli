@@ -1,16 +1,22 @@
-name: Release
+name: Prepare Release
 
 on:
-  push:
-    tags:
-      - "v*.*.*"
-
   workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: 'Release version (e.g. 3.2.0)'
+        required: true
+      nextDevVersion:
+        description: 'Next development version (default: auto-increment patch, e.g. 3.2.1-SNAPSHOT)'
+        required: false
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
 
 jobs:
-
-  release:
-
+  prepare-and-release:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,13 +29,58 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
+          cache: 'maven'
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Set release version
+        run: mvn -B versions:set -DnewVersion=${{ inputs.releaseVersion }} -DgenerateBackupPoms=false
+
+      - name: Commit and tag release
+        run: |
+          git add pom.xml
+          git commit -m "Release v${{ inputs.releaseVersion }}"
+          git tag "v${{ inputs.releaseVersion }}"
+
+      - name: Calculate and set next development version
+        run: |
+          if [[ -n "${{ inputs.nextDevVersion }}" ]]; then
+            NEXT="${{ inputs.nextDevVersion }}"
+          else
+            IFS='.' read -r major minor patch <<< "${{ inputs.releaseVersion }}"
+            NEXT="${major}.${minor}.$((patch + 1))-SNAPSHOT"
+          fi
+          mvn -B versions:set -DnewVersion="$NEXT" -DgenerateBackupPoms=false
+          git add pom.xml
+          git commit -m "Prepare next development version $NEXT"
+
+      - name: Push branch and tag
+        run: |
+          git push origin HEAD:${{ github.ref_name }}
+          git push origin "v${{ inputs.releaseVersion }}"
+
+      - name: Checkout release tag for build
+        run: git checkout "v${{ inputs.releaseVersion }}"
 
       - name: Build Release
         run: mvn package appassembler:assemble assembly:single checksum:files -DskipTests
 
-      - name: Release
-        uses: softprops/action-gh-release@v2.6
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
         with:
+          subject-path: |
+            target/utPLSQL-cli.zip
+            target/utPLSQL-cli.zip.sha256
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ inputs.releaseVersion }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
           files: |
             target/utPLSQL-cli.zip
-            target/utPLSQL-cli.zip.md5
+            target/utPLSQL-cli.zip.sha256
