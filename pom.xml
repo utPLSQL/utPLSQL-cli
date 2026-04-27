@@ -18,7 +18,7 @@
 
         <junit.jupiter.version>5.12.2</junit.jupiter.version>
         <picocli.version>4.7.7</picocli.version>
-        <logback.version>1.5.18</logback.version>
+        <logback.version>1.5.32</logback.version>
         <hamcrest.version>2.2</hamcrest.version>
         <travisBuildNumber>local</travisBuildNumber>
 
