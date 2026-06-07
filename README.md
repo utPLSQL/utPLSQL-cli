@@ -24,7 +24,7 @@ You can also download all development versions from [Bintray](https://bintray.co
 
 ## Requirements
 * [Java SE Runtime Environment 17](https://www.oracle.com/java/technologies/downloads/) or newer
-* When using reporters for Sonar or Coveralls client needs to be invoked from project's root directory.
+* When using reporters for Sonar, client needs to be invoked from project's root directory.
 
 ## Compatibility
 The latest CLI is compatible with database frameworks of the same **minor** version.
@@ -191,7 +191,7 @@ utplsql run "my/Username"/"myP@ssword"@connectstring
 
 Parameters -f, -o, -s are correlated. That is parameters -o and -s are controlling outputs for reporter specified by the preceding -f parameter.
 
-Sonar and Coveralls reporter will only provide valid reports, when source_path and/or test_path are provided, and ut_run is executed from your project's root path.
+Sonar reporter will only provide valid reports, when source_path and/or test_path are provided, and ut_run is executed from your project's root path.
 
 #### Examples
 
@@ -253,11 +253,6 @@ UT_COVERAGE_SONAR_REPORTER:
     Generates a JSON coverage report providing information on code coverage with line numbers.
     Designed for [SonarQube](https://about.sonarqube.com/) to report coverage.
     JSON format returned conforms with the Sonar specification: https://docs.sonarqube.org/display/SONAR/Generic+Test+Data
-
-UT_COVERALLS_REPORTER:
-    Generates a JSON coverage report providing information on code coverage with line numbers.
-    Designed for [Coveralls](https://coveralls.io/).
-    JSON format conforms with specification: https://docs.coveralls.io/api-introduction
 
 UT_DEBUG_REPORTER:
     No description available
