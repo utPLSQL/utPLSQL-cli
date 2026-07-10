@@ -21,6 +21,8 @@ public class Cli {
 
     static int runPicocliWithExitCode(String[] args) {
 
+        LoggerConfiguration.configure(LoggerConfiguration.ConfigLevel.NONE);
+
         logger.debug("Args: "+String.join(", ", args));
 
         CommandLine commandLine = new CommandLine(UtplsqlPicocliCommand.class);
