@@ -18,15 +18,23 @@ class VersionInfoCommandIT {
         capturer = new SystemCapturer.SystemOutCapturer();
     }
 
-    private int getNonEmptyLines(String content) {
-        return (int) Arrays.stream(content.split("[\n|\r]"))
+    private String[] getNonEmptyLineArray(String content) {
+        return Arrays.stream(content.split("[\r\n]+"))
                 .filter(line -> !line.isEmpty())
-                .count();
+                .toArray(String[]::new);
     }
 
     private void assertNumberOfLines( int expected, String content ) {
-        int numOfLines = getNonEmptyLines(content);
-        assertEquals(expected, numOfLines, String.format("Expected output to have %n lines, but got %n", expected, numOfLines));
+        String[] lines = getNonEmptyLineArray(content);
+        assertEquals(expected, lines.length, () -> {
+            StringBuilder sb = new StringBuilder();
+            sb.append(String.format("Expected output to have %d lines, but got %d.%n", expected, lines.length));
+            sb.append("Actual lines were:").append(System.lineSeparator());
+            for (int i = 0; i < lines.length; i++) {
+                sb.append(String.format("  [%d] %s%n", i, lines[i]));
+            }
+            return sb.toString();
+        });
     }
     @Test
     void infoCommandRunsWithoutConnection() {
