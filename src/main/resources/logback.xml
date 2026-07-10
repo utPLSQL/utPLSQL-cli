@@ -1,0 +1,17 @@
+<configuration>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Silent by default: LoggerConfiguration switches this to BASIC/DEBUG once
+         the requested command and its options have been parsed. Without this file,
+         Logback falls back to its own implicit default (root level DEBUG), which
+         would print log output before the CLI gets a chance to configure itself. -->
+    <root level="OFF">
+        <appender-ref ref="CONSOLE" />
+    </root>
+
+</configuration>
