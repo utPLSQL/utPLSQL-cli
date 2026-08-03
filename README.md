@@ -155,8 +155,7 @@ utplsql run "my/Username"/"myP@ssword"@connectstring
 -c                  - If specified, enables printing of test results in colors as defined by ANSICONSOLE standards. 
 (--color)             Works only on reporeters that support colors (ut_documentation_reporter).
                       
--fcode=code         - Override the exit code on failure, defaults to 1. You can set it to 0 to always exit with a success status.
-(--failure-exit-code)
+--failure-exit-code=code - Override the exit code on failure, defaults to 1. You can set it to 0 to always exit with a success status.
 
 -scc                - If specified, skips the compatibility-check with the version of the database framework.
 (--skip-              If you skip compatibility-check, CLI will expect the most actual framework version
