@@ -19,7 +19,12 @@ Provides an easy way of invoking utPLSQL from command-line. Main features:
 
 Published releases are available for download on the [utPLSQL-cli GitHub Releases Page.](https://github.com/utPLSQL/utPLSQL-cli/releases)
 
-You can also download all development versions from [Bintray](https://bintray.com/utplsql/utPLSQL-cli/utPLSQL-cli-develop#files).
+Development (`develop` branch) builds are not published as downloadable artifacts. To use the latest development version, build it from source:
+```
+git clone https://github.com/utPLSQL/utPLSQL-cli.git
+cd utPLSQL-cli
+mvn package appassembler:assemble
+```
 
 
 ## Requirements
@@ -84,7 +89,7 @@ Example:
 utplsql run -h
 ```
 
-#### \<ConnectionURL>
+#### ConnectionURL
 
 This is used in all commands as first parameter (though it's optional for `info`).
 
