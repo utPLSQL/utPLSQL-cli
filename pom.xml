@@ -15,6 +15,8 @@
         <maven.compiler.release>17</maven.compiler.release>
 
         <utplsql-java-api.version>3.2.4</utplsql-java-api.version>
+        <!-- Temporarly here - it needs to be moved to java-api. Keep in sync with the ojdbc version used by utplsql-java-api -->
+        <oraclepki.version>23.7.0.25.01</oraclepki.version>
 
         <junit.jupiter.version>5.12.2</junit.jupiter.version>
         <picocli.version>4.7.7</picocli.version>
@@ -72,6 +74,12 @@
             <groupId>org.utplsql</groupId>
             <artifactId>utplsql-java-api</artifactId>
             <version>${utplsql-java-api.version}</version>
+        </dependency>
+        <!-- Temporarly here - it needs to be moved to java-api. Required by ojdbc to read Oracle Wallets (Secure External Password Store) -->
+        <dependency>
+            <groupId>com.oracle.database.security</groupId>
+            <artifactId>oraclepki</artifactId>
+            <version>${oraclepki.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.xml.bind</groupId>

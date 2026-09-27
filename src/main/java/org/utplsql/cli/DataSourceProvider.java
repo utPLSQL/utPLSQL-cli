@@ -14,10 +14,15 @@ import java.sql.SQLException;
 public class DataSourceProvider {
 
     static {
-        String oracleHome = System.getenv("ORACLE_HOME");
-        if (oracleHome != null && System.getProperty("oracle.net.tns_admin") == null) {
-            System.setProperty("oracle.net.tns_admin",
-                    String.join(File.separator, oracleHome, "NETWORK", "ADMIN"));
+        if (System.getProperty("oracle.net.tns_admin") == null) {
+            String tnsAdmin = System.getenv("TNS_ADMIN");
+            String oracleHome = System.getenv("ORACLE_HOME");
+            if (tnsAdmin != null && !tnsAdmin.isEmpty()) {
+                System.setProperty("oracle.net.tns_admin", tnsAdmin);
+            } else if (oracleHome != null) {
+                System.setProperty("oracle.net.tns_admin",
+                        String.join(File.separator, oracleHome, "NETWORK", "ADMIN"));
+            }
         }
     }
 

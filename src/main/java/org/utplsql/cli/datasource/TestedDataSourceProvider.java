@@ -49,8 +49,11 @@ public class TestedDataSourceProvider {
         List<String> errors = new ArrayList<>();
         Throwable lastException = null;
 
-        ds.setUser(config.getUser());
-        ds.setPassword(config.getPassword());
+        // With external authentication (Oracle Wallet) the driver looks up the credentials itself
+        if (!config.isExternalAuthentication()) {
+            ds.setUser(config.getUser());
+            ds.setPassword(config.getPassword());
+        }
 
         for (ConnectStringPossibility possibility : possibilities) {
             logger.debug("Try connecting {}", possibility.getMaskedConnectString(config));
@@ -107,7 +110,7 @@ public class TestedDataSourceProvider {
 
         @Override
         public String getMaskedConnectString(ConnectionConfig config) {
-            return "jdbc:oracle:oci8:****/****@" + config.getConnect();
+            return "jdbc:oracle:oci8:" + maskedCredentials(config) + "@" + config.getConnect();
         }
     }
 
@@ -119,7 +122,11 @@ public class TestedDataSourceProvider {
 
         @Override
         public String getMaskedConnectString(ConnectionConfig config) {
-            return "jdbc:oracle:thin:****/****@" + config.getConnect();
+            return "jdbc:oracle:thin:" + maskedCredentials(config) + "@" + config.getConnect();
         }
+    }
+
+    private static String maskedCredentials(ConnectionConfig config) {
+        return config.isExternalAuthentication() ? "/" : "****/****";
     }
 }

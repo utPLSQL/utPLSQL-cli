@@ -98,15 +98,41 @@ Accepted formats:
 - `<user>/<password>@//<host>[:<port>]/<service>`
 - `<user>/<password>@<host>:<port>:<SID>` 
 - `<user>/<password>@<TNSName>`
+- `/@<TNSName>` - credentials are taken from an Oracle Wallet (Secure External Password Store), see [Oracle Wallet](#oracle-wallet-secure-external-password-store)
                          
-To connect using TNS, you need to have the ORACLE_HOME environment variable set.
-The file tnsnames.ora must exist in path %ORACLE_HOME%/network/admin
+To connect using TNS, you need to have either the TNS_ADMIN or the ORACLE_HOME environment variable set.
+The file tnsnames.ora must exist in the TNS_ADMIN directory or in %ORACLE_HOME%/network/admin
 The file tnsnames.ora must contain valid TNS entries. 
 
 In case you use a username containing `/` or a password containing `@` you should encapsulate it with double quotes `"`:
 ```
 utplsql run "my/Username"/"myP@ssword"@connectstring
 ```
+
+#### Oracle Wallet (Secure External Password Store)
+
+To avoid passing the password on the command line, store the credentials in an Oracle Wallet and connect with `/@<TNSName>`:
+```
+utplsql run /@MYDATABASE
+```
+
+Setup example:
+```
+# create an auto-login wallet with credentials for TNS alias MYDATABASE
+orapki wallet create -wallet $HOME/oracle/wallet -auto_login_local
+mkstore -wrl $HOME/oracle/wallet -createCredential MYDATABASE someusername
+
+# point the JDBC driver to the wallet
+echo "oracle.net.wallet_location=(SOURCE=(METHOD=FILE)(METHOD_DATA=(DIRECTORY=$HOME/oracle/wallet)))" \
+  > $HOME/oracle/network/admin/ojdbc.properties
+
+# tnsnames.ora with the MYDATABASE entry must be in the same directory
+export TNS_ADMIN=$HOME/oracle/network/admin
+```
+
+Instead of setting `TNS_ADMIN` you can also pass it as part of the connect string: `/@MYDATABASE?TNS_ADMIN=/path/to/network/admin`.
+
+The TNS alias used in the connect string must match the alias of the credential stored in the wallet.
 
 ### run
 `utplsql run <ConnectionURL> [<options>]`
