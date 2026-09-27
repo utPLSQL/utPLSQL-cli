@@ -100,9 +100,15 @@ Accepted formats:
 - `<user>/<password>@<TNSName>`
 - `/@<TNSName>` - credentials are taken from an Oracle Wallet (Secure External Password Store), see [Oracle Wallet](#oracle-wallet-secure-external-password-store)
                          
-To connect using TNS, you need to have either the TNS_ADMIN or the ORACLE_HOME environment variable set.
-The file tnsnames.ora must exist in the TNS_ADMIN directory or in %ORACLE_HOME%/network/admin
-The file tnsnames.ora must contain valid TNS entries. 
+To connect using a TNS name, the file `tnsnames.ora` with a valid entry for that name must be found.
+The directory holding `tnsnames.ora` (and `ojdbc.properties`, if used) is taken from the first of these that is set:
+
+1. `TNS_ADMIN` parameter in the connect string, e.g. `app/pass@MYDATABASE?TNS_ADMIN=/path/to/network/admin`
+2. Java system property `oracle.net.tns_admin`, e.g. `export JAVA_OPTS="-Doracle.net.tns_admin=/path/to/network/admin"`
+3. `TNS_ADMIN` environment variable
+4. `$ORACLE_HOME/network/admin`, when the `ORACLE_HOME` environment variable is set
+
+Options 1-3 are handled by the Oracle JDBC driver. Option 4 is a fallback provided by utPLSQL-cli, used only when none of the others is set.
 
 In case you use a username containing `/` or a password containing `@` you should encapsulate it with double quotes `"`:
 ```
@@ -126,11 +132,11 @@ mkstore -wrl $HOME/oracle/wallet -createCredential MYDATABASE someusername
 echo "oracle.net.wallet_location=(SOURCE=(METHOD=FILE)(METHOD_DATA=(DIRECTORY=$HOME/oracle/wallet)))" \
   > $HOME/oracle/network/admin/ojdbc.properties
 
-# tnsnames.ora with the MYDATABASE entry must be in the same directory
+# tnsnames.ora with the MYDATABASE entry must be in the same directory as ojdbc.properties
 export TNS_ADMIN=$HOME/oracle/network/admin
 ```
 
-Instead of setting `TNS_ADMIN` you can also pass it as part of the connect string: `/@MYDATABASE?TNS_ADMIN=/path/to/network/admin`.
+`ojdbc.properties` is read from the same directory as `tnsnames.ora`, so any of the options listed under [ConnectionURL](#connectionurl) can be used instead of `TNS_ADMIN`, for example `utplsql run "/@MYDATABASE?TNS_ADMIN=/path/to/network/admin"`.
 
 The TNS alias used in the connect string must match the alias of the credential stored in the wallet.
 
