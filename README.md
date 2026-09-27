@@ -110,7 +110,8 @@ The directory holding `tnsnames.ora` (and `ojdbc.properties`, if used) is taken 
 
 Options 1-3 are handled by the Oracle JDBC driver. Option 4 is a fallback provided by utPLSQL-cli, used only when none of the others is set.
 
-In case you use a username containing `/` or a password containing `@` you should encapsulate it with double quotes `"`:
+A password may contain `@`: everything up to the last `@` is taken as the password, e.g. `utplsql run myUser/myP@ssword@connectstring`.
+A username containing `/` must be enclosed in double quotes `"`, and so may the password:
 ```
 utplsql run "my/Username"/"myP@ssword"@connectstring
 ```
