@@ -13,17 +13,32 @@ import java.sql.SQLException;
  */
 public class DataSourceProvider {
 
+    private static final String TNS_ADMIN_PROPERTY = "oracle.net.tns_admin";
+
     static {
-        if (System.getProperty("oracle.net.tns_admin") == null) {
-            String tnsAdmin = System.getenv("TNS_ADMIN");
-            String oracleHome = System.getenv("ORACLE_HOME");
-            if (tnsAdmin != null && !tnsAdmin.isEmpty()) {
-                System.setProperty("oracle.net.tns_admin", tnsAdmin);
-            } else if (oracleHome != null) {
-                System.setProperty("oracle.net.tns_admin",
-                        String.join(File.separator, oracleHome, "NETWORK", "ADMIN"));
-            }
+        String tnsAdminFallback = getTnsAdminFallback(
+                System.getProperty(TNS_ADMIN_PROPERTY), System.getenv("TNS_ADMIN"), System.getenv("ORACLE_HOME"));
+        if (tnsAdminFallback != null) {
+            System.setProperty(TNS_ADMIN_PROPERTY, tnsAdminFallback);
         }
+    }
+
+    /**
+     * The JDBC driver resolves tnsnames.ora / ojdbc.properties from the {@value TNS_ADMIN_PROPERTY} property
+     * or the TNS_ADMIN environment variable on its own, but it doesn't look into ORACLE_HOME.
+     * The property takes precedence over the environment variable, so it must not be set when TNS_ADMIN is.
+     *
+     * @return ORACLE_HOME/NETWORK/ADMIN when neither {@value TNS_ADMIN_PROPERTY} nor TNS_ADMIN is set, otherwise null
+     */
+    static String getTnsAdminFallback(String tnsAdminProperty, String tnsAdminEnv, String oracleHome) {
+        if (isEmpty(tnsAdminProperty) && isEmpty(tnsAdminEnv) && !isEmpty(oracleHome)) {
+            return String.join(File.separator, oracleHome, "NETWORK", "ADMIN");
+        }
+        return null;
+    }
+
+    private static boolean isEmpty(String value) {
+        return value == null || value.isEmpty();
     }
 
     public static DataSource getDataSource(String connectString, int maxConnections) throws SQLException {
