@@ -87,7 +87,7 @@ public class TestedDataSourceProvider {
                     sqlCommands.add(String.format("ALTER SESSION SET NLS_TERRITORY='%s'", matcher.group(2)));
                 }
 
-                if (sqlCommands.size() > 0) {
+                if (!sqlCommands.isEmpty()) {
                     StringBuilder sb = new StringBuilder();
                     sb.append("BEGIN\n");
                     for (String command : sqlCommands) {
@@ -95,7 +95,7 @@ public class TestedDataSourceProvider {
                     }
                     sb.append("END;");
 
-                    logger.debug("NLS settings: {}", sb.toString());
+                    logger.debug("NLS settings: {}", sb);
                     ds.setConnectionInitSql(sb.toString());
                 }
             }
