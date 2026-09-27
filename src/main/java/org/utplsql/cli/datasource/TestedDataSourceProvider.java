@@ -16,23 +16,18 @@ import java.util.regex.Pattern;
 
 public class TestedDataSourceProvider {
 
-    interface ConnectStringPossibility {
-        String getConnectString(ConnectionConfig config);
-
-        String getMaskedConnectString(ConnectionConfig config);
-    }
-
     private static final Logger logger = LoggerFactory.getLogger(TestedDataSourceProvider.class);
+    /**
+     * JDBC URL prefixes tried in this order: thick (OCI) driver first, then thin driver
+     */
+    private static final List<String> JDBC_URL_PREFIXES = List.of("jdbc:oracle:oci8:", "jdbc:oracle:thin:");
+
     private final ConnectionConfig config;
-    private final List<ConnectStringPossibility> possibilities = new ArrayList<>();
     private final int maxConnections;
 
     public TestedDataSourceProvider(ConnectionConfig config, int maxConnections) {
         this.config = config;
         this.maxConnections = maxConnections;
-
-        possibilities.add(new ThickConnectStringPossibility());
-        possibilities.add(new ThinConnectStringPossibility());
     }
 
     public DataSource getDataSource() throws SQLException {
@@ -55,14 +50,15 @@ public class TestedDataSourceProvider {
             ds.setPassword(config.getPassword());
         }
 
-        for (ConnectStringPossibility possibility : possibilities) {
-            logger.debug("Try connecting {}", possibility.getMaskedConnectString(config));
-            ds.setURL(possibility.getConnectString(config));
+        for (String jdbcUrlPrefix : JDBC_URL_PREFIXES) {
+            String maskedUrl = jdbcUrlPrefix + config.getMaskedConnectString();
+            logger.debug("Try connecting {}", maskedUrl);
+            ds.setURL(jdbcUrlPrefix + "@" + config.getConnect());
             try (Connection ignored = ds.getConnection()) {
-                logger.info("Use connection string {}", possibility.getMaskedConnectString(config));
+                logger.info("Use connection string {}", maskedUrl);
                 return;
             } catch (Error | Exception e) {
-                errors.add(possibility.getMaskedConnectString(config) + ": " + e.getMessage());
+                errors.add(maskedUrl + ": " + e.getMessage());
                 lastException = e;
             }
         }
@@ -100,33 +96,5 @@ public class TestedDataSourceProvider {
                 }
             }
         }
-    }
-
-    private static class ThickConnectStringPossibility implements ConnectStringPossibility {
-        @Override
-        public String getConnectString(ConnectionConfig config) {
-            return "jdbc:oracle:oci8:@" + config.getConnect();
-        }
-
-        @Override
-        public String getMaskedConnectString(ConnectionConfig config) {
-            return "jdbc:oracle:oci8:" + maskedCredentials(config) + "@" + config.getConnect();
-        }
-    }
-
-    private static class ThinConnectStringPossibility implements ConnectStringPossibility {
-        @Override
-        public String getConnectString(ConnectionConfig config) {
-            return "jdbc:oracle:thin:@" + config.getConnect();
-        }
-
-        @Override
-        public String getMaskedConnectString(ConnectionConfig config) {
-            return "jdbc:oracle:thin:" + maskedCredentials(config) + "@" + config.getConnect();
-        }
-    }
-
-    private static String maskedCredentials(ConnectionConfig config) {
-        return config.isExternalAuthentication() ? "/" : "****/****";
     }
 }

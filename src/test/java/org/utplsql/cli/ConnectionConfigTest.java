@@ -2,6 +2,7 @@ package org.utplsql.cli;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -105,5 +106,46 @@ public class ConnectionConfigTest {
     })
     void rejectInvalidConnectString(String connectString) {
         assertThrows(IllegalArgumentException.class, () -> new ConnectionConfig(connectString));
+    }
+
+    @Test
+    void parseUnquotedPasswordWithAt() {
+        ConnectionConfig info = new ConnectionConfig("test/p@ss@w0rd@MY_TNS_ALIAS");
+
+        assertEquals("test", info.getUser());
+        assertEquals("p@ss@w0rd", info.getPassword());
+        assertEquals("MY_TNS_ALIAS", info.getConnect());
+    }
+
+    @ParameterizedTest
+    @CsvSource(delimiter = '|', value = {
+            "test/pw@my.local.host/service              | ****/****@my.local.host/service",
+            "test/pw@//my.local.host:1521/service       | ****/****@//my.local.host:1521/service",
+            "sys as sysdba/pw@MY_TNS_ALIAS              | ****/****@MY_TNS_ALIAS",
+            "test/\"p@ssw0rd=\"@MY_TNS_ALIAS            | ****/****@MY_TNS_ALIAS",
+            "\"User/Mine@=\"/pw@MY_TNS_ALIAS            | ****/****@MY_TNS_ALIAS",
+            "test/p@ss@MY_TNS_ALIAS                     | ****/****@MY_TNS_ALIAS",
+            "/@MY_TNS_ALIAS                             | /@MY_TNS_ALIAS"
+    })
+    void maskCredentials(String connectString, String expected) {
+        assertEquals(expected, ConnectionConfig.maskCredentials(connectString));
+        assertEquals(expected, new ConnectionConfig(connectString).getMaskedConnectString());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "run",
+            "--debug",
+            "-p=app.test_pkg",
+            "-f=ut_documentation_reporter",
+            "MY_TNS_ALIAS"
+    })
+    void maskCredentialsLeavesOtherValuesUnchanged(String value) {
+        assertEquals(value, ConnectionConfig.maskCredentials(value));
+    }
+
+    @Test
+    void maskCredentialsOfNull() {
+        assertNull(ConnectionConfig.maskCredentials(null));
     }
 }

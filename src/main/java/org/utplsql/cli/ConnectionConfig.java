@@ -7,9 +7,10 @@ public class ConnectionConfig {
 
     /**
      * Either {@code <user>/<password>@<connect>} or {@code /@<connect>}.
+     * An unquoted password extends to the last {@code @}, so it may contain {@code @} itself.
      */
     private static final Pattern CONNECT_STRING_PATTERN =
-            Pattern.compile("^(?:(\".+\"|[^/]+)/(\".+\"|[^@]+)|/)@(.*)$");
+            Pattern.compile("^(?:(\".+\"|[^/]+)/(\".+\"|.+)|/)@(.*)$");
 
     private final String user;
     private final String password;
@@ -24,6 +25,19 @@ public class ConnectionConfig {
         } else {
             throw new IllegalArgumentException("Not a valid connectString: '" + connectString + "'");
         }
+    }
+
+    /**
+     * Masks the credentials of a connect string, e.g. for logging.
+     *
+     * @param value any string, e.g. a command line argument
+     * @return the value as returned by {@link #getMaskedConnectString()} for a connect string, otherwise the unchanged value
+     */
+    public static String maskCredentials(String value) {
+        if (value == null || !CONNECT_STRING_PATTERN.matcher(value).matches()) {
+            return value;
+        }
+        return new ConnectionConfig(value).getMaskedConnectString();
     }
 
     private String stripEnclosingQuotes(String value) {
@@ -61,6 +75,17 @@ public class ConnectionConfig {
             return "/@" + connect;
         }
         return user + "/" + password + "@" + connect;
+    }
+
+    /**
+     * @return the connect string with user and password replaced by asterisks,
+     * or {@code /@<connect>} for external authentication
+     */
+    public String getMaskedConnectString() {
+        if (isExternalAuthentication()) {
+            return "/@" + connect;
+        }
+        return "****/****@" + connect;
     }
 
     public boolean isSysDba() {

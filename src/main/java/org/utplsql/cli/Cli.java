@@ -4,7 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Cli {
 
@@ -19,10 +21,19 @@ public class Cli {
         System.exit(exitCode);
     }
 
+    /**
+     * @return the arguments separated by ", ", with the credentials of the connect string masked
+     */
+    static String maskedArgs(String... args) {
+        return Arrays.stream(args)
+                .map(ConnectionConfig::maskCredentials)
+                .collect(Collectors.joining(", "));
+    }
+
     static int runPicocliWithExitCode(String[] args) {
 
 
-        logger.debug("Args: "+String.join(", ", args));
+        logger.debug("Args: {}", maskedArgs(args));
 
         CommandLine commandLine = new CommandLine(UtplsqlPicocliCommand.class);
         commandLine.setTrimQuotes(true);
