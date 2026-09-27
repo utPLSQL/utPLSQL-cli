@@ -13,7 +13,7 @@ class DataSourceProviderTest {
 
     @Test
     void tnsAdminFallsBackToOracleHome() {
-        assertEquals(String.join(File.separator, ORACLE_HOME, "NETWORK", "ADMIN"),
+        assertEquals(String.join(File.separator, ORACLE_HOME, "network", "admin"),
                 DataSourceProvider.getTnsAdminFallback(null, null, ORACLE_HOME));
     }
 

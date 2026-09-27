@@ -28,11 +28,11 @@ public class DataSourceProvider {
      * or the TNS_ADMIN environment variable on its own, but it doesn't look into ORACLE_HOME.
      * The property takes precedence over the environment variable, so it must not be set when TNS_ADMIN is.
      *
-     * @return ORACLE_HOME/NETWORK/ADMIN when neither {@value TNS_ADMIN_PROPERTY} nor TNS_ADMIN is set, otherwise null
+     * @return ORACLE_HOME/network/admin (lowercase, as in Oracle installations; paths are case-sensitive on Linux) when neither {@value TNS_ADMIN_PROPERTY} nor TNS_ADMIN is set, otherwise null
      */
     static String getTnsAdminFallback(String tnsAdminProperty, String tnsAdminEnv, String oracleHome) {
         if (isEmpty(tnsAdminProperty) && isEmpty(tnsAdminEnv) && !isEmpty(oracleHome)) {
-            return String.join(File.separator, oracleHome, "NETWORK", "ADMIN");
+            return String.join(File.separator, oracleHome, "network", "admin");
         }
         return null;
     }
