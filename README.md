@@ -167,7 +167,7 @@ The TNS alias used in the connect string must match the alias of the credential 
                       If defined, the output is not displayed on screen by default. This can be changed with the -s parameter.
                       If not defined, then output will be displayed on screen, even if the parameter -s is not specified.
                       If more than one -o parameter is specified for one -f parameter, the last one is taken into consideration.
-  -s                - Forces putting output to to screen for a given -f parameter.
+  -s                - Forces putting output to screen for a given -f parameter.
   
 -source_path=source - path to project source files, use the following options to enable custom type mappings:
   -owner="app"
@@ -186,7 +186,7 @@ The TNS alias used in the connect string must match the alias of the credential 
   -name_subexpression=subexpression_number
     
 -c                  - If specified, enables printing of test results in colors as defined by ANSICONSOLE standards. 
-(--color)             Works only on reporeters that support colors (ut_documentation_reporter).
+(--color)             Works only on reporters that support colors (ut_documentation_reporter).
                       
 --failure-exit-code=code - Override the exit code on failure, defaults to 1. You can set it to 0 to always exit with a success status.
 
@@ -217,7 +217,7 @@ The TNS alias used in the connect string must match the alias of the credential 
 -r                 - Enables random order of test executions
 (--random-test-order) Default: false
 
--seed              - Sets the seed to use for random test execution order. If set, it sets -random to true
+-seed=seed         - Sets the seed to use for random test execution order. If set, it sets -r (--random-test-order) to true
 (--random-test-order-seed)
 
 --coverage-schemes - A comma separated list of schemas on which coverage should be gathered
