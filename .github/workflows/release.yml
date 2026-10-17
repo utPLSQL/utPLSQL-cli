@@ -86,3 +86,12 @@ jobs:
           files: |
             target/utPLSQL-cli.zip
             target/utPLSQL-cli.zip.sha256
+
+      - name: Announce release in org discussions and on utplsql.github.io
+        uses: utPLSQL/.github/actions/announce-release@v1
+        with:
+          project-name: utPLSQL-cli
+          tag: v${{ inputs.release_version }}
+          discussion-token: ${{ secrets.API_TOKEN_GITHUB }}
+          site-token: ${{ secrets.API_TOKEN_GITHUB }}
+          site-category: utplsql-cli
