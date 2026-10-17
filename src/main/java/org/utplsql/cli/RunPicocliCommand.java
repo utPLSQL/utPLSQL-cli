@@ -82,6 +82,34 @@ public class RunPicocliCommand implements IRunCommand {
 
 
     @Option(
+            names = {"-include-schema-expr"},
+            description = "Regular expression to include in the coverage report schemas whose name matches the expression. " +
+                    "See coverage reporting options in framework documentation"
+    )
+    private String includeSchemaExpr;
+
+    @Option(
+            names = {"-exclude-schema-expr"},
+            description = "Regular expression to exclude from the coverage report schemas whose name matches the expression. " +
+                    "See coverage reporting options in framework documentation"
+    )
+    private String excludeSchemaExpr;
+
+    @Option(
+            names = {"-include-object-expr"},
+            description = "Regular expression to include in the coverage report objects whose name matches the expression. " +
+                    "See coverage reporting options in framework documentation"
+    )
+    private String includeObjectExpr;
+
+    @Option(
+            names = {"-exclude-object-expr"},
+            description = "Regular expression to exclude from the coverage report objects whose name matches the expression. " +
+                    "See coverage reporting options in framework documentation"
+    )
+    private String excludeObjectExpr;
+
+    @Option(
             names = {"-D", "--dbms_output"},
             description = "Enables DBMS_OUTPUT for the TestRunner (default: DISABLED)"
     )
@@ -249,6 +277,10 @@ public class RunPicocliCommand implements IRunCommand {
                 .tags(tags.toArray(new String[0]))
                 .coverageSchemes(coverageSchemes.toArray(new String[0]))
                 .oraStuckTimeout(oraStuckTimeout)
+                .includeSchemaExpr(includeSchemaExpr)
+                .excludeSchemaExpr(excludeSchemaExpr)
+                .includeObjectExpr(includeObjectExpr)
+                .excludeObjectExpr(excludeObjectExpr)
                 .create();
     }
 

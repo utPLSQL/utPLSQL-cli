@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
 
 public class RunCommandArgumentsTest {
 
@@ -67,6 +68,22 @@ public class RunCommandArgumentsTest {
 
         TestRunner testRunner = runCmd.newTestRunner(new ArrayList<>());
         assertThat( testRunner.getOptions().tags, contains("tag1", "tag.2") );
+    }
+
+    @Test
+    void provideExpressionFilters() {
+        IRunCommand runCmd = TestHelper.createRunCommand(TestHelper.getConnectionString(),
+                "-include-schema-expr=^APP$",
+                "-exclude-schema-expr=^APP_TEST$",
+                "-include-object-expr=^PKG_",
+                "-exclude-object-expr=_TMP$"
+        );
+
+        TestRunner testRunner = runCmd.newTestRunner(new ArrayList<>());
+        assertThat( testRunner.getOptions().includeSchemaExpr, equalTo("^APP$") );
+        assertThat( testRunner.getOptions().excludeSchemaExpr, equalTo("^APP_TEST$") );
+        assertThat( testRunner.getOptions().includeObjectExpr, equalTo("^PKG_") );
+        assertThat( testRunner.getOptions().excludeObjectExpr, equalTo("_TMP$") );
     }
 
     @Test
