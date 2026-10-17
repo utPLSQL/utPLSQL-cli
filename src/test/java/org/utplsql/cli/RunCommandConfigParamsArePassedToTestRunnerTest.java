@@ -39,4 +39,19 @@ public class RunCommandConfigParamsArePassedToTestRunnerTest {
         TestRunner testRunner = new RunAction(config).newTestRunner(new ArrayList<>());
         assertThat( testRunner.getOptions().oraStuckTimeout, equalTo(2) );
     }
+
+    @Test
+    void expressionFilters() {
+        RunCommandConfig config = new RunCommandConfig.Builder()
+                .includeSchemaExpr("^APP$")
+                .excludeSchemaExpr("^APP_TEST$")
+                .includeObjectExpr("^PKG_")
+                .excludeObjectExpr("_TMP$")
+                .create();
+        TestRunner testRunner = new RunAction(config).newTestRunner(new ArrayList<>());
+        assertThat( testRunner.getOptions().includeSchemaExpr, equalTo("^APP$") );
+        assertThat( testRunner.getOptions().excludeSchemaExpr, equalTo("^APP_TEST$") );
+        assertThat( testRunner.getOptions().includeObjectExpr, equalTo("^PKG_") );
+        assertThat( testRunner.getOptions().excludeObjectExpr, equalTo("_TMP$") );
+    }
 }

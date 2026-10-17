@@ -201,6 +201,17 @@ The TNS alias used in the connect string must match the alias of the credential 
 -exclude=pckg_list  - Comma-separated object list to exclude from the coverage report.
                       Format: [schema.]package[,[schema.]package ...].
                       See coverage reporting options in framework documentation.
+
+-include-schema-expr=regex - Regular expression matching the names of schemas to include in the coverage report.
+-exclude-schema-expr=regex - Regular expression matching the names of schemas to exclude from the coverage report.
+-include-object-expr=regex - Regular expression matching the names of objects to include in the coverage report.
+-exclude-object-expr=regex - Regular expression matching the names of objects to exclude from the coverage report.
+                      Case-insensitive. Object expressions are matched against the object name without the schema.
+                      Anchor them with `^` and `$`, otherwise any partial match counts.
+                      If an include expression is given, `-include` and `--coverage-schemes` are ignored.
+                      All exclude options are always applied and can be combined.
+                      Ignored when `-source_path` is used (file mapping defines the coverage scope).
+                      See https://www.utplsql.org/utPLSQL/latest/userguide/coverage.html#filtering-objects-in-coverage-reports
                       
 -q                  - Does not output the informational messages normally printed to console.
 (--quiet)             Default: false
@@ -246,6 +257,12 @@ Invokes all Unit tests from schema/package "hr_test" with two reporters:
 ```
 
 Invokes all unit test suites from schema "hr". Results are displayed to screen using default ut_documentation_reporter.
+
+```
+> utplsql run hr/hr@xe -p=hr_test -f=ut_coverage_html_reporter -o=coverage.html -include-schema-expr=^HR$ -exclude-object-expr=_TMP$
+```
+
+Runs the tests from "hr_test" and writes an HTML coverage report that covers all objects in schema "HR" except those whose name ends with "_TMP".
 
 ### info
 `utplsql info [<ConnectionURL>]`

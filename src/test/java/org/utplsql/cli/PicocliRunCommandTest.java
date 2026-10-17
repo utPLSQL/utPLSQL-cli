@@ -49,11 +49,19 @@ public class PicocliRunCommandTest {
                     "-owner_subexpression=1",
                     "-type_subexpression=2",
                     "-name_subexpression=3",
-                "--coverage-schemes=schema1,other_schema");
+                "--coverage-schemes=schema1,other_schema",
+                "-include-schema-expr=^APP$",
+                "-exclude-schema-expr=^APP_TEST$",
+                "-include-object-expr=^PKG_",
+                "-exclude-object-expr=_TMP$");
 
         assertNotNull(config.getConnectString());
         assertThat( config.getSuitePaths(), is(new String[]{"app.betwnstr", "app.basic"}));
         assertThat( config.getTags(), is(new String[]{"tag1", "tag.2"}));
+        assertEquals( "^APP$", config.getIncludeSchemaExpr() );
+        assertEquals( "^APP_TEST$", config.getExcludeSchemaExpr() );
+        assertEquals( "^PKG_", config.getIncludeObjectExpr() );
+        assertEquals( "_TMP$", config.getExcludeObjectExpr() );
         assertTrue( config.isOutputAnsiColor() );
         assertEquals( LoggerConfiguration.ConfigLevel.NONE, config.getLogConfigLevel());
         assertEquals( 10, config.getFailureExitCode());

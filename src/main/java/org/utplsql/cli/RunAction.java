@@ -167,6 +167,10 @@ public class RunAction {
                 .randomTestOrderSeed(config.getRandomTestOrderSeed())
                 .addTags(Arrays.asList(config.getTags()))
                 .addCoverageSchemes(Arrays.asList(config.getCoverageSchemes()))
+                .includeSchemaExpr(config.getIncludeSchemaExpr())
+                .excludeSchemaExpr(config.getExcludeSchemaExpr())
+                .includeObjectExpr(config.getIncludeObjectExpr())
+                .excludeObjectExpr(config.getExcludeObjectExpr())
                 .oraStuckTimeout(config.getOraStuckTimeout());
     }
 

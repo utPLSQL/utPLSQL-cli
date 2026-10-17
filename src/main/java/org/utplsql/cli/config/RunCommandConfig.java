@@ -24,9 +24,13 @@ public class RunCommandConfig extends ConnectionConfig {
     private final String[] tags;
     private final String[] coverageSchemes;
     private final Integer oraStuckTimeout;
+    private final String includeSchemaExpr;
+    private final String excludeSchemaExpr;
+    private final String includeObjectExpr;
+    private final String excludeObjectExpr;
 
-    @ConstructorProperties({"connectString", "suitePaths", "reporters", "outputAnsiColor", "failureExitCode", "skipCompatibilityCheck", "includePackages", "excludePackages", "sourceMapping", "testMapping", "logConfigLevel", "timeoutInMinutes", "dbmsOutput", "randomTestOrder", "randomTestOrderSeed", "tags", "coverageSchemes", "oraStuckTimeout"})
-    public RunCommandConfig(String connectString, String[] suitePaths, ReporterConfig[] reporters, boolean outputAnsiColor, Integer failureExitCode, boolean skipCompatibilityCheck, String[] includePackages, String[] excludePackages, FileMapperConfig sourceMapping, FileMapperConfig testMapping, ConfigLevel logConfigLevel, Integer timeoutInMinutes, boolean dbmsOutput, boolean randomTestOrder, Integer randomTestOrderSeed, String[] tags, String[] coverageSchemes, Integer oraStuckTimeout) {
+    @ConstructorProperties({"connectString", "suitePaths", "reporters", "outputAnsiColor", "failureExitCode", "skipCompatibilityCheck", "includePackages", "excludePackages", "sourceMapping", "testMapping", "logConfigLevel", "timeoutInMinutes", "dbmsOutput", "randomTestOrder", "randomTestOrderSeed", "tags", "coverageSchemes", "oraStuckTimeout", "includeSchemaExpr", "excludeSchemaExpr", "includeObjectExpr", "excludeObjectExpr"})
+    public RunCommandConfig(String connectString, String[] suitePaths, ReporterConfig[] reporters, boolean outputAnsiColor, Integer failureExitCode, boolean skipCompatibilityCheck, String[] includePackages, String[] excludePackages, FileMapperConfig sourceMapping, FileMapperConfig testMapping, ConfigLevel logConfigLevel, Integer timeoutInMinutes, boolean dbmsOutput, boolean randomTestOrder, Integer randomTestOrderSeed, String[] tags, String[] coverageSchemes, Integer oraStuckTimeout, String includeSchemaExpr, String excludeSchemaExpr, String includeObjectExpr, String excludeObjectExpr) {
         super(connectString);
         this.suitePaths = suitePaths;
         this.reporters = reporters;
@@ -45,6 +49,10 @@ public class RunCommandConfig extends ConnectionConfig {
         this.tags = tags;
         this.coverageSchemes = coverageSchemes;
         this.oraStuckTimeout = oraStuckTimeout;
+        this.includeSchemaExpr = includeSchemaExpr;
+        this.excludeSchemaExpr = excludeSchemaExpr;
+        this.includeObjectExpr = includeObjectExpr;
+        this.excludeObjectExpr = excludeObjectExpr;
     }
 
     public String[] getSuitePaths() {
@@ -113,6 +121,14 @@ public class RunCommandConfig extends ConnectionConfig {
 
     public Integer getOraStuckTimeout() { return oraStuckTimeout; }
 
+    public String getIncludeSchemaExpr() { return includeSchemaExpr; }
+
+    public String getExcludeSchemaExpr() { return excludeSchemaExpr; }
+
+    public String getIncludeObjectExpr() { return includeObjectExpr; }
+
+    public String getExcludeObjectExpr() { return excludeObjectExpr; }
+
     public static class Builder {
 
         private String connectString;
@@ -133,6 +149,10 @@ public class RunCommandConfig extends ConnectionConfig {
         private String[] tags = new String[0];
         private String[] coverageSchemes = new String[0];
         private Integer oraStuckTimeout;
+        private String includeSchemaExpr;
+        private String excludeSchemaExpr;
+        private String includeObjectExpr;
+        private String excludeObjectExpr;
 
         public Builder connectString(String connectString) {
             this.connectString = connectString;
@@ -224,8 +244,28 @@ public class RunCommandConfig extends ConnectionConfig {
             return this;
         }
 
+        public Builder includeSchemaExpr(String includeSchemaExpr) {
+            this.includeSchemaExpr = includeSchemaExpr;
+            return this;
+        }
+
+        public Builder excludeSchemaExpr(String excludeSchemaExpr) {
+            this.excludeSchemaExpr = excludeSchemaExpr;
+            return this;
+        }
+
+        public Builder includeObjectExpr(String includeObjectExpr) {
+            this.includeObjectExpr = includeObjectExpr;
+            return this;
+        }
+
+        public Builder excludeObjectExpr(String excludeObjectExpr) {
+            this.excludeObjectExpr = excludeObjectExpr;
+            return this;
+        }
+
         public RunCommandConfig create() {
-            return new RunCommandConfig(connectString, suitePaths, reporters, outputAnsiColor, failureExitCode, skipCompatibilityCheck, includePackages, excludePackages, sourceMapping, testMapping, logConfigLevel, timeoutInMinutes, dbmsOutput, randomTestOrder, randomTestOrderSeed, tags, coverageSchemes, oraStuckTimeout);
+            return new RunCommandConfig(connectString, suitePaths, reporters, outputAnsiColor, failureExitCode, skipCompatibilityCheck, includePackages, excludePackages, sourceMapping, testMapping, logConfigLevel, timeoutInMinutes, dbmsOutput, randomTestOrder, randomTestOrderSeed, tags, coverageSchemes, oraStuckTimeout, includeSchemaExpr, excludeSchemaExpr, includeObjectExpr, excludeObjectExpr);
         }
     }
 }
