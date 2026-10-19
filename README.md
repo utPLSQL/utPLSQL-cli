@@ -209,7 +209,8 @@ The TNS alias used in the connect string must match the alias of the credential 
                       Case-insensitive. Object expressions are matched against the object name without the schema.
                       Anchor them with `^` and `$`, otherwise any partial match counts.
                       If an include expression is given, `-include` and `--coverage-schemes` are ignored.
-                      All exclude options are always applied and can be combined.
+                      Schema and object exclude expressions are both applied.
+                      If any exclude expression is given, the `-exclude` list is ignored.
                       Ignored when `-source_path` is used (file mapping defines the coverage scope).
                       See https://www.utplsql.org/utPLSQL/latest/userguide/coverage.html#filtering-objects-in-coverage-reports
                       
